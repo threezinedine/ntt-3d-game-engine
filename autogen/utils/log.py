@@ -25,7 +25,7 @@ class CommandLoggerHandler(logging.StreamHandler[TextIO]):
         print(f"{color}{self.formatter.format(record)}{Fore.RESET}")
 
 
-logger = logging.getLogger("COMMAND")
+logger = logging.getLogger("AUTOGEN")
 
 handler = CommandLoggerHandler()
 formatter = logging.Formatter(

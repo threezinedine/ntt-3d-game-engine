@@ -10,9 +10,17 @@ def main():
     else:
         logger.setLevel(logging.INFO)
 
-    logger.debug("This is a debug message.")
-    logger.info("Test")
+    check_system_command("gcc", required=True)
+    check_system_command("git", required=True)
+    check_system_command("cmake", required=True)
+    check_system_command("uv", required=True)
+
+    args.execute()
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        logger.error(f"An unhandled exception occurred: {e}")
+        raise e
