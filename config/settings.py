@@ -30,6 +30,13 @@ class Settings:
             runables.append(project.relPath)
         return runables
 
+    @property
+    def buildables(self) -> list[str]:
+        buildables: list[str] = []
+        for project in self.Projects.cppProjects:
+            buildables.append(project.relPath)
+        return buildables
+
     def is_python_project(self, project: str) -> bool:
         """
         Check if the given project path corresponds to a Python project.
@@ -39,5 +46,17 @@ class Settings:
         """
         for py_project in self.Projects.pythonProjects:
             if py_project.relPath == project:
+                return True
+        return False
+
+    def is_cpp_project(self, project: str) -> bool:
+        """
+        Check if the given project path corresponds to a C++ project.
+
+        :param project: The relative path to the project.
+        :return: True if the project is a C++ project, False otherwise.
+        """
+        for cpp_project in self.Projects.cppProjects:
+            if cpp_project.relPath == project:
                 return True
         return False

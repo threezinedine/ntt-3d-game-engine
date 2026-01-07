@@ -35,11 +35,52 @@ class Args:
             help="The relative path to the python project to run.",
         )
 
+        build_parser = subparsers.add_parser(
+            "build",
+            help="Build a specified cpp project from the projects.json file.",
+        )
+
+        build_parser.add_argument(
+            "project",
+            type=str,
+            choices=self.settings.buildables,
+            help="The relative path to the cpp project to build.",
+        )
+
+        build_parser.add_argument(
+            "-r",
+            "--reload",
+            action="store_true",
+            help="Regenerate the build files before building the project.",
+        )
+
+        build_parser.add_argument(
+            "-t",
+            "--type",
+            type=str,
+            default=CPP_BUILD_TYPES[0],
+            choices=CPP_BUILD_TYPES,
+            help="The type of build to perform (debug, release, test). Default is debug.",
+        )
+
+        build_parser.add_argument(
+            "-p",
+            "--platform",
+            type=str,
+            default=CPP_BUILD_PLATFORMS[0],
+            choices=CPP_BUILD_PLATFORMS,
+            help="The target platform for the build (windows, linux, macos, web, android). Default is linux.",
+        )
+
         self.args = parser.parse_args()
 
     @property
     def verbose(self) -> bool:
         return self.args.verbose
+
+    @property
+    def vars(self) -> dict[str, Any]:
+        return vars(self.args)
 
     def execute(self) -> None:
         """
@@ -51,3 +92,9 @@ class Args:
                 sync_python_project(self.args.project)
                 logger.debug(f"Running {self.args.project}...")
                 run_python_project(self.args.project)
+
+        elif self.args.command == "build":
+            if self.settings.is_cpp_project(self.args.project):
+                logger.debug(f"Building {self.args.project}...")
+                generate_cpp_project(**self.vars)
+                build_cpp_project(**self.vars)
