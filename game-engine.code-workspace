@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"path": "config"
+		},
+		{
+			"path": "autogen"
+		},
+		{
+			"path": "core"
+		},
+		{
+			"path": "runtime"
+		},
+		{
+			"path": "editor"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}
