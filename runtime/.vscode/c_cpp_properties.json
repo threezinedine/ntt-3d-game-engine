@@ -1,0 +1,29 @@
+{
+	"configurations": [
+		{
+			"name": "Linux",
+			"includePath": [
+				"${workspaceFolder}/**",
+				"${workspaceFolder}/../core/**"
+			],
+			"defines": [],
+			"compilerPath": "/usr/bin/clang",
+			"cStandard": "c17",
+			"cppStandard": "c++17",
+			"intelliSenseMode": "linux-clang-x64"
+		},
+		{
+			"name": "Windows",
+			"includePath": [
+				"${workspaceFolder}/**",
+				"${workspaceFolder}/../core/**"
+			],
+			"defines": [],
+			"compilerPath": "clang.exe",
+			"cStandard": "c17",
+			"cppStandard": "c++17",
+			"intelliSenseMode": "windows-clang-x64"
+		}
+	],
+	"version": 4
+}

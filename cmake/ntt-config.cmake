@@ -1,4 +1,6 @@
 macro(ntt_configure)
+    set(BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/..")
+
     option(CMAKE_BUILD_TYPE "Build type" "Debug") 
     set(TARGET_COMPILE_OPTIONS)
     set(TARGET_DEFINITIONS)
@@ -36,4 +38,17 @@ macro(ntt_print_configuration)
         message(STATUS " - ${DEFINITION}")
     endforeach()
     
+endmacro()
+
+macro(ntt_find_package PACKAGE_NAME FOLDER)
+    if (MSVC)
+        set(CMAKE_FOLDER ${FOLDER})
+    endif()
+
+    set(${PACKAGE_NAME}_DIR ${BASE_DIRECTORY}/cmake)
+    find_package(${PACKAGE_NAME} REQUIRED)
+
+    if (MSVC)
+        unset(CMAKE_FOLDER)
+    endif()
 endmacro()

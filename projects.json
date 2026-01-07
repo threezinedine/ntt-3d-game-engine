@@ -4,7 +4,8 @@
 			"relPath": "core"
 		},
 		{
-			"relPath": "runtime"
+			"relPath": "runtime",
+			"executable": "EngineRuntime"
 		}
 	],
 	"pythonProjects": [

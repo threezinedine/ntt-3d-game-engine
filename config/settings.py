@@ -28,6 +28,9 @@ class Settings:
         runables: list[str] = []
         for project in self.Projects.pythonProjects:
             runables.append(project.relPath)
+        for project in self.Projects.cppProjects:
+            if project.executable != "":
+                runables.append(project.relPath)
         return runables
 
     @property
@@ -60,3 +63,21 @@ class Settings:
             if cpp_project.relPath == project:
                 return True
         return False
+
+    def get_cpp_project_executable(self, project: str) -> str:
+        """
+        Get the executable name for the given C++ project.
+
+        :param project: The relative path to the C++ project.
+        :return: The name of the executable for the project.
+        :raises ValueError: If the project is not found or has no executable defined.
+        """
+        for cpp_project in self.Projects.cppProjects:
+            if cpp_project.relPath == project:
+                if cpp_project.executable != "":
+                    return cpp_project.executable
+                else:
+                    raise ValueError(
+                        f"No executable defined for C++ project: {project}"
+                    )
+        raise ValueError(f"C++ project not found: {project}")
