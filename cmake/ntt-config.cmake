@@ -17,6 +17,8 @@ macro(ntt_configure)
     endif()
 
     ntt_platform_detect()
+
+    ntt_option("NTT_ENGINE_BINDING" "ON")
 endmacro()
 
 macro(ntt_platform_detect)

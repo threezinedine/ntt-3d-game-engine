@@ -4,6 +4,7 @@ from ..constants import *
 from typing import Any
 import shutil
 from .log import *
+from configparser import ConfigParser
 
 
 def _get_target_folder(
@@ -62,6 +63,11 @@ def generate_cpp_project(
         shutil.rmtree(os.path.join(project, target_folder), ignore_errors=True)
 
     final_command = f"cmake -S . -B {target_folder}"
+
+    options = _get_config_values(project, type, platform, generator)
+
+    for key, value in options.items():
+        final_command += f" -D{key.upper()}={value}"
 
     if generator is not None:
         final_command += f' -G "{generator}"'
@@ -149,3 +155,38 @@ def clean_cpp_project(project: str, **kwargs: Any) -> None:
         command_logger.info(f"Cleaned build files at {build_path}")
     else:
         command_logger.info(f"No build files found at {build_path} to clean.")
+
+
+def _get_config_values(
+    project: str, type: str, platform: str, generator: str | None = None
+) -> dict[str, str]:
+    """
+    Retrieves configuration values from config.cfg for the specified build type.
+
+    :param project: The path to the C++ project directory. The path is relative to the root of the repository.
+    :param type: The type of build files to generate (must be in "debug", "release", "test").
+    :param platform: The target platform for the build files (must be in "windows", "linux", "macos", "web", "android").
+    :param generator: The CMake generator to use (if None, the default generator will be used).
+    :return: A dictionary of configuration key-value pairs.
+    """
+    config = ConfigParser()
+    config_path = os.path.join(project, "config.cfg")
+    config.read(config_path)
+
+    _get_target_folder(type, platform, generator)  # Validate inputs
+
+    final_config: dict[str, str] = {}
+
+    if "common" in config:
+        final_config.update(config["common"])
+
+    if type.lower() in config:
+        final_config.update(config[type.lower()])
+
+    if platform.lower() in config:
+        final_config.update(config[platform.lower()])
+
+    if generator is not None and generator.lower() in config:
+        final_config.update(config[generator.lower()])
+
+    return final_config
