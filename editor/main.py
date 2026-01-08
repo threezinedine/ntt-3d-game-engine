@@ -2,6 +2,8 @@ from PySide6.QtGui import QKeyEvent
 from PySide6.QtWidgets import QApplication, QMainWindow
 from PySide6.QtCore import Qt
 
+from log import editor_logger
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -19,6 +21,7 @@ class MainWindow(QMainWindow):
 def main():
     app = QApplication([])
     window = MainWindow()
+    editor_logger.info("Starting the application.")
     window.showMaximized()
     app.exec()
 

@@ -1,5 +1,7 @@
 from argparse import ArgumentParser
 from utils import *
+import logging
+from log import autogen_logger
 
 
 def main():
@@ -13,12 +15,12 @@ def main():
     args = parser.parse_args()
 
     if args.verbose:
-        logger.setLevel(logging.DEBUG)
-        logger.debug("Verbose mode enabled.")
+        autogen_logger.setLevel(logging.DEBUG)
+        autogen_logger.debug("Verbose mode enabled.")
     else:
-        logger.setLevel(logging.INFO)
+        autogen_logger.setLevel(logging.INFO)
 
-    logger.info("This is a placeholder for the main functionality.")
+    autogen_logger.info("This is a placeholder for the main functionality.")
 
 
 if __name__ == "__main__":
