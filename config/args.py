@@ -36,9 +36,28 @@ class Args:
             help="The relative path to the cpp project to build.",
         )
 
+        self._build_install_subparser(subparsers)
+
         self._add_cpp_project_option(build_parser)
 
         self.args = parser.parse_args()
+
+    def _build_install_subparser(
+        self,
+        subparsers: Any,
+    ) -> None:
+        install_parser = subparsers.add_parser(
+            "install",
+            help="Install dependencies for a specified python project from the projects.json file.",
+        )
+
+        install_subparsers = install_parser.add_subparsers(
+            dest="project",
+            help="The relative path to the python project to install dependencies for.",
+        )
+
+        for project in self.settings.installables:
+            install_subparsers.add_parser(project)
 
     def _build_run_subparser(
         self,
@@ -113,13 +132,12 @@ class Args:
             elif self.settings.is_cpp_project(self.args.project):
                 command_logger.debug(f"Building {self.args.project}...")
                 build_cpp_project(**self.vars)
+                project = self.settings.get_cpp_project(self.args.project)
                 command_logger.debug(
-                    f"Running {self.args.project} with executable {self.settings.get_cpp_project_executable(self.args.project)}..."
+                    f"Running {self.args.project} with executable {project.executable}..."
                 )
                 run_cpp_project(
-                    executable=self.settings.get_cpp_project_executable(
-                        self.args.project
-                    ),
+                    executable=project.executable,
                     **self.vars,
                 )
             else:
@@ -132,3 +150,25 @@ class Args:
                 command_logger.debug(f"Building {self.args.project}...")
                 generate_cpp_project(**self.vars)
                 build_cpp_project(**self.vars)
+            else:
+                raise ValueError(f"Project {self.args.project} is not a C++ project.")
+        elif self.args.command == "install":
+            if self.settings.is_python_project(self.args.project):
+                command_logger.debug(
+                    f"Installing dependencies for {self.args.project}..."
+                )
+                sync_python_project(self.args.project)
+                project = self.settings.get_python_project(self.args.project)
+                assert (
+                    project.installCommand is not None
+                ), "Install command should not be None."
+                run_command(
+                    project.installCommand,
+                    directory=self.args.project,
+                )
+            else:
+                raise ValueError(
+                    f"Project {self.args.project} is not a Python project."
+                )
+        else:
+            raise ValueError(f"Unknown command: {self.args.command}")

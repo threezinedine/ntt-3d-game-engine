@@ -40,6 +40,14 @@ class Settings:
             buildables.append(project.relPath)
         return buildables
 
+    @property
+    def installables(self) -> list[str]:
+        installables: list[str] = []
+        for project in self.Projects.pythonProjects:
+            if project.installCommand is not None:
+                installables.append(project.relPath)
+        return installables
+
     def is_python_project(self, project: str) -> bool:
         """
         Check if the given project path corresponds to a Python project.
@@ -64,20 +72,28 @@ class Settings:
                 return True
         return False
 
-    def get_cpp_project_executable(self, project: str) -> str:
+    def get_cpp_project(self, project: str) -> CPPProject:
         """
-        Get the executable name for the given C++ project.
+        Get the C++ project configuration for the given project path.
 
         :param project: The relative path to the C++ project.
-        :return: The name of the executable for the project.
-        :raises ValueError: If the project is not found or has no executable defined.
+        :return: The CppProject instance corresponding to the project.
+        :raises ValueError: If the project is not found.
         """
         for cpp_project in self.Projects.cppProjects:
             if cpp_project.relPath == project:
-                if cpp_project.executable != "":
-                    return cpp_project.executable
-                else:
-                    raise ValueError(
-                        f"No executable defined for C++ project: {project}"
-                    )
+                return cpp_project
         raise ValueError(f"C++ project not found: {project}")
+
+    def get_python_project(self, project: str) -> PythonProject:
+        """
+        Get the Python project configuration for the given project path.
+
+        :param project: The relative path to the Python project.
+        :return: The PythonProject instance corresponding to the project.
+        :raises ValueError: If the project is not found.
+        """
+        for py_project in self.Projects.pythonProjects:
+            if py_project.relPath == project:
+                return py_project
+        raise ValueError(f"Python project not found: {project}")

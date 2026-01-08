@@ -10,3 +10,4 @@ class CPPProject:
 @dataclass
 class PythonProject:
     relPath: str = field(default="")
+    installCommand: str | None = field(default=None)

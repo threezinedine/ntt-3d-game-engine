@@ -13,7 +13,8 @@
 			"relPath": "autogen"
 		},
 		{
-			"relPath": "editor"
+			"relPath": "editor",
+			"installCommand": "uv run --quiet install.py"
 		}
 	]
 }
