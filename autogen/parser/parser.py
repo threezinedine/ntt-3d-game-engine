@@ -1,6 +1,7 @@
 import clang.cindex as cindex  # type: ignore
 from .py_enum import PyEnum
 from .py_typedef import PyTypedef
+from .py_variable import PyVariable
 
 
 class Parser:
@@ -9,6 +10,7 @@ class Parser:
         self.tu: cindex.TranslationUnit | None = None
         self.Enums: list[PyEnum] = []
         self.Typedefs: list[PyTypedef] = []
+        self.Variables: list[PyVariable] = []
 
     def add_code(self, name: str, code: str) -> None:
         self._temps[name] = code
@@ -35,6 +37,9 @@ class Parser:
             elif cursor.kind == cindex.CursorKind.TYPEDEF_DECL:
                 py_typedef = PyTypedef(cursor)
                 self.Typedefs.append(py_typedef)
+            elif cursor.kind == cindex.CursorKind.VAR_DECL:
+                py_variable = PyVariable(cursor)
+                self.Variables.append(py_variable)
             elif cursor.kind == cindex.CursorKind.NAMESPACE:
                 namespace = cursor.spelling
                 for child in cursor.get_children():
@@ -46,3 +51,7 @@ class Parser:
                         py_typedef = PyTypedef(child)
                         py_typedef.namespace = namespace
                         self.Typedefs.append(py_typedef)
+                    elif child.kind == cindex.CursorKind.VAR_DECL:
+                        py_variable = PyVariable(child)
+                        py_variable.namespace = namespace
+                        self.Variables.append(py_variable)
