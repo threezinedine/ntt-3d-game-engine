@@ -40,9 +40,27 @@ class Args:
         self._add_cpp_project_option(build_parser)
 
         self._build_install_subparser(subparsers)
+        self._build_test_subparser(subparsers)
         self._build_clean_subparser(subparsers)
 
         self.args = parser.parse_args()
+
+    def _build_test_subparser(
+        self,
+        subparsers: Any,
+    ) -> None:
+        test_parser = subparsers.add_parser(
+            "test",
+            help="Test a specified python project from the projects.json file.",
+        )
+
+        test_subparsers = test_parser.add_subparsers(
+            dest="project",
+            help="The relative path to the python project to test.",
+        )
+
+        for project in self.settings.testable:
+            test_subparsers.add_parser(project)
 
     def _build_clean_subparser(
         self,
@@ -250,6 +268,20 @@ class Args:
             else:
                 raise ValueError(
                     f"Unknown project type for project: {self.args.project}"
+                )
+        elif self.args.command == "test":
+            if self.settings.is_python_project(self.args.project):
+                command_logger.debug(f"Testing Python project {self.args.project}...")
+                sync_python_project(self.args.project)
+                project = self.settings.get_python_project(self.args.project)
+                assert project.test is not None, "Test command should not be None."
+                run_command(
+                    project.test.command,
+                    directory=project.test.cwd,
+                )
+            else:
+                raise ValueError(
+                    f"Project {self.args.project} is not a Python project."
                 )
         else:
             raise ValueError(f"Unknown command: {self.args.command}")

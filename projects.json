@@ -11,7 +11,11 @@
 	"pythonProjects": [
 		{
 			"relPath": "autogen",
-			"cleans": ["autogen/temp"]
+			"cleans": ["autogen/temp"],
+			"test": {
+				"command": "uv run --quiet pytest",
+				"cwd": "autogen"
+			}
 		},
 		{
 			"relPath": "editor",

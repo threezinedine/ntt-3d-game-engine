@@ -57,6 +57,14 @@ class Settings:
             cleanable.append(project.relPath)
         return cleanable
 
+    @property
+    def testable(self) -> list[str]:
+        testable: list[str] = []
+        for project in self.Projects.pythonProjects:
+            if project.test is not None:
+                testable.append(project.relPath)
+        return testable
+
     def is_python_project(self, project: str) -> bool:
         """
         Check if the given project path corresponds to a Python project.
