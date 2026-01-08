@@ -4,5 +4,11 @@
 			"file": "core/.vscode/c_cpp_properties.json.in",
 			"output": "core/.vscode/c_cpp_properties.json"
 		}
+	],
+	"commands": [
+		{
+			"files": "autogen/*.txt.in",
+			"command": "cat {{ INPUT }} > {{ INPUT[:-3] }}"
+		}
 	]
 }

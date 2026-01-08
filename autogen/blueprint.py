@@ -1,7 +1,7 @@
 import os
 from models import *
 from log import autogen_logger
-from constants import *
+import constants
 from jinja2 import Template
 from utils import *
 
@@ -53,11 +53,17 @@ def _generate_blueprint(blueprint: Blueprint) -> bool:
         content = f.read()
 
     template = Template(content)
+
+    variables: dict[str, str] = {}
+
+    for key, value in constants.__dict__.items():
+        if key.isupper():
+            variables[key] = value
+
     output_content = template.render(
-        BASE_DIR=BASE_DIR,
-        PLATFORM_IS_WINDOWS=PLATFORM_IS_WINDOWS,
-        PLATFORM_IS_LINUX=PLATFORM_IS_LINUX,
-        PYTHON_INCLUDE_DIR=PYTHON_INCLUDE_DIR,
+        **variables,
+        INPUT=blueprint.file,
+        OUTPUT=blueprint.output,
     )
 
     with open(complete_output, "w") as f:

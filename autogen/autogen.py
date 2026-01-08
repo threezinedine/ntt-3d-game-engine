@@ -1,5 +1,6 @@
 import json
 from blueprint import generate_blueprints
+from command import generate_commands
 from dacite import from_dict
 from models import *
 from utils import *
@@ -17,6 +18,9 @@ class Autogen:
         final_processed_files: set[str] = set()
 
         processed_files = generate_blueprints(self.settings)
+        final_processed_files.update(processed_files)
+
+        processed_files = generate_commands(self.settings)
         final_processed_files.update(processed_files)
 
         for file in final_processed_files:
