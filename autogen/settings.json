@@ -1,0 +1,8 @@
+{
+	"blueprints": [
+		{
+			"file": "core/.vscode/c_cpp_properties.json.in",
+			"output": "core/.vscode/c_cpp_properties.json"
+		}
+	]
+}

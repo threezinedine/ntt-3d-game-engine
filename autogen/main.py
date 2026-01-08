@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 from utils import *
 import logging
 from log import autogen_logger
+from autogen import Autogen
 
 
 def main():
@@ -20,7 +21,8 @@ def main():
     else:
         autogen_logger.setLevel(logging.INFO)
 
-    autogen_logger.info("This is a placeholder for the main functionality.")
+    autogen = Autogen()
+    autogen.Execute()
 
 
 if __name__ == "__main__":

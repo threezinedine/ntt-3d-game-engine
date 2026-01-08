@@ -4,6 +4,6 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 try:
-    from ..config.utils.log import *
+    from ..config.constants import *
 except:
-    from config.utils.log import *  # type: ignore
+    from config.constants import *  # type: ignore
