@@ -21,7 +21,7 @@ class Settings:
             data = json.load(file)
 
             self.Projects = from_dict(data_class=Projects, data=data)
-            logger.debug(f"Loaded {PROJECTS_FILE} settings.")
+            command_logger.debug(f"Loaded {PROJECTS_FILE} settings.")
 
     @property
     def runables(self) -> list[str]:

@@ -18,13 +18,13 @@ def check_system_command(command: str, required: bool = True) -> None:
             stderr=subprocess.DEVNULL,
             check=True,
         )
-        logger.debug(f"Command '{command}' is available on the system.")
+        command_logger.debug(f"Command '{command}' is available on the system.")
     except subprocess.CalledProcessError:
         if required:
             raise EnvironmentError(
                 f"Required command '{command}' is not available on the system."
             )
         else:
-            logger.warning(
+            command_logger.warning(
                 f"Optional command '{command}' is not available on the system."
             )

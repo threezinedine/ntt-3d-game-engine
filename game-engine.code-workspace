@@ -1,24 +1,31 @@
 {
 	"folders": [
 		{
-			"path": "config"
-		},
-		{
+			"name": "autogen",
 			"path": "autogen"
 		},
 		{
+			"name": "core",
 			"path": "core"
 		},
 		{
+			"name": "runtime",
 			"path": "runtime"
 		},
 		{
+			"name": "cmake",
 			"path": "cmake"
 		},
 		{
+			"name": "editor",
 			"path": "editor"
 		},
 		{
+			"name": "config",
+			"path": "config"
+		},
+		{
+			"name": "ntt-3d-game-engine",
 			"path": "."
 		}
 	],

@@ -129,5 +129,5 @@ def run_cpp_project(
         os.path.join(project, executable_path)
     ), f"Executable not found at {executable_path}. Please build the project first."
 
-    logger.info(f"Running executable: {executable_path} at {project}")
+    command_logger.info(f"Running executable: {executable_path} at {project}")
     run_command(executable_path, directory=project)

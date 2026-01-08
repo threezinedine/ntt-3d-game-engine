@@ -5,10 +5,10 @@ def main():
     args = Args()
 
     if args.verbose:
-        logger.setLevel(logging.DEBUG)
-        logger.debug("Verbose mode enabled.")
+        command_logger.setLevel(logging.DEBUG)
+        command_logger.debug("Verbose mode enabled.")
     else:
-        logger.setLevel(logging.INFO)
+        command_logger.setLevel(logging.INFO)
 
     check_system_command("gcc", required=True)
     check_system_command("git", required=True)
@@ -22,5 +22,5 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        logger.error(f"An unhandled exception occurred: {e}")
+        command_logger.error(f"An unhandled exception occurred: {e}")
         raise e

@@ -106,14 +106,14 @@ class Args:
         """
         if self.args.command == "run":
             if self.settings.is_python_project(self.args.project):
-                logger.debug(f"Syncing {self.args.project}...")
+                command_logger.debug(f"Syncing {self.args.project}...")
                 sync_python_project(self.args.project)
-                logger.debug(f"Running {self.args.project}...")
+                command_logger.debug(f"Running {self.args.project}...")
                 run_python_project(self.args.project)
             elif self.settings.is_cpp_project(self.args.project):
-                logger.debug(f"Building {self.args.project}...")
+                command_logger.debug(f"Building {self.args.project}...")
                 build_cpp_project(**self.vars)
-                logger.debug(
+                command_logger.debug(
                     f"Running {self.args.project} with executable {self.settings.get_cpp_project_executable(self.args.project)}..."
                 )
                 run_cpp_project(
@@ -129,6 +129,6 @@ class Args:
 
         elif self.args.command == "build":
             if self.settings.is_cpp_project(self.args.project):
-                logger.debug(f"Building {self.args.project}...")
+                command_logger.debug(f"Building {self.args.project}...")
                 generate_cpp_project(**self.vars)
                 build_cpp_project(**self.vars)

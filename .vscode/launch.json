@@ -1,0 +1,12 @@
+{
+	"configurations": [
+		{
+			"name": "Python Helper",
+			"type": "debugpy",
+			"request": "launch",
+			"program": "${workspaceFolder}/helper.py",
+			"args": ["-v", "run", "autogen"],
+			"cwd": "${workspaceFolder}"
+		}
+	]
+}

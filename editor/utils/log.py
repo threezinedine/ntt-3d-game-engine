@@ -25,29 +25,12 @@ class CommandLoggerHandler(logging.StreamHandler[TextIO]):
         print(f"{color}{self.formatter.format(record)}{Fore.RESET}")
 
 
-class Logger:
-    loggers: dict[str, logging.Logger] = {}
+logger = logging.getLogger("EDITOR")
 
-    @staticmethod
-    def get_logger(name: str) -> logging.Logger:
-        if name in Logger.loggers:
-            return Logger.loggers[name]
+handler = CommandLoggerHandler()
+formatter = logging.Formatter(
+    "[%(name)7s] - [%(levelname)7s] - %(filename)-20s:%(lineno)-4d - %(message)s"
+)
+handler.setFormatter(formatter)
 
-        logger = logging.getLogger(name)
-
-        handler = CommandLoggerHandler()
-        formatter = logging.Formatter(
-            "[%(name)7s] - [%(levelname)7s] - %(filename)-20s:%(lineno)-4d - %(message)s"
-        )
-        handler.setFormatter(formatter)
-
-        logger.addHandler(handler)
-
-        Logger.loggers[name] = logger
-
-        return logger
-
-
-command_logger = Logger.get_logger("COMMAND")
-editor_logger = Logger.get_logger("EDITOR")
-autogen_logger = Logger.get_logger("AUTOGEN")
+logger.addHandler(handler)
