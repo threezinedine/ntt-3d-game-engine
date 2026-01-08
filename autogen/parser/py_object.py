@@ -2,7 +2,7 @@ import clang.cindex as cindex  # type: ignore
 
 
 class PyObject:
-    def __init__(self, cursor: cindex.Cursor) -> None:
+    def __init__(self, tu: cindex.TranslationUnit, cursor: cindex.Cursor) -> None:
         self.name = cursor.spelling
         self.annotations: list[str] = []
         self.comment = cursor.raw_comment if cursor.raw_comment else None

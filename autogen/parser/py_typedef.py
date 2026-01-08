@@ -2,7 +2,7 @@ import clang.cindex as cindex
 
 
 class PyTypedef:
-    def __init__(self, cursor: cindex.Cursor) -> None:
+    def __init__(self, tu: cindex.TranslationUnit, cursor: cindex.Cursor) -> None:
         self.name = cursor.spelling
         self.underlying_type = cursor.underlying_typedef_type.spelling
         self.namespace: str | None = None

@@ -3,13 +3,12 @@ from .py_object import PyObject
 
 
 class PyConstant(PyObject):
-    def __init__(self, cursor: cindex.Cursor) -> None:
-        super().__init__(cursor)
+    def __init__(self, tu: cindex.TranslationUnit, cursor: cindex.Cursor) -> None:
+        super().__init__(tu, cursor)
 
         self.value: str | int | float | None = ""
 
         for child in cursor.get_children():
-            print(child.kind)
             if child.kind == cindex.CursorKind.INTEGER_LITERAL:
                 self.value = "".join(token.spelling for token in child.get_tokens())
             elif child.kind == cindex.CursorKind.FLOATING_LITERAL:
