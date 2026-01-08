@@ -1,6 +1,7 @@
 from PySide6.QtGui import QKeyEvent
 from PySide6.QtWidgets import QApplication, QMainWindow
 from PySide6.QtCore import Qt
+from Engine import *
 
 from log import editor_logger
 
@@ -19,6 +20,7 @@ class MainWindow(QMainWindow):
 
 
 def main():
+    print(add(3, 3))
     app = QApplication([])
     window = MainWindow()
     editor_logger.info("Starting the application.")
