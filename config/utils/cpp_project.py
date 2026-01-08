@@ -131,3 +131,21 @@ def run_cpp_project(
 
     command_logger.info(f"Running executable: {executable_path} at {project}")
     run_command(executable_path, directory=project)
+
+
+def clean_cpp_project(project: str, **kwargs: Any) -> None:
+    """
+    Cleans the build files for a given C++ project.
+
+    :param project: The relative path to the C++ project to clean.
+    :param type: The type of build files to clean (must be in "debug", "release", "test").
+    :param platform: The target platform for the build files (must be in "windows", "linux", "macos", "web", "android").
+    :param generator: The CMake generator used to build the project (if None, the default generator will be used).
+    """
+    build_path = os.path.join(project, "build")
+
+    if os.path.exists(build_path):
+        shutil.rmtree(build_path)
+        command_logger.info(f"Cleaned build files at {build_path}")
+    else:
+        command_logger.info(f"No build files found at {build_path} to clean.")

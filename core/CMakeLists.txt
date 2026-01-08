@@ -52,7 +52,7 @@ ntt_find_package(ntt-pybind "Dependencies")
 set(BINDING_PROJECT_NAME EngineCoreBinding)
 pybind11_add_module(
     ${BINDING_PROJECT_NAME}
-    "temp/main.cpp"
+    "temp/binding.cpp"
 )
 
 target_link_libraries(
@@ -75,10 +75,18 @@ set_target_properties(
     SUFFIX ${BINDING_OUTPUT_SUFFIX}
 )
 
+set(SRC_FILE ${CMAKE_BINARY_DIR}/${BINDING_PROJECT_NAME}${BINDING_OUTPUT_SUFFIX})
+set(DST_FILE ${BASE_DIRECTORY}/editor/Engine/${BINDING_PROJECT_NAME}${BINDING_OUTPUT_SUFFIX})
+set(STAMP_FILE ${SRC_FILE}.stamp)
+
 add_custom_command(
-    TARGET ${BINDING_PROJECT_NAME}
+    OUTPUT ${STAMP_FILE}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    ${CMAKE_BINARY_DIR}/${BINDING_PROJECT_NAME}${BINDING_OUTPUT_SUFFIX}
-    ${BASE_DIRECTORY}/editor/Engine/${BINDING_PROJECT_NAME}${BINDING_OUTPUT_SUFFIX}
+    ${SRC_FILE}
+    ${DST_FILE}
+    COMMAND ${CMAKE_COMMAND} -E echo "" > ${STAMP_FILE}
+    DEPENDS ${STAMP_FILE}
     COMMENT "Copying ${BINDING_PROJECT_NAME}${BINDING_OUTPUT_SUFFIX} to editor folder"
 )
+
+add_custom_target(copy_binding_to_editor ALL DEPENDS ${STAMP_FILE})

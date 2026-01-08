@@ -14,7 +14,20 @@
 		},
 		{
 			"relPath": "editor",
-			"installCommand": "uv run --quiet install.py"
+			"preRun": {
+				"command": "uv run helper.py build core --platform=linux --type=release"
+			},
+			"install": {
+				"command": "uv --quiet run install.py",
+				"cwd": "editor"
+			},
+			"cleans": [
+				"editor/Engine/EngineCoreBinding.so",
+				"editor/main.spec",
+				"core/build/linux_release/EngineCoreBinding.so.stamp",
+				"core/build/web_release/EngineCoreBinding.so.stamp",
+				"core/build/windows_release/EngineCoreBinding.so.stamp"
+			]
 		}
 	]
 }

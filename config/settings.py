@@ -44,9 +44,18 @@ class Settings:
     def installables(self) -> list[str]:
         installables: list[str] = []
         for project in self.Projects.pythonProjects:
-            if project.installCommand is not None:
+            if project.install is not None:
                 installables.append(project.relPath)
         return installables
+
+    @property
+    def cleanable(self) -> list[str]:
+        cleanable: list[str] = []
+        for project in self.Projects.cppProjects:
+            cleanable.append(project.relPath)
+        for project in self.Projects.pythonProjects:
+            cleanable.append(project.relPath)
+        return cleanable
 
     def is_python_project(self, project: str) -> bool:
         """

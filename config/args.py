@@ -36,11 +36,38 @@ class Args:
             help="The relative path to the cpp project to build.",
         )
 
-        self._build_install_subparser(subparsers)
-
         self._add_cpp_project_option(build_parser)
 
+        self._build_install_subparser(subparsers)
+        self._build_clean_subparser(subparsers)
+
         self.args = parser.parse_args()
+
+    def _build_clean_subparser(
+        self,
+        subparsers: Any,
+    ) -> None:
+        clean_parser = subparsers.add_parser(
+            "clean",
+            help="Clean build files for all projects specified in the projects.json file.",
+        )
+
+        clean_subparsers = clean_parser.add_subparsers(
+            dest="project",
+            help="The relative path to the project to clean, or 'all' to clean all projects.",
+        )
+
+        clean_subparsers.add_parser(
+            "all",
+            help="Clean all projects specified in the projects.json file.",
+        )
+
+        for project in self.settings.cleanable:
+            if self.settings.is_python_project(project):
+                clean_subparsers.add_parser(project)
+            elif self.settings.is_cpp_project(project):
+                cpp_parser = clean_subparsers.add_parser(project)
+                self._add_cpp_project_option(cpp_parser)
 
     def _build_install_subparser(
         self,
@@ -125,9 +152,18 @@ class Args:
         """
         if self.args.command == "run":
             if self.settings.is_python_project(self.args.project):
+                python_project = self.settings.get_python_project(self.args.project)
                 command_logger.debug(f"Syncing {self.args.project}...")
                 sync_python_project(self.args.project)
                 command_logger.debug(f"Running {self.args.project}...")
+                if python_project.preRun is not None:
+                    command_logger.debug(
+                        f"Running pre-run command for {self.args.project}..."
+                    )
+                    run_command(
+                        python_project.preRun.command,
+                        directory=python_project.preRun.cwd,
+                    )
                 run_python_project(self.args.project)
             elif self.settings.is_cpp_project(self.args.project):
                 command_logger.debug(f"Building {self.args.project}...")
@@ -160,15 +196,69 @@ class Args:
                 sync_python_project(self.args.project)
                 project = self.settings.get_python_project(self.args.project)
                 assert (
-                    project.installCommand is not None
+                    project.install is not None
                 ), "Install command should not be None."
+
+                if project.preInstall is not None:
+                    command_logger.debug(
+                        f"Running pre-install command for {self.args.project}..."
+                    )
+                    run_command(
+                        project.preInstall.command,
+                        directory=project.preInstall.cwd,
+                    )
+
                 run_command(
-                    project.installCommand,
-                    directory=self.args.project,
+                    project.install.command,
+                    directory=project.install.cwd,
                 )
             else:
                 raise ValueError(
                     f"Project {self.args.project} is not a Python project."
                 )
+        elif self.args.command == "clean":
+            if self.args.project == "all":
+                command_logger.debug("Cleaning all projects...")
+                for project in self.settings.Projects.cppProjects:
+                    clean_cpp_project(project=project.relPath)
+
+                    for clean_item in project.cleans or []:
+                        self._clean(clean_item)
+
+                for project in self.settings.Projects.pythonProjects:
+                    clean_python_project(project=project.relPath)
+
+                    for clean_item in project.cleans or []:
+                        self._clean(clean_item)
+
+            elif self.settings.is_cpp_project(self.args.project):
+                command_logger.debug(f"Cleaning C++ project {self.args.project}...")
+                clean_cpp_project(**self.vars)
+
+                project = self.settings.get_cpp_project(self.args.project)
+                for clean_item in project.cleans or []:
+                    self._clean(clean_item)
+
+            elif self.settings.is_python_project(self.args.project):
+                command_logger.debug(f"Cleaning Python project {self.args.project}...")
+                clean_python_project(self.args.project)
+
+                project = self.settings.get_python_project(self.args.project)
+                for clean_item in project.cleans or []:
+                    self._clean(clean_item)
+            else:
+                raise ValueError(
+                    f"Unknown project type for project: {self.args.project}"
+                )
         else:
             raise ValueError(f"Unknown command: {self.args.command}")
+
+    def _clean(self, name: str) -> None:
+        path = os.path.join(name)
+        if not os.path.exists(path):
+            return
+
+        if os.path.isfile(path):
+            os.remove(path)
+        else:
+            shutil.rmtree(path, ignore_errors=True)
