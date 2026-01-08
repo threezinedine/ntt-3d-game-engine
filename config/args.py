@@ -164,7 +164,7 @@ class Args:
                         python_project.preRun.command,
                         directory=python_project.preRun.cwd,
                     )
-                run_python_project(self.args.project)
+                run_python_project(self.args.project, verbose=self.args.verbose)
             elif self.settings.is_cpp_project(self.args.project):
                 command_logger.debug(f"Building {self.args.project}...")
                 build_cpp_project(**self.vars)

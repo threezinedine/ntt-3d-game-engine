@@ -12,13 +12,16 @@ def sync_python_project(project: str) -> None:
     run_command(f"uv sync --quiet", directory=project)
 
 
-def run_python_project(project: str) -> None:
+def run_python_project(project: str, verbose: bool = False) -> None:
     """
     Runs a Python project.
 
     :param project: The path to the Python project directory. The path is relative to the root of the repository.
     """
-    run_command(f"uv --quiet run main.py", directory=project)
+    if verbose:
+        run_command(f"uv --quiet run main.py --verbose", directory=project)
+    else:
+        run_command(f"uv --quiet run main.py", directory=project)
 
 
 def clean_python_project(project: str) -> None:

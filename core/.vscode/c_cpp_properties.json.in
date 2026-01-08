@@ -3,15 +3,34 @@
 		{
 			"name": "Linux",
 			"includePath": [
-				"${workspaceFolder}/**",
-				"/usr/include/python3.12",
-				"${workspaceFolder}/build/linux_debug/_deps/**"
+				{% if PLATFORM_IS_LINUX-%}
+				"{{ PYTHON_INCLUDE_DIR }}",
+				{% endif-%}
+				"${workspaceFolder}/**"
 			],
-			"defines": [],
+			"defines": [
+				"NTT_PLATFORM_LINUX"
+			],
 			"compilerPath": "/usr/bin/clang",
 			"cStandard": "c17",
 			"cppStandard": "c++17",
 			"intelliSenseMode": "linux-clang-x64"
+		},
+		{
+			"name": "Windows",
+			"includePath": [
+				{% if PLATFORM_IS_WINDOWS-%}
+				"{{ PYTHON_INCLUDE_DIR }}"
+				{% endif-%}
+				"${workspaceFolder}/**"
+			],
+			"defines": [
+				"NTT_PLATFORM_WINDOWS"
+			],
+			"compilerPath": "clang.exe",
+			"cStandard": "c17",
+			"cppStandard": "c++17",
+			"intelliSenseMode": "windows-clang-x64"
 		}
 	],
 	"version": 4
