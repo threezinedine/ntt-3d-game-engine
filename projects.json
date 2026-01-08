@@ -10,7 +10,8 @@
 	],
 	"pythonProjects": [
 		{
-			"relPath": "autogen"
+			"relPath": "autogen",
+			"cleans": ["autogen/temp"]
 		},
 		{
 			"relPath": "editor",
