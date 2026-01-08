@@ -2,8 +2,7 @@ from PySide6.QtGui import QKeyEvent
 from PySide6.QtWidgets import QApplication, QMainWindow
 from PySide6.QtCore import Qt
 from Engine import *
-
-from log import editor_logger
+from utils import *
 
 
 class MainWindow(QMainWindow):
@@ -20,6 +19,7 @@ class MainWindow(QMainWindow):
 
 
 def main():
+    editor_logger.setLevel(logging.DEBUG)
     print(add(3, 3))
     app = QApplication([])
     window = MainWindow()
