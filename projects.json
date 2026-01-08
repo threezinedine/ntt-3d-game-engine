@@ -25,9 +25,7 @@
 			"cleans": [
 				"editor/Engine/EngineCoreBinding.so",
 				"editor/main.spec",
-				"core/build/linux_release/EngineCoreBinding.so.stamp",
-				"core/build/web_release/EngineCoreBinding.so.stamp",
-				"core/build/windows_release/EngineCoreBinding.so.stamp"
+				"core/build/*_release/EngineCoreBinding.so.stamp"
 			]
 		}
 	]

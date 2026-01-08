@@ -1,6 +1,7 @@
 from argparse import _SubParsersAction, ArgumentParser  # type: ignore
 from .settings import Settings
 from .utils import *
+import glob
 
 
 class Args:
@@ -254,11 +255,10 @@ class Args:
             raise ValueError(f"Unknown command: {self.args.command}")
 
     def _clean(self, name: str) -> None:
-        path = os.path.join(name)
-        if not os.path.exists(path):
-            return
+        objects = glob.glob(name)
 
-        if os.path.isfile(path):
-            os.remove(path)
-        else:
-            shutil.rmtree(path, ignore_errors=True)
+        for object in objects:
+            if os.path.isfile(object):
+                os.remove(object)
+            elif os.path.isdir(object):
+                shutil.rmtree(object, ignore_errors=True)
