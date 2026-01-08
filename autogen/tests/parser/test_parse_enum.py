@@ -103,3 +103,26 @@ def test_parse_enum_with_comment():
         enum.constants[1].comment
         == "///< General information about application operation"
     )
+
+
+def test_parse_namespaced_enum():
+    parser = Parser()
+
+    parser.add_code(
+        "namespaced_enum.cpp",
+        """
+        namespace Graphics {
+            enum Shape {
+                CIRCLE,
+                SQUARE,
+                TRIANGLE
+            };
+        }
+        """,
+    )
+
+    parser.parse("namespaced_enum.cpp")
+    assert len(parser.Enums) == 1
+    enum = parser.Enums[0]
+    assert enum.name == "Shape"
+    assert enum.namespace == "Graphics"
