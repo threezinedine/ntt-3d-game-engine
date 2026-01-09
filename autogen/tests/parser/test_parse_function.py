@@ -169,3 +169,55 @@ def test_parse_function_with_default_arguments():
     assert func.arguments[5].name == "label"
     assert func.arguments[5].type == "const char *"
     assert func.arguments[5].default_value == '"area"'
+
+
+def test_function_with_annotations():
+    parser = Parser()
+
+    parser.add_code(
+        "function_annotations.cpp",
+        """
+        int __attribute__((annotate("nodiscard"))) calculate_sum(int a __attribute__((annotate("nonnull"))), int b) {
+            return a + b;
+        }
+        """,
+    )
+
+    parser.parse("function_annotations.cpp")
+
+    assert len(parser.Functions) == 1
+    func = parser.Functions[0]
+    assert func.name == "calculate_sum"
+    assert func.return_type == "int"
+    assert "nodiscard" in func.annotations
+
+    assert len(func.arguments) == 2
+    assert func.arguments[0].name == "a"
+    assert func.arguments[0].type == "int"
+    assert "nonnull" in func.arguments[0].annotations
+
+    assert func.arguments[1].name == "b"
+    assert func.arguments[1].type == "int"
+
+
+def test_parse_function_with_comments():
+    parser = Parser()
+
+    parser.add_code(
+        "function_with_comments.cpp",
+        """
+        /// This function adds two integers
+        int add(int a, int b) {
+            return a + b; // Return the sum
+        }
+        """,
+    )
+
+    parser.parse("function_with_comments.cpp")
+
+    assert len(parser.Functions) == 1
+    func = parser.Functions[0]
+    assert func.name == "add"
+    assert func.return_type == "int"
+    assert func.comment is not None
+    assert "This function adds two integers" in func.comment
