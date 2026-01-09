@@ -29,7 +29,7 @@ class Settings:
         for project in self.Projects.pythonProjects:
             runables.append(project.relPath)
         for project in self.Projects.cppProjects:
-            if project.executable != "":
+            if project.run is not None:
                 runables.append(project.relPath)
         return runables
 
@@ -61,6 +61,9 @@ class Settings:
     def testable(self) -> list[str]:
         testable: list[str] = []
         for project in self.Projects.pythonProjects:
+            if project.test is not None:
+                testable.append(project.relPath)
+        for project in self.Projects.cppProjects:
             if project.test is not None:
                 testable.append(project.relPath)
         return testable

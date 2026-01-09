@@ -5,7 +5,8 @@ from .command import *
 @dataclass
 class CPPProject:
     relPath: str = field(default="")
-    executable: str = field(default="")
+    run: str | None = field(default=None)
+    test: str | None = field(default=None)
     cleans: list[str] | None = field(default=None)
 
 

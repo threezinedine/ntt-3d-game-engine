@@ -1,11 +1,12 @@
 {
 	"cppProjects": [
 		{
-			"relPath": "core"
+			"relPath": "core",
+			"test": "EngineCoreTests"
 		},
 		{
 			"relPath": "runtime",
-			"executable": "EngineRuntime"
+			"run": "EngineRuntime"
 		}
 	],
 	"pythonProjects": [

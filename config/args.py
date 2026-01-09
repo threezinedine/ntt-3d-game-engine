@@ -60,7 +60,11 @@ class Args:
         )
 
         for project in self.settings.testable:
-            test_subparsers.add_parser(project)
+            if self.settings.is_python_project(project):
+                test_subparsers.add_parser(project)
+            elif self.settings.is_cpp_project(project):
+                cpp_parser = test_subparsers.add_parser(project)
+                self._add_cpp_project_option(cpp_parser)
 
     def _build_clean_subparser(
         self,
@@ -189,10 +193,10 @@ class Args:
                 build_cpp_project(**self.vars)
                 project = self.settings.get_cpp_project(self.args.project)
                 command_logger.debug(
-                    f"Running {self.args.project} with executable {project.executable}..."
+                    f"Running {self.args.project} with executable {project.run}..."
                 )
-                run_cpp_project(
-                    executable=project.executable,
+                run_cpp_executable(
+                    executable=project.run,
                     **self.vars,
                 )
             else:
@@ -277,6 +281,14 @@ class Args:
                 run_command(
                     project.test.command,
                     directory=project.test.cwd,
+                )
+            elif self.settings.is_cpp_project(self.args.project):
+                command_logger.debug(f"Testing C++ project {self.args.project}...")
+                project = self.settings.get_cpp_project(self.args.project)
+                assert project.test is not None, "Test command should not be None."
+                run_cpp_executable(
+                    executable=project.test,
+                    **self.vars,
                 )
             else:
                 raise ValueError(

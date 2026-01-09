@@ -23,6 +23,10 @@ file(
     "include/*.h"
 )
 
+set(TARGET_INCLUDE_DIRS
+    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+)
+
 add_library(
     ${PROJECT_NAME}
     STATIC
@@ -33,7 +37,7 @@ add_library(
 target_include_directories(
     ${PROJECT_NAME}
     PUBLIC
-    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    ${TARGET_INCLUDE_DIRS}
 )
 
 target_compile_definitions(
@@ -89,3 +93,43 @@ if (NTT_ENGINE_BINDING)
 
     add_custom_target(copy_binding_to_editor ALL DEPENDS ${STAMP_FILE})
 endif()
+
+ntt_find_package(ntt-googletest "Dependencies")
+file(
+    GLOB_RECURSE 
+    TEST_SOURCE_FILES
+    "tests/*.cpp"
+)
+
+set(TEST_PROJECT_NAME ${PROJECT_NAME}Tests)
+
+add_executable(
+    ${TEST_PROJECT_NAME}
+    ${TEST_SOURCE_FILES}
+    ${HEADER_FILES}
+    ${SOURCE_FILES}
+)
+
+target_link_libraries(
+    ${TEST_PROJECT_NAME}
+    PRIVATE
+    ntt-googletest
+)
+
+target_include_directories(
+    ${TEST_PROJECT_NAME}
+    PRIVATE
+    ${TARGET_INCLUDE_DIRS}
+)
+
+target_compile_definitions(
+    ${TEST_PROJECT_NAME}
+    PRIVATE 
+    ${TARGET_DEFINITIONS}
+)
+
+target_compile_options(
+    ${TEST_PROJECT_NAME}
+    PRIVATE
+    ${TARGET_COMPILE_OPTIONS}
+)

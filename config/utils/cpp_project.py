@@ -97,7 +97,7 @@ def build_cpp_project(
     run_command(final_command, directory=project)
 
 
-def run_cpp_project(
+def run_cpp_executable(
     project: str,
     type: str,
     platform: str,
