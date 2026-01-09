@@ -3,10 +3,12 @@
 		{
 			"name": "Linux",
 			"includePath": [
-				"${workspaceFolder}/**",
-				"${workspaceFolder}/../core/**"
+				"/usr/include/python3.12",
+				"${workspaceFolder}/**"
 			],
-			"defines": [],
+			"defines": [
+				"NTT_PLATFORM_LINUX"
+			],
 			"compilerPath": "/usr/bin/clang",
 			"cStandard": "c17",
 			"cppStandard": "c++17",
@@ -15,10 +17,11 @@
 		{
 			"name": "Windows",
 			"includePath": [
-				"${workspaceFolder}/**",
-				"${workspaceFolder}/../core/**"
+				"${workspaceFolder}/**"
 			],
-			"defines": [],
+			"defines": [
+				"NTT_PLATFORM_WINDOWS"
+			],
 			"compilerPath": "clang.exe",
 			"cStandard": "c17",
 			"cppStandard": "c++17",

@@ -57,6 +57,8 @@ def _generate_command(command: Command) -> list[str]:
                 INPUT=relative_path,
             )
 
+            autogen_logger.debug(f"Generating command: {final_command}")
+
             subprocess.run(
                 final_command,
                 shell=True,

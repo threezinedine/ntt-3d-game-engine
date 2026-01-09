@@ -7,8 +7,8 @@
 	],
 	"commands": [
 		{
-			"files": "autogen/*.txt.in",
-			"command": "cat {{ INPUT }} > {{ INPUT[:-3] }}"
+			"files": "core/.vscode/c_cpp_properties.json",
+			"command": "mkdir -p runtime/.vscode && cp {{ INPUT }} runtime/{{ INPUT[5:] }}"
 		}
 	],
 	"bindings": [
