@@ -3,6 +3,8 @@
 #include "platforms/common.h"
 #include "types.h"
 
+#define LOGGER_BUFFER_SIZE 4096
+
 namespace ntt {
 
 /**
@@ -39,3 +41,57 @@ private:
 };
 
 } // namespace ntt
+
+#if NTT_DEBUG
+#define NTT_LOG_TRACE(message, ...)                                                                                    \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		char buffer[LOGGER_BUFFER_SIZE];                                                                               \
+		std::snprintf(buffer, LOGGER_BUFFER_SIZE, message, ##__VA_ARGS__);                                             \
+		Logger::GetInstance()->Log(LOG_LEVEL_TRACE, buffer, __FILE__, __LINE__);                                       \
+	} while (0)
+
+#define NTT_LOG_DEBUG(message, ...)                                                                                    \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		char buffer[LOGGER_BUFFER_SIZE];                                                                               \
+		std::snprintf(buffer, LOGGER_BUFFER_SIZE, message, ##__VA_ARGS__);                                             \
+		Logger::GetInstance()->Log(LOG_LEVEL_DEBUG, buffer, __FILE__, __LINE__);                                       \
+	} while (0)
+
+#else
+#define NTT_LOG_TRACE(message, ...)
+#define NTT_LOG_DEBUG(message, ...)
+#endif
+
+#define NTT_LOG_INFO(message, ...)                                                                                     \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		char buffer[LOGGER_BUFFER_SIZE];                                                                               \
+		std::snprintf(buffer, LOGGER_BUFFER_SIZE, message, ##__VA_ARGS__);                                             \
+		Logger::GetInstance()->Log(LOG_LEVEL_INFO, buffer, __FILE__, __LINE__);                                        \
+	} while (0)
+
+#define NTT_LOG_WARN(message, ...)                                                                                     \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		char buffer[LOGGER_BUFFER_SIZE];                                                                               \
+		std::snprintf(buffer, LOGGER_BUFFER_SIZE, message, ##__VA_ARGS__);                                             \
+		Logger::GetInstance()->Log(LOG_LEVEL_WARN, buffer, __FILE__, __LINE__);                                        \
+	} while (0)
+
+#define NTT_LOG_ERROR(message, ...)                                                                                    \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		char buffer[LOGGER_BUFFER_SIZE];                                                                               \
+		std::snprintf(buffer, LOGGER_BUFFER_SIZE, message, ##__VA_ARGS__);                                             \
+		Logger::GetInstance()->Log(LOG_LEVEL_ERROR, buffer, __FILE__, __LINE__);                                       \
+	} while (0)
+
+#define NTT_LOG_FATAL(message, ...)                                                                                    \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		char buffer[LOGGER_BUFFER_SIZE];                                                                               \
+		std::snprintf(buffer, LOGGER_BUFFER_SIZE, message, ##__VA_ARGS__);                                             \
+		Logger::GetInstance()->Log(LOG_LEVEL_FATAL, buffer, __FILE__, __LINE__);                                       \
+	} while (0)
