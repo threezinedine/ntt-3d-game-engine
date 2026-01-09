@@ -4,7 +4,8 @@ from .py_typedef import PyTypedef
 from .py_variable import PyVariable
 from .py_union import PyUnion
 from .py_function import PyFunction
-from .py_struct import PyStruct  # pyright: ignore[reportUnusedImport]
+from .py_struct import PyStruct
+from .py_class import PyClass
 
 
 class Parser:
@@ -55,6 +56,9 @@ class Parser:
             elif cursor.kind == cindex.CursorKind.STRUCT_DECL:
                 py_struct = PyStruct(self.tu, cursor)
                 self.Structs.append(py_struct)
+            elif cursor.kind == cindex.CursorKind.CLASS_DECL:
+                py_class = PyClass(self.tu, cursor)
+                self.Structs.append(py_class)
             elif cursor.kind == cindex.CursorKind.NAMESPACE:
                 namespace = cursor.spelling
                 for child in cursor.get_children():
@@ -82,3 +86,7 @@ class Parser:
                         py_struct = PyStruct(self.tu, child)
                         py_struct.namespace = namespace
                         self.Structs.append(py_struct)
+                    elif child.kind == cindex.CursorKind.CLASS_DECL:
+                        py_class = PyClass(self.tu, child)
+                        py_class.namespace = namespace
+                        self.Structs.append(py_class)
