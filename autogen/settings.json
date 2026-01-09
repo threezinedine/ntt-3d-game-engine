@@ -15,6 +15,7 @@
 			"input": "core/include/engine/engine.h",
 			"dependencies": [
 				"core/include/**/*.h",
+				"core/include/**/**/*.h",
 				"autogen/templates/*.j2",
 				"autogen/templates/**/*.j2",
 				"autogen/templates/**/**/*.j2"
@@ -27,6 +28,7 @@
 			"input": "core/include/engine/engine.h",
 			"dependencies": [
 				"core/include/**/*.h",
+				"core/include/**/**/*.h",
 				"autogen/templates/*.j2",
 				"autogen/templates/**/*.j2",
 				"autogen/templates/**/**/*.j2"

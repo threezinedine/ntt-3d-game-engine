@@ -29,7 +29,7 @@ template <typename T>
 using Scope = std::unique_ptr<T>;
 
 template <typename T, typename... Args>
-constexpr Scope<T> NTT_MAKE_SCOPE(Args&&... args)
+constexpr Scope<T> CreateScope(Args&&... args)
 {
 	return std::make_unique<T>(std::forward<Args>(args)...);
 }
@@ -38,7 +38,7 @@ template <typename T>
 using Ref = std::shared_ptr<T>;
 
 template <typename T, typename... Args>
-constexpr Ref<T> NTT_MAKE_REF(Args&&... args)
+constexpr Ref<T> CreateRef(Args&&... args)
 {
 	return std::make_shared<T>(std::forward<Args>(args)...);
 }
@@ -66,7 +66,7 @@ using String = std::string;
 	{                                                                                                                  \
 		if (!(cond))                                                                                                   \
 		{                                                                                                              \
-			Console::setColor(ConsoleColor::RED);                                                                      \
+			Console::setColor(CONSOLE_COLOR_RED);                                                                      \
 			Console::printf("Assertion Failed: %s, in %s at line %d", #cond, __FILE__, __LINE__);                      \
 			debugBreak();                                                                                              \
 		}                                                                                                              \
@@ -77,7 +77,7 @@ using String = std::string;
 	{                                                                                                                  \
 		if (!(cond))                                                                                                   \
 		{                                                                                                              \
-			Console::setColor(ConsoleColor::RED);                                                                      \
+			Console::setColor(CONSOLE_COLOR_RED);                                                                      \
 			Console::printf("Assertion Failed: %s, in %s at line %d", msg, __FILE__, __LINE__);                        \
 			debugBreak();                                                                                              \
 		}                                                                                                              \
@@ -86,7 +86,7 @@ using String = std::string;
 #define NTT_UNREACHABLE()                                                                                              \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		Console::setColor(ConsoleColor::RED);                                                                          \
+		Console::setColor(CONSOLE_COLOR_RED);                                                                          \
 		Console::printf("Unreachable code reached in %s at line %d", __FILE__, __LINE__);                              \
 		debugBreak();                                                                                                  \
 	} while (0)
@@ -94,7 +94,7 @@ using String = std::string;
 #define NTT_UNIMPLEMENTED()                                                                                            \
 	do                                                                                                                 \
 	{                                                                                                                  \
-		Console::setColor(ConsoleColor::RED);                                                                          \
+		Console::setColor(CONSOLE_COLOR_RED);                                                                          \
 		Console::printf("Unimplemented code reached in %s at line %d", __FILE__, __LINE__);                            \
 		debugBreak();                                                                                                  \
 	} while (0)
@@ -107,12 +107,36 @@ using String = std::string;
 #endif
 
 #if (defined(__GNUC__) || defined(__clang__)) && !defined(NTT_NO_ANALYZE)
-#define NTT_BINDING __attribute__((annotate("binding")))
-#define NTT_HIDDEN	__attribute__((annotate("hidden")))
+#define NTT_BINDING	  __attribute__((annotate("binding")))
+#define NTT_HIDDEN	  __attribute__((annotate("hidden")))
+#define NTT_SINGLETON __attribute__((annotate("singleton")))
 #else
 #define NTT_BINDING
 #define NTT_HIDDEN
+#define NTT_SINGLETON
 #endif
 
 #include "console.h"
 #include "trap.h"
+
+#define NTT_DELETE_COPY(class)                                                                                         \
+	class(const class&)			   = delete;                                                                           \
+	class& operator=(const class&) = delete;
+
+#define NTT_SINGLETON_DECLARE(class)                                                                                   \
+public:                                                                                                                \
+	static Scope<class>& GetInstance()                                                                                 \
+	{                                                                                                                  \
+		if (s_instance == NTT_NULLPTR)                                                                                 \
+		{                                                                                                              \
+			s_instance = CreateScope<class>();                                                                         \
+		}                                                                                                              \
+		return s_instance;                                                                                             \
+	}                                                                                                                  \
+	class();                                                                                                           \
+	~class();                                                                                                          \
+                                                                                                                       \
+private:                                                                                                               \
+	static Scope<class> s_instance;
+
+#define NTT_SINGLETON_DEFINE(class) Scope<class> class ::s_instance = NTT_NULLPTR;

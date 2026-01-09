@@ -34,6 +34,7 @@ macro(ntt_configure)
     ntt_platform_detect()
 
     ntt_option("NTT_ENGINE_BINDING" "ON")
+    ntt_option("NTT_NO_ANALYZE" "OFF")
 
     if (MSVC)
     else()

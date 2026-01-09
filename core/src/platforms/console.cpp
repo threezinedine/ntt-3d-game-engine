@@ -3,38 +3,38 @@
 #include <cstdio>
 
 namespace ntt {
-ConsoleColor Console::s_currentColor = ConsoleColor::DEFAULT;
+ConsoleColor Console::s_currentColor = CONSOLE_COLOR_DEFAULT;
 
 void Console::setColor(ConsoleColor color)
 {
 	s_currentColor = color;
 	switch (s_currentColor)
 	{
-	case ConsoleColor::BLACK:
+	case CONSOLE_COLOR_BLACK:
 		std::printf("\033[30m");
 		break;
-	case ConsoleColor::RED:
+	case CONSOLE_COLOR_RED:
 		std::printf("\033[31m");
 		break;
-	case ConsoleColor::GREEN:
+	case CONSOLE_COLOR_GREEN:
 		std::printf("\033[32m");
 		break;
-	case ConsoleColor::YELLOW:
+	case CONSOLE_COLOR_YELLOW:
 		std::printf("\033[33m");
 		break;
-	case ConsoleColor::BLUE:
+	case CONSOLE_COLOR_BLUE:
 		std::printf("\033[34m");
 		break;
-	case ConsoleColor::MAGENTA:
+	case CONSOLE_COLOR_MAGENTA:
 		std::printf("\033[35m");
 		break;
-	case ConsoleColor::CYAN:
+	case CONSOLE_COLOR_CYAN:
 		std::printf("\033[36m");
 		break;
-	case ConsoleColor::WHITE:
+	case CONSOLE_COLOR_WHITE:
 		std::printf("\033[37m");
 		break;
-	case ConsoleColor::DEFAULT:
+	case CONSOLE_COLOR_DEFAULT:
 		std::printf("\033[39m");
 		break;
 
@@ -45,7 +45,7 @@ void Console::setColor(ConsoleColor color)
 
 void Console::resetColor()
 {
-	s_currentColor = ConsoleColor::WHITE;
+	s_currentColor = CONSOLE_COLOR_WHITE;
 	std::printf("\033[37m");
 }
 
