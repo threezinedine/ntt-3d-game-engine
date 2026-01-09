@@ -231,6 +231,15 @@ class Args:
                     project.install.command,
                     directory=project.install.cwd,
                 )
+
+                if project.afterInstall is not None:
+                    command_logger.debug(
+                        f"Running after-install command for {self.args.project}..."
+                    )
+                    run_command(
+                        project.afterInstall.command,
+                        directory=project.afterInstall.cwd,
+                    )
             else:
                 raise ValueError(
                     f"Project {self.args.project} is not a Python project."
@@ -239,18 +248,6 @@ class Args:
             if self.args.project == "all":
                 command_logger.debug("Cleaning all projects...")
                 run_command("git clean -fdX", directory=BASE_DIR)
-
-                # for project in self.settings.Projects.cppProjects:
-                #     clean_cpp_project(project=project.relPath)
-
-                #     for clean_item in project.cleans or []:
-                #         self._clean(clean_item)
-
-                # for project in self.settings.Projects.pythonProjects:
-                #     clean_python_project(project=project.relPath)
-
-                #     for clean_item in project.cleans or []:
-                #         self._clean(clean_item)
 
             elif self.settings.is_cpp_project(self.args.project):
                 command_logger.debug(f"Cleaning C++ project {self.args.project}...")

@@ -8,3 +8,8 @@ dependencies = [
     "colorama>=0.4.6",
     "dacite>=1.9.2",
 ]
+
+[tool.uv.workspace]
+members = [
+    "helper",
+]

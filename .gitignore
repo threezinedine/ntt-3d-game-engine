@@ -256,3 +256,6 @@ __marimo__/
 
 # debug information files
 *.dwo
+
+main
+main.exe

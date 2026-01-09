@@ -31,6 +31,13 @@
 				"editor/main.spec",
 				"core/build/*_release/EngineCoreBinding.so.stamp"
 			]
+		},
+		{
+			"relPath": "runtool",
+			"install": {
+				"command": "uv --quiet run install.py",
+				"cwd": "runtool"
+			}
 		}
 	]
 }
