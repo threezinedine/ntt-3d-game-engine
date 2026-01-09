@@ -56,6 +56,8 @@ def _generate_blueprint(blueprint: Blueprint) -> bool:
         OUTPUT=blueprint.output,
     )
 
+    os.makedirs(os.path.dirname(complete_output), exist_ok=True)
+
     with open(complete_output, "w") as f:
         f.write(output_content)
 

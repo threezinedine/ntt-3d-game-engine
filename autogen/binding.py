@@ -111,6 +111,8 @@ def _generate_binding(binding: Binding) -> bool:
         parser=parser,
     )
 
+    os.makedirs(os.path.dirname(copmlete_output), exist_ok=True)
+
     with open(copmlete_output, "w") as f:
         f.write(output_content)
 

@@ -18,6 +18,13 @@
 			"dependencies": ["core/include/**/*.h"],
 			"includes": ["{{ BASE_DIR }}/core/include"],
 			"template": "pyi.j2"
+		},
+		{
+			"output": "core/temp/bindings.cpp",
+			"input": "core/include/engine/engine.h",
+			"dependencies": ["core/include/**/*.h"],
+			"includes": ["{{ BASE_DIR }}/core/include"],
+			"template": "binding.j2"
 		}
 	]
 }
