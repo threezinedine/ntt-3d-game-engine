@@ -4,6 +4,7 @@ from .py_typedef import PyTypedef
 from .py_variable import PyVariable
 from .py_union import PyUnion
 from .py_function import PyFunction
+from .py_struct import PyStruct  # pyright: ignore[reportUnusedImport]
 
 
 class Parser:
@@ -15,6 +16,7 @@ class Parser:
         self.Variables: list[PyVariable] = []
         self.Unions: list[PyUnion] = []
         self.Functions: list[PyFunction] = []
+        self.Structs: list[PyStruct] = []
 
     def add_code(self, name: str, code: str) -> None:
         self._temps[name] = code
@@ -50,6 +52,9 @@ class Parser:
             elif cursor.kind == cindex.CursorKind.FUNCTION_DECL:
                 py_function = PyFunction(self.tu, cursor)
                 self.Functions.append(py_function)
+            elif cursor.kind == cindex.CursorKind.STRUCT_DECL:
+                py_struct = PyStruct(self.tu, cursor)
+                self.Structs.append(py_struct)
             elif cursor.kind == cindex.CursorKind.NAMESPACE:
                 namespace = cursor.spelling
                 for child in cursor.get_children():
@@ -73,3 +78,7 @@ class Parser:
                         py_function = PyFunction(self.tu, child)
                         py_function.namespace = namespace
                         self.Functions.append(py_function)
+                    elif child.kind == cindex.CursorKind.STRUCT_DECL:
+                        py_struct = PyStruct(self.tu, child)
+                        py_struct.namespace = namespace
+                        self.Structs.append(py_struct)
