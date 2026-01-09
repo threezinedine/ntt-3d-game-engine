@@ -123,6 +123,10 @@ using String = std::string;
 	class(const class&)			   = delete;                                                                           \
 	class& operator=(const class&) = delete;
 
+#define NTT_DELETE_MOVE(class)                                                                                         \
+	class(class&&)			  = delete;                                                                                \
+	class& operator=(class&&) = delete;
+
 #define NTT_SINGLETON_DECLARE(class)                                                                                   \
 public:                                                                                                                \
 	static Scope<class>& GetInstance()                                                                                 \
@@ -134,6 +138,8 @@ public:                                                                         
 		return s_instance;                                                                                             \
 	}                                                                                                                  \
 	class();                                                                                                           \
+	NTT_DELETE_COPY(class)                                                                                             \
+	NTT_DELETE_MOVE(class)                                                                                             \
 	~class();                                                                                                          \
                                                                                                                        \
 private:                                                                                                               \
