@@ -20,8 +20,8 @@ def test_parse_class():
 
     parser.parse("class.cpp")
 
-    assert len(parser.Structs) == 1
-    cls = parser.Structs[0]
+    assert len(parser.Classes) == 1
+    cls = parser.Classes[0]
     assert cls.name == "Animal"
 
     assert len(cls.methods) == 1

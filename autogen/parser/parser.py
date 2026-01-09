@@ -1,3 +1,4 @@
+from log import autogen_logger
 import clang.cindex as cindex  # type: ignore
 from .py_enum import PyEnum
 from .py_typedef import PyTypedef
@@ -11,6 +12,8 @@ from .py_class import PyClass
 class Parser:
     def __init__(self) -> None:
         self._temps: dict[str, str] = {}
+        self._include_paths: list[str] = []
+
         self.tu: cindex.TranslationUnit | None = None
         self.Enums: list[PyEnum] = []
         self.Typedefs: list[PyTypedef] = []
@@ -18,18 +21,30 @@ class Parser:
         self.Unions: list[PyUnion] = []
         self.Functions: list[PyFunction] = []
         self.Structs: list[PyStruct] = []
+        self.Classes: list[PyClass] = []
+
+    def add_include_path(self, path: str) -> None:
+        self._include_paths.append(path)
 
     def add_code(self, name: str, code: str) -> None:
         self._temps[name] = code
 
     def parse(self, filename: str) -> None:
+        autogen_logger.debug(f"Parsing file: {filename}")
+        autogen_logger.debug(
+            f"Include paths: {[f"-I{path}" for path in self._include_paths]}"
+        )
+
         index = cindex.Index.create()
         self.tu = index.parse(
             filename,
             args=[
+                "-x",
+                "c++",
                 "-std=c++17",
                 "-I/usr/include",
                 "-I/usr/local/include",
+                *[f"-I{path}" for path in self._include_paths],
             ],
             unsaved_files=list(self._temps.items()),
             options=cindex.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD,
@@ -58,7 +73,7 @@ class Parser:
                 self.Structs.append(py_struct)
             elif cursor.kind == cindex.CursorKind.CLASS_DECL:
                 py_class = PyClass(self.tu, cursor)
-                self.Structs.append(py_class)
+                self.Classes.append(py_class)
             elif cursor.kind == cindex.CursorKind.NAMESPACE:
                 namespace = cursor.spelling
                 for child in cursor.get_children():
@@ -89,4 +104,16 @@ class Parser:
                     elif child.kind == cindex.CursorKind.CLASS_DECL:
                         py_class = PyClass(self.tu, child)
                         py_class.namespace = namespace
-                        self.Structs.append(py_class)
+                        self.Classes.append(py_class)
+
+    def __repr__(self) -> str:
+        return f"""
+<Parser
+    Enums={self.Enums}
+    Typedefs={self.Typedefs}
+    Variables={self.Variables}
+    Unions={self.Unions}
+    Functions={self.Functions}
+    Structs={self.Structs}
+    Classes={self.Classes}
+>"""

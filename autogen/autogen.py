@@ -1,6 +1,7 @@
 import json
 from blueprint import generate_blueprints
 from command import generate_commands
+from binding import generate_bindings
 from dacite import from_dict
 from models import *
 from utils import *
@@ -21,6 +22,9 @@ class Autogen:
         final_processed_files.update(processed_files)
 
         processed_files = generate_commands(self.settings)
+        final_processed_files.update(processed_files)
+
+        processed_files = generate_bindings(self.settings)
         final_processed_files.update(processed_files)
 
         for file in final_processed_files:

@@ -3,8 +3,6 @@ import os
 import subprocess
 from models import *
 from log import autogen_logger
-import constants
-from jinja2 import Template
 from utils import *
 
 
@@ -54,16 +52,8 @@ def _generate_command(command: Command) -> list[str]:
                 )
                 continue
 
-            template = Template(command.command)
-
-            variables: dict[str, str] = {}
-
-            for key, value in constants.__dict__.items():
-                if key.isupper():
-                    variables[key] = value
-
-            final_command = template.render(
-                **variables,
+            final_command = render_template_str(
+                command.command,
                 INPUT=relative_path,
             )
 

@@ -10,5 +10,14 @@
 			"files": "autogen/*.txt.in",
 			"command": "cat {{ INPUT }} > {{ INPUT[:-3] }}"
 		}
+	],
+	"bindings": [
+		{
+			"output": "editor/Engine/__init__.pyi",
+			"input": "core/include/engine/engine.h",
+			"dependencies": ["core/include/**/*.h"],
+			"includes": ["{{ BASE_DIR }}/core/include"],
+			"template": "pyi.j2"
+		}
 	]
 }
