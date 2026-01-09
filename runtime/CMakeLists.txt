@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
-project(EngineRuntime)
 
 set(CMAKE_MODULE "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_MODULE}")
 
 include(ntt-config)
+
+ntt_project(EngineRuntime)
 
 ntt_configure()
 

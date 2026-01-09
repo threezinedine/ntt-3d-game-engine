@@ -10,7 +10,8 @@
 			],
 			"defines": [
 				"NTT_PLATFORM_LINUX",
-				"NTT_DEBUG"
+				"NTT_DEBUG",
+				"NTT_NO_ANALYZE"
 			],
 			"compilerPath": "/usr/bin/clang",
 			"cStandard": "c17",
@@ -27,7 +28,8 @@
 			],
 			"defines": [
 				"NTT_PLATFORM_WINDOWS",
-				"NTT_DEBUG"
+				"NTT_DEBUG",
+				"NTT_NO_ANALYZE"
 			],
 			"compilerPath": "clang.exe",
 			"cStandard": "c17",

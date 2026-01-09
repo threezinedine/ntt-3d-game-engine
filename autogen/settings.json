@@ -3,12 +3,10 @@
 		{
 			"file": "core/.vscode/c_cpp_properties.json.in",
 			"output": "core/.vscode/c_cpp_properties.json"
-		}
-	],
-	"commands": [
+		},
 		{
-			"files": "core/.vscode/c_cpp_properties.json",
-			"command": "mkdir -p runtime/.vscode && cp {{ INPUT }} runtime/{{ INPUT[5:] }}"
+			"file": "runtime/.vscode/c_cpp_properties.json.in",
+			"output": "runtime/.vscode/c_cpp_properties.json"
 		}
 	],
 	"bindings": [

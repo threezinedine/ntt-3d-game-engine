@@ -1,3 +1,5 @@
+#pragma once
+
 // =============== Typedef =============
 typedef unsigned long long u64;
 typedef unsigned int	   u32;
@@ -30,9 +32,6 @@ typedef bool b32;
 // =============== Macros ===============
 #define NTT_ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0])) /// Get the number of elements in a static array
 #define NTT_UNUSED(x)		(void)(x)						 /// To suppress unused variable warnings
-
-#include "console.h"
-#include "trap.h"
 
 #if NTT_DEBUG
 #define NTT_ASSERT(cond)                                                                                               \
@@ -80,10 +79,13 @@ typedef bool b32;
 #define NTT_UNIMPLEMENTED()
 #endif
 
-#if defined(__GNUC__) || defined(__clang__)
+#if (defined(__GNUC__) || defined(__clang__)) && !defined(NTT_NO_ANALYZE)
 #define NTT_BINDING __attribute__((annotate("binding")))
 #define NTT_HIDDEN	__attribute__((annotate("hidden")))
 #else
 #define NTT_BINDING
 #define NTT_HIDDEN
 #endif
+
+#include "console.h"
+#include "trap.h"

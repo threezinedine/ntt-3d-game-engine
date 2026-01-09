@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
-project(EngineCore)
 
 set(CMAKE_MODULE "${CMAKE_CURRENT_SOURCE_DIR}/../cmake")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_MODULE}")
 
 include(ntt-config)
+
+ntt_project(EngineCore)
 
 ntt_configure()
 
@@ -70,22 +71,6 @@ if (NTT_ENGINE_BINDING AND NTT_PLATFORM_LINUX)
     )
 endif()
 
-
-set(AUTOGEN_STAMP ${CMAKE_BINARY_DIR}/autogen.stamp)
-
-find_program(PYTHON_EXECUTABLE NAMES Python PATHS ${BASE_DIRECTORY}/.venv)
-message("Using Python interpreter at: ${PYTHON_EXECUTABLE}")
-
-add_custom_command(
-    OUTPUT ${AUTOGEN_STAMP}
-    COMMAND cd ${BASE_DIRECTORY} && ${PYTHON_EXECUTABLE} helper.py run autogen
-    COMMAND ${CMAKE_COMMAND} -E touch ${AUTOGEN_STAMP}
-    DEPENDS ${HEADER_FILES}
-    COMMENT "Running autogen script"
-)
-
-add_custom_target(run_autogen ALL DEPENDS ${HEADER_FILES} ${AUTOGEN_STAMP})
-
 if (NTT_ENGINE_BINDING)
     ntt_find_package(ntt-pybind "Dependencies")
     set(BINDING_PROJECT_NAME EngineCoreBinding)
@@ -126,6 +111,21 @@ if (NTT_ENGINE_BINDING)
     )
 
     add_custom_target(copy_binding_to_editor ALL DEPENDS ${STAMP_FILE})
+
+    set(AUTOGEN_STAMP ${CMAKE_BINARY_DIR}/autogen.stamp)
+
+    find_program(PYTHON_EXECUTABLE NAMES Python PATHS ${BASE_DIRECTORY}/.venv)
+    message("Using Python interpreter at: ${PYTHON_EXECUTABLE}")
+
+    add_custom_command(
+        OUTPUT ${AUTOGEN_STAMP}
+        COMMAND cd ${BASE_DIRECTORY} && ${PYTHON_EXECUTABLE} helper.py run autogen
+        COMMAND ${CMAKE_COMMAND} -E touch ${AUTOGEN_STAMP}
+        DEPENDS ${HEADER_FILES}
+        COMMENT "Running autogen script"
+    )
+
+    add_custom_target(run_autogen ALL DEPENDS ${HEADER_FILES} ${AUTOGEN_STAMP})
 endif()
 
 ntt_find_package(ntt-googletest "Dependencies")
