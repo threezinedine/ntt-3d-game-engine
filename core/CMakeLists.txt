@@ -53,7 +53,7 @@ if (NTT_ENGINE_BINDING)
     set(BINDING_PROJECT_NAME EngineCoreBinding)
     pybind11_add_module(
         ${BINDING_PROJECT_NAME}
-        "temp/binding.cpp"
+        "temp/bindings.cpp"
     )
 
     target_link_libraries(

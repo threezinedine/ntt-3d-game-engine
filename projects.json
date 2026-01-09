@@ -20,7 +20,7 @@
 		{
 			"relPath": "editor",
 			"preRun": {
-				"command": "uv run helper.py build core --platform=linux --type=release"
+				"command": "uv run helper.py run autogen && uv run helper.py build core --platform=linux --type=release"
 			},
 			"install": {
 				"command": "uv --quiet run install.py",

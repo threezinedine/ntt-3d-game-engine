@@ -238,17 +238,19 @@ class Args:
         elif self.args.command == "clean":
             if self.args.project == "all":
                 command_logger.debug("Cleaning all projects...")
-                for project in self.settings.Projects.cppProjects:
-                    clean_cpp_project(project=project.relPath)
+                run_command("git clean -fdX", directory=BASE_DIR)
 
-                    for clean_item in project.cleans or []:
-                        self._clean(clean_item)
+                # for project in self.settings.Projects.cppProjects:
+                #     clean_cpp_project(project=project.relPath)
 
-                for project in self.settings.Projects.pythonProjects:
-                    clean_python_project(project=project.relPath)
+                #     for clean_item in project.cleans or []:
+                #         self._clean(clean_item)
 
-                    for clean_item in project.cleans or []:
-                        self._clean(clean_item)
+                # for project in self.settings.Projects.pythonProjects:
+                #     clean_python_project(project=project.relPath)
+
+                #     for clean_item in project.cleans or []:
+                #         self._clean(clean_item)
 
             elif self.settings.is_cpp_project(self.args.project):
                 command_logger.debug(f"Cleaning C++ project {self.args.project}...")
