@@ -1,7 +1,7 @@
 from PySide6.QtGui import QKeyEvent
 from PySide6.QtWidgets import QApplication, QMainWindow
 from PySide6.QtCore import Qt
-from Engine import Console, ConsoleColor
+from Engine import *
 from utils import *
 
 
@@ -20,7 +20,7 @@ class MainWindow(QMainWindow):
 
 def main():
     editor_logger.setLevel(logging.DEBUG)
-    Console.setColor(ConsoleColor.CYAN)
+    Console.setColor(ConsoleColor.CONSOLE_COLOR_CYAN)
     Console.print("Starting the application...\n")
     app = QApplication([])
     window = MainWindow()
