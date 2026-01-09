@@ -1,0 +1,17 @@
+{% import 'pyi/common.j2' as pyi_common -%}
+
+{% for cls in parser.Classes-%}
+{% if "binding" in cls.annotations-%}
+class {{cls.name}}:
+    {% for method in cls.methods-%}
+    {% if "binding" in method.annotations-%}
+    {% if method.is_static-%}
+    @staticmethod
+    {{ pyi_common.print_function(method) }}
+    {% else-%}
+    {{ pyi_common.print_method(method) }}
+    {% endif-%}
+    {% endif-%}
+    {% endfor-%}
+{%- endif %}
+{% endfor-%}

@@ -29,14 +29,13 @@ def generate_bindings(settings: AutogenSettings) -> list[str]:
             dep_files.extend([os.path.relpath(f, BASE_DIR) for f in files])
 
         dep_files = list(set(dep_files))
+        dep_files_clone = dep_files.copy()
 
-        for file in dep_files:
+        for file in dep_files_clone:
             is_cached = is_file_cached(file)
-            autogen_logger.debug(f"Dependency cached status for {file}: {is_cached}")
 
             if is_cached:
                 dep_files.remove(file)
-                continue
 
         complete_input = os.path.join(BASE_DIR, binding.input)
 
@@ -45,10 +44,14 @@ def generate_bindings(settings: AutogenSettings) -> list[str]:
         ), f"Binding input file {binding.input} does not exist."
 
         is_input_cached = is_file_cached(binding.input)
+        copmlete_output = os.path.join(BASE_DIR, binding.output)
+        output_exist = os.path.exists(copmlete_output)
+
         autogen_logger.debug(
-            f"Input cached status for {binding.input}: {is_input_cached}"
+            f"State: dep_files={dep_files}, is_input_cached={is_input_cached}, output_exist={output_exist}"
         )
-        if len(dep_files) > 0 or not is_input_cached:
+
+        if len(dep_files) > 0 or not is_input_cached or not output_exist:
             if not _generate_binding(binding):
                 continue
 
@@ -73,11 +76,6 @@ def _generate_binding(binding: Binding) -> bool:
     assert os.path.exists(
         complete_input
     ), f"Binding input file {binding.input} does not exist."
-
-    output_exist = os.path.exists(copmlete_output)
-
-    if output_exist:
-        return False
 
     parser = Parser()
 

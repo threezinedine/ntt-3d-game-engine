@@ -1,8 +1,9 @@
 #pragma once
+#include "common.h"
 
 namespace ntt {
 
-enum ConsoleColor
+enum NTT_BINDING ConsoleColor
 {
 	BLACK = 0,
 	RED,
@@ -12,13 +13,14 @@ enum ConsoleColor
 	MAGENTA,
 	CYAN,
 	WHITE,
-	DEFAULT
+	DEFAULT,
+	COUNT NTT_HIDDEN
 };
 
 /**
  * Unified console interface for different platforms.
  */
-class Console
+class NTT_BINDING Console
 {
 public:
 	/**
@@ -26,17 +28,22 @@ public:
 	 *
 	 * @param color The color to set the console text to.
 	 */
-	static void setColor(ConsoleColor color);
+	static void setColor(ConsoleColor color) NTT_BINDING;
 
 	/**
 	 * Recover the `WHITE` color for the console text.
 	 */
-	static void resetColor();
+	static void resetColor() NTT_BINDING;
 
 	/**
 	 * Display a sentence on the console.
 	 */
-	static void print(const char* message);
+	static void print(const char* message) NTT_BINDING;
+
+	/**
+	 * Display a formatted sentence on the console.
+	 */
+	static void printf(const char* format, ...);
 
 private:
 	static ConsoleColor s_currentColor;

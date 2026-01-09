@@ -1,0 +1,11 @@
+{% for enum in parser.Enums-%}
+{% if "binding" in enum.annotations-%}
+class {{enum.name}}(Enum):
+    {% for constant in enum.constants-%}
+    {% if "hidden" not in constant.annotations-%}
+    {{constant.name}} = {{constant.value}}
+    {% endif-%}
+    {% endfor-%}
+{%- endif %}
+{% endfor-%}
+

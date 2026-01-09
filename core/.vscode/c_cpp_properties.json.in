@@ -9,7 +9,8 @@
 				"${workspaceFolder}/**"
 			],
 			"defines": [
-				"NTT_PLATFORM_LINUX"
+				"NTT_PLATFORM_LINUX",
+				"NTT_DEBUG"
 			],
 			"compilerPath": "/usr/bin/clang",
 			"cStandard": "c17",
@@ -25,7 +26,8 @@
 				"${workspaceFolder}/**"
 			],
 			"defines": [
-				"NTT_PLATFORM_WINDOWS"
+				"NTT_PLATFORM_WINDOWS",
+				"NTT_DEBUG"
 			],
 			"compilerPath": "clang.exe",
 			"cStandard": "c17",

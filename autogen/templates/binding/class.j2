@@ -1,0 +1,12 @@
+{% import 'binding/class/common.j2' as class_common -%}
+
+{% for cls in parser.Classes-%}
+{% if "binding" in cls.annotations-%}
+py::class_<{{cls.name}}>(m, "{{cls.name}}")
+    {% for method in cls.methods-%}
+    {% if "binding" in method.annotations-%}
+    {{ class_common.print_method(cls, method) }}
+    {% endif-%}
+    {% endfor-%};
+{%- endif %}
+{% endfor-%}

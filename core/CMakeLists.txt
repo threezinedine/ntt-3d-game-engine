@@ -27,6 +27,10 @@ set(TARGET_INCLUDE_DIRS
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
+set(TARGET_PRECOMPILED_HEADER
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/platforms/common.h"
+)
+
 add_library(
     ${PROJECT_NAME}
     STATIC
@@ -51,6 +55,36 @@ target_compile_options(
     PUBLIC
     ${TARGET_COMPILE_OPTIONS}
 )
+
+target_precompile_headers(
+    ${PROJECT_NAME}
+    PUBLIC
+    ${TARGET_PRECOMPILED_HEADER}
+)
+
+if (NTT_ENGINE_BINDING AND NTT_PLATFORM_LINUX)
+    target_compile_options(
+        ${PROJECT_NAME}
+        PRIVATE 
+        -fPIC
+    )
+endif()
+
+
+set(AUTOGEN_STAMP ${CMAKE_BINARY_DIR}/autogen.stamp)
+
+find_program(PYTHON_EXECUTABLE NAMES Python PATHS ${BASE_DIRECTORY}/.venv)
+message("Using Python interpreter at: ${PYTHON_EXECUTABLE}")
+
+add_custom_command(
+    OUTPUT ${AUTOGEN_STAMP}
+    COMMAND cd ${BASE_DIRECTORY} && ${PYTHON_EXECUTABLE} helper.py run autogen
+    COMMAND ${CMAKE_COMMAND} -E touch ${AUTOGEN_STAMP}
+    DEPENDS ${HEADER_FILES}
+    COMMENT "Running autogen script"
+)
+
+add_custom_target(run_autogen ALL DEPENDS ${HEADER_FILES} ${AUTOGEN_STAMP})
 
 if (NTT_ENGINE_BINDING)
     ntt_find_package(ntt-pybind "Dependencies")
@@ -132,4 +166,10 @@ target_compile_options(
     ${TEST_PROJECT_NAME}
     PRIVATE
     ${TARGET_COMPILE_OPTIONS}
+)
+
+target_precompile_headers(
+    ${TEST_PROJECT_NAME}
+    PRIVATE
+    ${TARGET_PRECOMPILED_HEADER}
 )

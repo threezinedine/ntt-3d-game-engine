@@ -1,0 +1,7 @@
+{% macro print_method(cls, method)-%}
+{%-if method.is_static-%}
+.def_static("{{method.name}}", &{{cls.name}}::{{method.name}})
+{%-else-%}
+.def("{{method.name}}", &{{cls.name}}::{{method.name}})
+{%- endif-%}
+{%- endmacro %}

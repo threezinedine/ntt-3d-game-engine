@@ -19,6 +19,11 @@ macro(ntt_configure)
     ntt_platform_detect()
 
     ntt_option("NTT_ENGINE_BINDING" "ON")
+
+    if (MSVC)
+    else()
+        add_compile_options(-Wall -Werror)
+    endif()
 endmacro()
 
 macro(ntt_platform_detect)
@@ -44,6 +49,10 @@ macro(ntt_platform_detect)
         message("Building for WebAssembly")
         list(APPEND TARGET_DEFINITIONS "NTT_PLATFORM_WEB=1")
     endif() 
+
+    if (MSVC)
+        list(APPEND TARGET_DEFINITIONS "NTT_COMPILER_MSVC=1")
+    endif()
 endmacro()
 
 

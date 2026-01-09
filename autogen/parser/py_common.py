@@ -25,6 +25,7 @@ class PyMethod(PyFunction):
     def __init__(self, tu: cindex.TranslationUnit, cursor: cindex.Cursor) -> None:
         super().__init__(tu, cursor)
         self.access = "public"
+        self.is_static = cursor.is_static_method()
 
         if cursor.access_specifier == cindex.AccessSpecifier.PRIVATE:
             self.access = "private"

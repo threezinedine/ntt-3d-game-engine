@@ -1,0 +1,33 @@
+{% macro convert_type(type)-%}
+{%- if type in ["int", "char", "short", "long", "unsigned int", "unsigned char", "unsigned short", "unsigned long"] -%}
+int
+{%- elif type in ["float", "double"] -%}
+float
+{%- elif type == "bool" -%}
+bool
+{%- elif type in ["std::string", "const char *"] -%}
+str
+{%- else -%}
+{{ type }}
+{%- endif -%}
+{%- endmacro %}
+
+{% macro print_argument(argument)-%}
+{{argument.name}}: {{ convert_type(argument.type) }}{% if argument.default_value != None %} = {{argument.default_value}}{% endif %}
+{%- endmacro %}
+
+{% macro print_return_type(function)-%}
+{%- if function.return_type == "void" -%}
+None
+{%- else -%}
+{{ convert_type(function.return_type) }}
+{%- endif -%}
+{%- endmacro %}
+
+{% macro print_function(function)-%}
+def {{function.name}}({% for argument in function.arguments %}{{ print_argument(argument) }}{% if not loop.last %}, {% endif %}{% endfor %}) -> {{ print_return_type(function) }}: ...
+{%- endmacro %}
+
+{% macro print_method(method)-%}
+def {{method.name}}(self, {% for argument in method.arguments %}{{ print_argument(argument) }}{% if not loop.last %}, {% endif %}{% endfor %}) -> {{ print_return_type(method) }}: ...
+{%- endmacro %}

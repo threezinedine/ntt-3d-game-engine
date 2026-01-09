@@ -1,1 +1,5 @@
-def add(a: int, b: int) -> int: ...
+from typing import *  # type: ignore
+from enum import *
+
+{% include "pyi/enum.j2" %}
+{% include "pyi/class.j2" %}

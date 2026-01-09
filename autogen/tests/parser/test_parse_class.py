@@ -37,3 +37,29 @@ def test_parse_class():
     field2 = cls.fields[1]
     assert field2.name == "weight"
     assert field2.type == "float"
+
+
+def test_parse_static_method():
+    parser = Parser()
+
+    parser.add_code(
+        "static_method.cpp",
+        """
+        class MathUtils {
+        public:
+            static int add(int a, int b);
+        };
+        """,
+    )
+
+    parser.parse("static_method.cpp")
+
+    assert len(parser.Classes) == 1
+    cls = parser.Classes[0]
+    assert cls.name == "MathUtils"
+
+    assert len(cls.methods) == 1
+    method = cls.methods[0]
+    assert method.name == "add"
+    assert method.return_type == "int"
+    assert method.is_static is True

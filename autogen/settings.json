@@ -15,14 +15,24 @@
 		{
 			"output": "editor/Engine/__init__.pyi",
 			"input": "core/include/engine/engine.h",
-			"dependencies": ["core/include/**/*.h"],
+			"dependencies": [
+				"core/include/**/*.h",
+				"autogen/templates/*.j2",
+				"autogen/templates/**/*.j2",
+				"autogen/templates/**/**/*.j2"
+			],
 			"includes": ["{{ BASE_DIR }}/core/include"],
 			"template": "pyi.j2"
 		},
 		{
 			"output": "core/temp/bindings.cpp",
 			"input": "core/include/engine/engine.h",
-			"dependencies": ["core/include/**/*.h"],
+			"dependencies": [
+				"core/include/**/*.h",
+				"autogen/templates/*.j2",
+				"autogen/templates/**/*.j2",
+				"autogen/templates/**/**/*.j2"
+			],
 			"includes": ["{{ BASE_DIR }}/core/include"],
 			"template": "binding.j2"
 		}
