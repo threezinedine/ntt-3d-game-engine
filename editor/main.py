@@ -25,7 +25,7 @@ def main():
     Logger.Setup(
         level,
         "",
-        LOG_HANDLER_TYPE_EDITOR,
+        int(LOG_HANDLER_TYPE_EDITOR) | int(LOG_HANDLER_TYPE_CONSOLE),
         LOG_TAG_MASK_ALL,
     )
 

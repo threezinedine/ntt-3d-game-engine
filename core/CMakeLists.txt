@@ -92,6 +92,21 @@ if (NTT_ENGINE_BINDING AND NTT_PLATFORM_LINUX)
     )
 endif()
 
+set(AUTOGEN_STAMP ${CMAKE_BINARY_DIR}/autogen.stamp)
+
+find_program(PYTHON_EXECUTABLE NAMES Python PATHS ${BASE_DIRECTORY}/.venv)
+message("Using Python interpreter at: ${PYTHON_EXECUTABLE}")
+
+add_custom_command(
+    OUTPUT ${AUTOGEN_STAMP}
+    COMMAND cd ${BASE_DIRECTORY} && ${PYTHON_EXECUTABLE} helper.py run autogen
+    COMMAND ${CMAKE_COMMAND} -E touch ${AUTOGEN_STAMP}
+    DEPENDS ${HEADER_FILES}
+    COMMENT "Running autogen script"
+)
+
+add_custom_target(run_autogen ALL DEPENDS ${HEADER_FILES} ${AUTOGEN_STAMP})
+
 if (NTT_ENGINE_BINDING)
     ntt_find_package(ntt-pybind "Dependencies")
     set(BINDING_PROJECT_NAME EngineCoreBinding)
@@ -122,31 +137,12 @@ if (NTT_ENGINE_BINDING)
 
     set(SRC_FILE ${CMAKE_BINARY_DIR}/${BINDING_PROJECT_NAME}${BINDING_OUTPUT_SUFFIX})
     set(DST_FILE ${BASE_DIRECTORY}/editor/Engine/${BINDING_PROJECT_NAME}${BINDING_OUTPUT_SUFFIX})
-    set(STAMP_FILE ${SRC_FILE}.stamp)
 
     add_custom_command(
-        OUTPUT ${STAMP_FILE}
+        TARGET ${BINDING_PROJECT_NAME}
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SRC_FILE} ${DST_FILE}
-        COMMAND ${CMAKE_COMMAND} -E echo "" > ${STAMP_FILE}
         COMMENT "Copying ${BINDING_PROJECT_NAME}${BINDING_OUTPUT_SUFFIX} to editor folder"
     )
-
-    add_custom_target(copy_binding_to_editor ALL DEPENDS ${STAMP_FILE})
-
-    set(AUTOGEN_STAMP ${CMAKE_BINARY_DIR}/autogen.stamp)
-
-    find_program(PYTHON_EXECUTABLE NAMES Python PATHS ${BASE_DIRECTORY}/.venv)
-    message("Using Python interpreter at: ${PYTHON_EXECUTABLE}")
-
-    add_custom_command(
-        OUTPUT ${AUTOGEN_STAMP}
-        COMMAND cd ${BASE_DIRECTORY} && ${PYTHON_EXECUTABLE} helper.py run autogen
-        COMMAND ${CMAKE_COMMAND} -E touch ${AUTOGEN_STAMP}
-        DEPENDS ${HEADER_FILES} ${PROJECT_NAME}
-        COMMENT "Running autogen script"
-    )
-
-    add_custom_target(run_autogen ALL DEPENDS ${HEADER_FILES} ${AUTOGEN_STAMP} ${PROJECT_NAME})
 endif()
 
 if (NTT_ENGINE_CORE_TESTS_ENABLE)

@@ -34,7 +34,7 @@ void Logger::Setup(LogLevel level, const char* format, LogHandlerTypes types, u3
 
 	if (types & LOG_HANDLER_TYPE_EDITOR)
 	{
-		m_handlers.push_back(CreateScope<EditorLogHandler>(m_editorCallback));
+		m_handlers.push_back(CreateScope<EditorLogHandler>());
 	}
 
 	m_format = format;
@@ -72,7 +72,7 @@ void Logger::Log(LogLevel level, LogTagMaskBit tag, const char* message, const c
 	char messageBuffer[LOGGER_BUFFER_SIZE];
 	std::memset(messageBuffer, 0, LOGGER_BUFFER_SIZE);
 	std::sprintf(messageBuffer, "[%7s] - [%7s] - %20s:%-4d - %s", tagStr, levelStr, finalFilename, line, message);
-	record.message = messageBuffer;
+	record.message = String(messageBuffer);
 
 	for (auto& handler : m_handlers)
 	{

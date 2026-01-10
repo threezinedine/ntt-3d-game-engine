@@ -6,6 +6,7 @@ from Engine import *
 class LogWidgetModel:
     def __init__(self) -> None:
         Logger.SetupEditorCallback(self.handleLogMessage)
+        self.messges: list[LogRecord] = []
 
     def handleLogMessage(self, record: LogRecord) -> None:
-        print(record.message)
+        self.messges.append(record)

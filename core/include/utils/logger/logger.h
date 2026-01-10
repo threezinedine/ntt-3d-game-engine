@@ -40,6 +40,11 @@ public:
 	 */
 	inline void SetupEditorCallback(LogEditorCallbackFn callback) NTT_BINDING;
 
+	inline LogEditorCallbackFn GetEditorCallback() const
+	{
+		return m_editorCallback;
+	}
+
 private:
 	Array<Scope<Handler>> m_handlers;
 	LogLevel			  m_logLevel;

@@ -7,12 +7,9 @@ namespace ntt {
 class EditorLogHandler : public Handler
 {
 public:
-	EditorLogHandler(LogEditorCallbackFn callback);
+	EditorLogHandler();
 	virtual ~EditorLogHandler() override;
 	virtual void Process(const LogRecord& record) override;
-
-private:
-	LogEditorCallbackFn m_callback;
 };
 
 } // namespace ntt

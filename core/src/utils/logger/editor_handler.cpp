@@ -1,8 +1,8 @@
 #include "editor_handler.h"
+#include "utils/logger/logger.h"
 
 namespace ntt {
-EditorLogHandler::EditorLogHandler(LogEditorCallbackFn callback)
-	: m_callback(callback)
+EditorLogHandler::EditorLogHandler()
 {
 }
 
@@ -12,9 +12,9 @@ EditorLogHandler::~EditorLogHandler()
 
 void EditorLogHandler::Process(const LogRecord& record)
 {
-	if (m_callback)
+	if (Logger::GetInstance()->GetEditorCallback())
 	{
-		m_callback(record);
+		Logger::GetInstance()->GetEditorCallback()(record);
 	}
 }
 

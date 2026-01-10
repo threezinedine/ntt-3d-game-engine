@@ -33,6 +33,14 @@ class EditorMainWindow(QMainWindow):
 
         self.setup_docks()
 
+        Logger.Log(
+            LOG_LEVEL_WARN,
+            LOG_TAG_MASK_SYSTEM,
+            "Editor Main Window initialized.",
+            "file.py",
+            30,
+        )
+
     def setup_docks(self) -> None:
         dockViews: list[QDockWidget] = [
             self.ui.logDockWidget,
