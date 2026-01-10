@@ -33,9 +33,11 @@ set(TARGET_PRECOMPILED_HEADER
 )
 
 ntt_find_package(ntt-glm "Dependencies")
+ntt_find_package(ntt-json "Dependencies")
 
 set(TARGET_LINK_LIBRARIES
     ntt-glm
+    ntt-json
 )
 
 if (NTT_USE_GLFW)

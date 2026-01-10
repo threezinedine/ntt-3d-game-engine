@@ -4,6 +4,7 @@
 #include <functional>
 #include <glm/glm.hpp>
 #include <memory>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <vector>
 
@@ -57,6 +58,8 @@ typedef glm::vec4 Vec4;
 
 typedef glm::mat3 Mat3;
 typedef glm::mat4 Mat4;
+
+typedef nlohmann::json Json;
 
 // =============== Constants =============
 #define NTT_KB 1024ULL
