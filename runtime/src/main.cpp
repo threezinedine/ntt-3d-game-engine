@@ -15,6 +15,8 @@ int main()
 	Window window("NTT Engine Window", 1280, 720);
 
 	window.Initialize();
+	Renderer::Initialize();
+	Renderer::AttachSurface(window.GetSurface());
 
 	while (window.IsOpen())
 	{
@@ -22,6 +24,8 @@ int main()
 	}
 
 	NTT_SYSTEM_LOG_INFO("Shutting down application");
+
+	Renderer::Shutdown();
 	window.Shutdown();
 
 	ShutdownWindowingSystem();

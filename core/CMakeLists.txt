@@ -40,6 +40,11 @@ set(TARGET_LINK_LIBRARIES
 if (NTT_USE_GLFW)
     ntt_find_package(ntt-glfw "Dependencies")
     list(APPEND TARGET_LINK_LIBRARIES ntt-glfw)
+
+    if (NTT_USE_GRAPHICS_OPENGL)
+        ntt_find_package(ntt-glad "Dependencies")
+        list(APPEND TARGET_LINK_LIBRARIES ntt-glad)
+    endif()
 endif()
 
 add_library(

@@ -29,7 +29,7 @@ void Window::Initialize()
 {
 	m_isOpen			 = NTT_TRUE;
 	m_internal->m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
-	m_pSurface			 = CreateScope<Surface>(m_internal->m_window);
+	m_pSurface			 = CreateRef<Surface>(m_internal->m_window);
 	m_pSurface->Bind();
 }
 
