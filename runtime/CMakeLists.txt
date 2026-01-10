@@ -9,6 +9,7 @@ include(ntt-config)
 ntt_project(EngineRuntime)
 
 ntt_configure()
+ntt_run_autogen()
 
 file(
     GLOB_RECURSE 

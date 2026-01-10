@@ -1,6 +1,7 @@
 macro(ntt_project PROJECT)
     if (NOT TOP_LEVEL_PROJECT)
         set(TOP_LEVEL_PROJECT ${PROJECT})
+        message(STATUS "Top level project set to: ${TOP_LEVEL_PROJECT}")
     endif()
 
     if (${PROJECT_NAME} STREQUAL TOP_LEVEL_PROJECT)
@@ -32,7 +33,6 @@ macro(ntt_configure)
 
     ntt_platform_detect()
 
-    ntt_option("NTT_ENGINE_BINDING" "ON")
     ntt_option("NTT_NO_ANALYZE" "OFF")
     ntt_option("NTT_ENGINE_CORE_TESTS_ENABLE" "ON")
     ntt_option("NTT_ENGINE_EDITOR_BINDING" "OFF")
@@ -143,4 +143,26 @@ endmacro()
 
 macro(ntt_remove_duplicates)
     list(REMOVE_DUPLICATES TARGET_DEFINITIONS)
+endmacro()
+
+macro(ntt_run_autogen)
+    if (IS_TOP_LEVEL_PROJECT)
+        set(AUTOGEN_STAMP ${CMAKE_BINARY_DIR}/autogen.stamp)
+
+        if (NTT_PLATFORM_WINDOWS)
+            set(PYTHON_EXECUTABLE "${BASE_DIRECTORY}\\.venv\\Scripts\\python.exe")
+        else()
+            set(PYTHON_EXECUTABLE "${BASE_DIRECTORY}/.venv/bin/python")
+        endif()
+
+        add_custom_command(
+            OUTPUT ${AUTOGEN_STAMP}
+            COMMAND cd ${BASE_DIRECTORY} && ${PYTHON_EXECUTABLE} helper.py run autogen
+            COMMAND ${CMAKE_COMMAND} -E touch ${AUTOGEN_STAMP}
+            DEPENDS ${HEADER_FILES}
+            COMMENT "Running autogen script"
+        )
+
+        add_custom_target(run_autogen ALL DEPENDS ${HEADER_FILES} ${AUTOGEN_STAMP})
+    endif()
 endmacro()
