@@ -35,7 +35,7 @@
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
-     <string>Window</string>
+     <string>Windows</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -68,6 +68,9 @@
    </property>
    <property name="floating">
     <bool>false</bool>
+   </property>
+   <property name="windowTitle">
+    <string>Logging</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
