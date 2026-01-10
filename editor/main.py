@@ -1,29 +1,27 @@
-from PySide6.QtGui import QKeyEvent
-from PySide6.QtWidgets import QApplication, QMainWindow
-from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QApplication
 from Engine import *
 from utils import *
-
-
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("My Application")
-        self.setGeometry(100, 100, 800, 600)
-
-    def keyPressEvent(self, event: QKeyEvent) -> None:
-        if event.key() == Qt.Key.Key_Escape:
-            self.close()
-
-        return super().keyPressEvent(event)
+from windows.main_window import EditorMainWindow
+from di import *
+from argparse import ArgumentParser
 
 
 def main():
-    editor_logger.setLevel(logging.DEBUG)
-    Console.setColor(ConsoleColor.CONSOLE_COLOR_CYAN)
-    Console.print("Starting the application...\n")
+    parser = ArgumentParser()
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Enable verbose logging",
+    )
+
+    if parser.parse_args().verbose:
+        editor_logger.setLevel(logging.DEBUG)
+    else:
+        editor_logger.setLevel(logging.INFO)
+
     app = QApplication([])
-    window = MainWindow()
+    window = di_get(EditorMainWindow)
     editor_logger.info("Starting the application.")
     window.showMaximized()
     app.exec()
