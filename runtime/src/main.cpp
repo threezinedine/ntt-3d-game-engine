@@ -10,5 +10,21 @@ int main()
 	NTT_SYSTEM_LOG_DEBUG("Starting initialization sequence");
 	NTT_SYSTEM_LOG_INFO("Loading configuration files");
 
+	InitializeWindowingSystem();
+
+	Window window("NTT Engine Window", 1280, 720);
+
+	window.Initialize();
+
+	while (window.IsOpen())
+	{
+		window.PollEvents();
+	}
+
+	NTT_SYSTEM_LOG_INFO("Shutting down application");
+	window.Shutdown();
+
+	ShutdownWindowingSystem();
+
 	return 0;
 }

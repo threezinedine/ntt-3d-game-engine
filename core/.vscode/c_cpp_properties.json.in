@@ -6,11 +6,14 @@
 				{% if PLATFORM_IS_LINUX-%}
 				"{{ PYTHON_INCLUDE_DIR }}",
 				{% endif-%}
+				"${workspaceFolder}/../runtime/**",
 				"${workspaceFolder}/**"
 			],
 			"defines": [
 				"NTT_PLATFORM_LINUX",
 				"NTT_DEBUG",
+				"NTT_USE_GRAPHICS_OPENGL",
+				"NTT_USE_GLFW",
 				"NTT_NO_ANALYZE"
 			],
 			"compilerPath": "/usr/bin/clang",

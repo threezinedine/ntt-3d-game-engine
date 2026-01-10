@@ -1,6 +1,7 @@
 #pragma once
 #include <cstddef>
 #include <cstring>
+#include <glm/glm.hpp>
 #include <memory>
 #include <string>
 #include <vector>
@@ -48,6 +49,13 @@ template <typename T>
 using Array = std::vector<T>;
 
 using String = std::string;
+
+typedef glm::vec2 Vec2;
+typedef glm::vec3 Vec3;
+typedef glm::vec4 Vec4;
+
+typedef glm::mat3 Mat3;
+typedef glm::mat4 Mat4;
 
 // =============== Constants =============
 #define NTT_KB 1024ULL

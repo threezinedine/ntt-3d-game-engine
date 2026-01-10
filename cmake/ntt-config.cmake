@@ -37,11 +37,45 @@ macro(ntt_configure)
     ntt_option("NTT_NO_ANALYZE" "OFF")
     ntt_option("NTT_ENGINE_CORE_TESTS_ENABLE" "ON")
 
+    ntt_detect_graphics_api()
+
     if (MSVC)
     else()
         add_compile_options(-Wall -Werror -Wswitch)
     endif()
+
+    ntt_remove_duplicates()
 endmacro()
+
+macro(ntt_detect_graphics_api)
+    ntt_option("NTT_USE_GRAPHICS_OPENGL" "OFF")
+    ntt_option("NTT_USE_GRAPHICS_VULKAN" "ON")
+
+    ntt_option("NTT_USE_GLFW" "OFF")
+
+    if (NTT_USE_GRAPHICS_VULKAN)
+        list(APPEND TARGET_DEFINITIONS "NTT_USE_GRAPHICS_OPENGL=0")
+        list(APPEND TARGET_DEFINITIONS "NTT_USE_GRAPHICS_VULKAN=1")
+
+        if (NTT_USE_GRAPHICS_OPENGL)
+            message(WARNING "Both OpenGL and Vulkan graphics APIs are enabled. Vulkan will be used as the primary graphics API.")
+            list(REMOVE_ITEM TARGET_DEFINITIONS "NTT_USE_GRAPHICS_OPENGL=1")
+            set(NTT_USE_GRAPHICS_OPENGL OFF)
+            set(NTT_USE_GRAPHICS_OPENGL ON)
+        endif()
+    else()
+        list(APPEND TARGET_DEFINITIONS "NTT_USE_GRAPHICS_OPENGL=1")
+        list(APPEND TARGET_DEFINITIONS "NTT_USE_GRAPHICS_VULKAN=0")
+        list(REMOVE_ITEM TARGET_DEFINITIONS "NTT_USE_GLFW=0")
+        list(APPEND TARGET_DEFINITIONS "NTT_USE_GLFW=1")
+
+        if (NOT NTT_USE_GLFW)
+            message(WARNING "OpenGL forces the use of GLFW. Enabling NTT_USE_GLFW.")
+            set(NTT_USE_GLFW ON)
+        endif()
+    endif()
+endmacro()
+
 
 macro(ntt_platform_detect)
     set(NTT_PLATFORM_WINDOWS FALSE)
@@ -101,4 +135,8 @@ macro(ntt_find_package PACKAGE_NAME FOLDER)
     if (MSVC)
         unset(CMAKE_FOLDER)
     endif()
+endmacro()
+
+macro(ntt_remove_duplicates)
+    list(REMOVE_DUPLICATES TARGET_DEFINITIONS)
 endmacro()

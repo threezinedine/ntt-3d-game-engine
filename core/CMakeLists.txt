@@ -32,6 +32,17 @@ set(TARGET_PRECOMPILED_HEADER
     "${CMAKE_CURRENT_SOURCE_DIR}/include/platforms/common.h"
 )
 
+ntt_find_package(ntt-glm "Dependencies")
+
+set(TARGET_LINK_LIBRARIES
+    ntt-glm
+)
+
+if (NTT_USE_GLFW)
+    ntt_find_package(ntt-glfw "Dependencies")
+    list(APPEND TARGET_LINK_LIBRARIES ntt-glfw)
+endif()
+
 add_library(
     ${PROJECT_NAME}
     STATIC
@@ -61,6 +72,12 @@ target_precompile_headers(
     ${PROJECT_NAME}
     PUBLIC
     ${TARGET_PRECOMPILED_HEADER}
+)
+
+target_link_libraries(
+    ${PROJECT_NAME}
+    PUBLIC
+    ${TARGET_LINK_LIBRARIES}
 )
 
 if (NTT_ENGINE_BINDING AND NTT_PLATFORM_LINUX)
@@ -149,6 +166,7 @@ if (NTT_ENGINE_CORE_TESTS_ENABLE)
         ${TEST_PROJECT_NAME}
         PRIVATE
         ntt-googletest
+        ${TARGET_LINK_LIBRARIES}
     )
 
     target_include_directories(
