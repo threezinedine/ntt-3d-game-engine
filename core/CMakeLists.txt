@@ -128,48 +128,50 @@ if (NTT_ENGINE_BINDING)
     add_custom_target(run_autogen ALL DEPENDS ${HEADER_FILES} ${AUTOGEN_STAMP})
 endif()
 
-ntt_find_package(ntt-googletest "Dependencies")
-file(
-    GLOB_RECURSE 
-    TEST_SOURCE_FILES
-    "tests/*.cpp"
-)
+if (NTT_ENGINE_CORE_TESTS_ENABLE)
+    ntt_find_package(ntt-googletest "Dependencies")
+    file(
+        GLOB_RECURSE 
+        TEST_SOURCE_FILES
+        "tests/*.cpp"
+    )
 
-set(TEST_PROJECT_NAME ${PROJECT_NAME}Tests)
+    set(TEST_PROJECT_NAME ${PROJECT_NAME}Tests)
 
-add_executable(
-    ${TEST_PROJECT_NAME}
-    ${TEST_SOURCE_FILES}
-    ${HEADER_FILES}
-    ${SOURCE_FILES}
-)
+    add_executable(
+        ${TEST_PROJECT_NAME}
+        ${TEST_SOURCE_FILES}
+        ${HEADER_FILES}
+        ${SOURCE_FILES}
+    )
 
-target_link_libraries(
-    ${TEST_PROJECT_NAME}
-    PRIVATE
-    ntt-googletest
-)
+    target_link_libraries(
+        ${TEST_PROJECT_NAME}
+        PRIVATE
+        ntt-googletest
+    )
 
-target_include_directories(
-    ${TEST_PROJECT_NAME}
-    PRIVATE
-    ${TARGET_INCLUDE_DIRS}
-)
+    target_include_directories(
+        ${TEST_PROJECT_NAME}
+        PRIVATE
+        ${TARGET_INCLUDE_DIRS}
+    )
 
-target_compile_definitions(
-    ${TEST_PROJECT_NAME}
-    PRIVATE 
-    ${TARGET_DEFINITIONS}
-)
+    target_compile_definitions(
+        ${TEST_PROJECT_NAME}
+        PRIVATE 
+        ${TARGET_DEFINITIONS}
+    )
 
-target_compile_options(
-    ${TEST_PROJECT_NAME}
-    PRIVATE
-    ${TARGET_COMPILE_OPTIONS}
-)
+    target_compile_options(
+        ${TEST_PROJECT_NAME}
+        PRIVATE
+        ${TARGET_COMPILE_OPTIONS}
+    )
 
-target_precompile_headers(
-    ${TEST_PROJECT_NAME}
-    PRIVATE
-    ${TARGET_PRECOMPILED_HEADER}
-)
+    target_precompile_headers(
+        ${TEST_PROJECT_NAME}
+        PRIVATE
+        ${TARGET_PRECOMPILED_HEADER}
+    )
+endif()

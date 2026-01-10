@@ -35,6 +35,7 @@ macro(ntt_configure)
 
     ntt_option("NTT_ENGINE_BINDING" "ON")
     ntt_option("NTT_NO_ANALYZE" "OFF")
+    ntt_option("NTT_ENGINE_CORE_TESTS_ENABLE" "ON")
 
     if (MSVC)
     else()
