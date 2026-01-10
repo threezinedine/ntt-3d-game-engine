@@ -10,3 +10,8 @@ dependencies = [
     "pyinstaller>=6.17.0",
     "pyside6>=6.10.1",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]

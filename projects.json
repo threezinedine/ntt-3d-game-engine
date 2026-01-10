@@ -31,7 +31,11 @@
 				"editor/Engine/EngineCoreBinding.so",
 				"editor/main.spec",
 				"core/build/*_editor*/EngineCoreBinding.so.stamp"
-			]
+			],
+			"test": {
+				"command": "uv run --quiet pytest",
+				"cwd": "editor"
+			}
 		},
 		{
 			"relPath": "runtool",
