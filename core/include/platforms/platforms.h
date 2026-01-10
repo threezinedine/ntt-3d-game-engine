@@ -1,5 +1,5 @@
 #pragma once
 #include "common.h"
 #include "console.h"
+#include "graphics/graphics.h"
 #include "memory.h"
-#include "window.h"

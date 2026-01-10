@@ -1,6 +1,6 @@
 #if NTT_USE_GLFW
 
-#include "platforms/window.h"
+#include "platforms/graphics/window.h"
 #include <GLFW/glfw3.h>
 
 namespace ntt {
@@ -15,6 +15,7 @@ Window::Window(const char* title, u32 width, u32 height)
 	, m_height(height)
 	, m_title(title)
 	, m_isOpen(NTT_FALSE)
+	, m_pSurface(nullptr)
 {
 	m_internal			 = CreateScope<WindowInternal>();
 	m_internal->m_window = nullptr;
@@ -26,23 +27,23 @@ Window::~Window()
 
 void Window::Initialize()
 {
-	// Platform-specific window creation code goes here.
 	m_isOpen			 = NTT_TRUE;
 	m_internal->m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
-	glfwMakeContextCurrent(m_internal->m_window);
+	m_pSurface			 = CreateScope<Surface>(m_internal->m_window);
+	m_pSurface->Bind();
 }
 
 void Window::Shutdown()
 {
-	// Platform-specific window destruction code goes here.
 	m_isOpen = NTT_FALSE;
+	m_pSurface.reset();
 	glfwDestroyWindow(m_internal->m_window);
 }
 
 void Window::PollEvents()
 {
-	// Platform-specific event polling code goes here.
-	m_isOpen = !glfwWindowShouldClose(glfwGetCurrentContext());
+	NTT_ASSERT(m_pSurface != nullptr);
+	m_isOpen = !glfwWindowShouldClose(m_pSurface->GetGLFWWindow());
 	glfwPollEvents();
 }
 

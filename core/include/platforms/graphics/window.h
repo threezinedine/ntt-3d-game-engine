@@ -1,5 +1,6 @@
 #pragma once
-#include "common.h"
+#include "platforms/common.h"
+#include "surface.h"
 
 namespace ntt {
 
@@ -35,13 +36,19 @@ public:
 		return m_isOpen;
 	}
 
+	inline Scope<Surface>& GetSurface()
+	{
+		return m_pSurface;
+	}
+
 private:
 	u32	   m_width;
 	u32	   m_height;
 	String m_title;
 
 private:
-	b8 m_isOpen;
+	b8			   m_isOpen;
+	Scope<Surface> m_pSurface;
 
 private:
 	class WindowInternal;
