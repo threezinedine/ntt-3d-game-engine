@@ -18,3 +18,5 @@ else:
     PLATFORM_IS_LINUX = False
 
 PYTHON_INCLUDE_DIR = sysconfig.get_paths()["include"]
+
+DELETE_FILE_COMMAND = "del" if PLATFORM_IS_WINDOWS else "rm -f"

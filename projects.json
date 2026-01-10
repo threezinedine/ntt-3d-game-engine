@@ -40,5 +40,11 @@
 				"cwd": "runtool"
 			}
 		}
-	]
+	],
+	"commands": {
+		"designer": {
+			"command": "uv run pyside6-designer",
+			"cwd": "editor"
+		}
+	}
 }

@@ -43,6 +43,12 @@ class Args:
         self._build_test_subparser(subparsers)
         self._build_clean_subparser(subparsers)
 
+        for command in self.settings.customCommands:
+            subparsers.add_parser(
+                command,
+                help=f"Run the custom command '{command}' defined in projects.json.",
+            )
+
         self.args = parser.parse_args()
 
     def _build_test_subparser(
@@ -315,7 +321,17 @@ class Args:
                     f"Project {self.args.project} is not a Python project."
                 )
         else:
-            raise ValueError(f"Unknown command: {self.args.command}")
+            for custom_command in self.settings.customCommands:
+                if self.args.command == custom_command:
+                    command = self.settings.Projects.commands[custom_command]
+                    command_logger.debug(
+                        f"Running custom command '{custom_command}': {command.command}"
+                    )
+                    run_command(
+                        command.command,
+                        directory=command.cwd,
+                    )
+                    break
 
     def _clean(self, name: str) -> None:
         objects = glob.glob(name)

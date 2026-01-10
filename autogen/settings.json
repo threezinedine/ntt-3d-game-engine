@@ -9,6 +9,12 @@
 			"output": "runtime/.vscode/c_cpp_properties.json"
 		}
 	],
+	"commands": [
+		{
+			"files": "editor/uis/*.ui",
+			"command": "cd {{ BASE_DIR }}/editor && uv run --quiet pyside6-uic {{ INPUT[7:] }} -o converted/{{ INPUT[11:-3] }}.py && touch converted/__init__.py"
+		}
+	],
 	"bindings": [
 		{
 			"output": "editor/Engine/__init__.pyi",

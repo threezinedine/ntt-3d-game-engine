@@ -68,6 +68,10 @@ class Settings:
                 testable.append(project.relPath)
         return testable
 
+    @property
+    def customCommands(self) -> list[str]:
+        return list(self.Projects.commands.keys())
+
     def is_python_project(self, project: str) -> bool:
         """
         Check if the given project path corresponds to a Python project.
