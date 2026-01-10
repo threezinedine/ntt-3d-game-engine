@@ -23,6 +23,25 @@ class Parser:
         self.Structs: list[PyStruct] = []
         self.Classes: list[PyClass] = []
 
+        self.PrimitiveTypes: list[str] = [
+            "unsigned long",
+            "unsigned int",
+            "unsigned short",
+            "unsigned char",
+            "long",
+            "int",
+            "short",
+            "char",
+            "float",
+            "double",
+            "char",
+            "bool",
+            "void",
+            "String",
+        ]
+
+        self.JsonStructTypes: list[str] = []
+
     def add_include_path(self, path: str) -> None:
         self._include_paths.append(path)
 
@@ -112,6 +131,14 @@ class Parser:
                         py_type_alias = PyTypeAlias(self.tu, child)
                         py_type_alias.namespace = namespace
                         self.Typedefs.append(py_type_alias)
+
+        for struct in self.Structs:
+            if "json" in struct.annotations:
+                self.JsonStructTypes.append(struct.name)
+
+        for typedef in self.Typedefs:
+            if typedef.underlying_type in self.PrimitiveTypes:
+                self.PrimitiveTypes.append(typedef.name)
 
     def __repr__(self) -> str:
         return f"""

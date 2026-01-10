@@ -149,6 +149,12 @@ macro(ntt_run_autogen)
     if (IS_TOP_LEVEL_PROJECT)
         set(AUTOGEN_STAMP ${CMAKE_BINARY_DIR}/autogen.stamp)
 
+        file(
+            GLOB_RECURSE 
+            TEMPLATE_FILES
+            "${BASE_DIRECTORY}/autogen/templates/*.j2"
+        )
+
         if (NTT_PLATFORM_WINDOWS)
             set(PYTHON_EXECUTABLE "${BASE_DIRECTORY}\\.venv\\Scripts\\python.exe")
         else()
@@ -159,10 +165,11 @@ macro(ntt_run_autogen)
             OUTPUT ${AUTOGEN_STAMP}
             COMMAND cd ${BASE_DIRECTORY} && ${PYTHON_EXECUTABLE} helper.py run autogen
             COMMAND ${CMAKE_COMMAND} -E touch ${AUTOGEN_STAMP}
-            DEPENDS ${HEADER_FILES}
+            DEPENDS ${HEADER_FILES} ${TEMPLATE_FILES}
             COMMENT "Running autogen script"
         )
 
-        add_custom_target(run_autogen ALL DEPENDS ${HEADER_FILES} ${AUTOGEN_STAMP})
+        add_custom_target(run_autogen ALL DEPENDS ${HEADER_FILES} ${AUTOGEN_STAMP} ${TEMPLATE_FILES})
+        message(STATUS "Setup autogen target")
     endif()
 endmacro()

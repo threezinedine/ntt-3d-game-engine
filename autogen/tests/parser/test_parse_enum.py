@@ -53,12 +53,13 @@ def test_parse_enum_with_annotations():
     enum = parser.Enums[0]
     assert enum.name == "Status"
     assert len(enum.annotations) == 1
-    assert "py:active_status" in enum.annotations
+    assert "py" in enum.annotations
+    assert enum.annotations["py"] == "active_status"
 
     assert len(enum.constants) == 3
     assert enum.constants[0].name == "ACTIVE"
     assert enum.constants[0].value == 0
-    assert enum.constants[0].annotations == []
+    assert enum.constants[0].annotations == {}
 
     assert enum.constants[1].name == "INACTIVE"
     assert enum.constants[1].value == 1
@@ -66,7 +67,7 @@ def test_parse_enum_with_annotations():
 
     assert enum.constants[2].name == "PENDING"
     assert enum.constants[2].value == 2
-    assert enum.constants[2].annotations == []
+    assert enum.constants[2].annotations == {}
 
 
 def test_parse_enum_with_comment():

@@ -81,13 +81,15 @@ def test_parse_union_with_annotations():
     assert union.name == "Data"
 
     assert len(union.annotations) == 1
-    assert "py:data_union" in union.annotations
+    assert "py" in union.annotations
+    assert union.annotations["py"] == "data_union"
 
     assert len(union.fields) == 2
     assert union.fields[0].name == "intValue"
     assert union.fields[0].type == "int"
     assert len(union.fields[0].annotations) == 1
-    assert "py:int_field" in union.fields[0].annotations
+    assert "py" in union.fields[0].annotations
+    assert union.fields[0].annotations["py"] == "int_field"
 
     assert union.fields[1].name == "floatValue"
     assert union.fields[1].type == "float"

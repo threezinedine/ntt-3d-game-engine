@@ -30,4 +30,4 @@ class PyStruct(PyObject):
                 self.base_classes.append(base)
 
     def __repr__(self) -> str:
-        return f"<Struct name={self.name} fields={len(self.fields)} methods={len(self.methods)}>"
+        return f"<Struct name={self.name} fields={self.fields} methods={len(self.methods)}>"

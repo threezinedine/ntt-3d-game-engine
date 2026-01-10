@@ -312,6 +312,7 @@ class Args:
                 command_logger.debug(f"Testing C++ project {self.args.project}...")
                 project = self.settings.get_cpp_project(self.args.project)
                 assert project.test is not None, "Test command should not be None."
+                build_cpp_project(**self.vars)
                 run_cpp_executable(
                     executable=project.test,
                     **self.vars,

@@ -1,0 +1,14 @@
+#include "engine/engine.h"
+{% import "json_writer/common.j2" as common %}
+
+namespace ntt {
+
+// clang-format off
+{% for struct in parser.Structs-%}
+{% if "json" in struct.annotations %}
+{{ common.generate_to_json(parser, struct) }}
+{% endif %}
+{%- endfor %}
+// clang-format on
+
+} // namespace ntt

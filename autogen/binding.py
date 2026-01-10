@@ -107,6 +107,8 @@ def _generate_binding(binding: Binding) -> bool:
             "to_pyi_type": to_pyi_type,
             "is_type_function_pointer": is_type_function_pointer,
             "convert_function_pointer_type": convert_function_pointer_type,
+            "is_array_type": is_array_type,
+            "get_array_element_type": get_array_element_type,
         }
     )
 

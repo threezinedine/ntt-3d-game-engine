@@ -39,6 +39,15 @@ class EditorMainWindow(QMainWindow):
             30,
         )
 
+        desc = ProjectDescription()
+        desc.name = "My Project"
+        desc.version = Version()
+        desc.version.major = 1
+        desc.version.minor = 0
+        desc.version.patch = 0
+        desc.tags = ["example", "test"]
+        print(ProjectDescriptionToJsonString(desc))
+
     def setup_docks(self) -> None:
         dockViews: list[QDockWidget] = [
             self.ui.logDockWidget,

@@ -47,8 +47,13 @@ constexpr Ref<T> CreateRef(Args&&... args)
 	return std::make_shared<T>(std::forward<Args>(args)...);
 }
 
+#if NTT_NO_ANALYZE
 template <typename T>
 using Array = std::vector<T>;
+#else
+template <typename T>
+class Array;
+#endif
 
 using String = std::string;
 
@@ -122,13 +127,19 @@ typedef nlohmann::json Json;
 #endif
 
 #if (defined(__GNUC__) || defined(__clang__)) && !defined(NTT_NO_ANALYZE)
-#define NTT_BINDING	  __attribute__((annotate("binding")))
-#define NTT_HIDDEN	  __attribute__((annotate("hidden")))
-#define NTT_SINGLETON __attribute__((annotate("singleton")))
+#define NTT_BINDING			   __attribute__((annotate("binding")))
+#define NTT_HIDDEN			   __attribute__((annotate("hidden")))
+#define NTT_SINGLETON		   __attribute__((annotate("singleton")))
+#define NTT_JSON			   __attribute__((annotate("json"))) NTT_BINDING
+#define NTT_ALIAS(name)		   __attribute__((annotate("name_alias:" name)))
+#define NTT_DEFAULT_VALUE(val) __attribute__((annotate("default_value:" #val)))
 #else
 #define NTT_BINDING
 #define NTT_HIDDEN
 #define NTT_SINGLETON
+#define NTT_JSON
+#define NTT_ALIAS(name)
+#define NTT_DEFAULT_VALUE(val)
 #endif
 
 #include "console.h"
@@ -169,3 +180,10 @@ private:                                                                        
 		NTT_ASSERT(s_instance != NTT_NULLPTR);                                                                         \
 		s_instance.reset();                                                                                            \
 	}
+
+#define NTT_JSON_DEFINE(structName)                                                                                    \
+	struct structName;                                                                                                 \
+	structName structName##FromJsonString(const String& jsonStr) NTT_BINDING;                                          \
+	structName structName##FromJson(const Json& json);                                                                 \
+	Json	   structName##ToJson(const structName& obj);                                                              \
+	String	   structName##ToJsonString(const structName& obj) NTT_BINDING;

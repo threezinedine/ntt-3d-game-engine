@@ -111,5 +111,28 @@ def test_parse_variable_with_annotations():
     assert var.name == "config_value"
     assert var.type == "int"
     assert len(var.annotations) == 2
-    assert "py:configurable" in var.annotations
+    assert "py" in var.annotations
+    assert var.annotations["py"] == "configurable"
     assert "hidden" in var.annotations
+
+
+def test_parse_vector_type():
+    parser = Parser()
+
+    parser.add_code(
+        "vector_type.cpp",
+        """
+        //#include <vector>
+
+        template <typename T>
+        class Vector;
+
+        Vector<char> numbers;
+        """,
+    )
+
+    parser.parse("vector_type.cpp")
+    assert len(parser.Variables) != 0
+    var = parser.Variables[-1]
+    assert var.name == "numbers"
+    assert var.type == "Vector<char>"

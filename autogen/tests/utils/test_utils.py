@@ -19,10 +19,10 @@ def test_to_pyi_type():
     assert to_pyi_type("const float*") == "Optional[float]"
     assert to_pyi_type("double&") == "float"
     assert to_pyi_type("const bool&") == "bool"
-    assert to_pyi_type("int[23]") == "int[]"
-    assert to_pyi_type("const std::string[10]") == "str[]"
-    assert to_pyi_type("CustomType[]") == "CustomType[]"
-    assert to_pyi_type("CustomType[18]") == "CustomType[]"
+    assert to_pyi_type("int[23]") == "List[int]"
+    assert to_pyi_type("const std::string[10]") == "List[str]"
+    assert to_pyi_type("CustomType[]") == "List[CustomType]"
+    assert to_pyi_type("CustomType[18]") == "List[CustomType]"
     assert to_pyi_type("char[25]") == "str"
 
 
@@ -49,3 +49,12 @@ def test_convert_std_function():
     assert (
         to_pyi_type("std::function<std::string(const char*)>") == "Callable[[str], str]"
     )
+
+
+def test_convert_array_type():
+    assert to_pyi_type("char[256]") == "str"
+    assert to_pyi_type("int[10]") == "List[int]"
+    assert to_pyi_type("float[5]") == "List[float]"
+    assert to_pyi_type("CustomType[20]") == "List[CustomType]"
+    assert to_pyi_type("Array<int>") == "List[int]"
+    assert to_pyi_type("Array<CustomType>") == "List[CustomType]"

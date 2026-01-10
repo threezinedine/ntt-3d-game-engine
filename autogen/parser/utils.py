@@ -24,13 +24,13 @@ def to_pyi_type(type_str: str) -> str:
         "unsigned short": "int",
         "const char*": "str",
         "const char *": "str",
-        # std::function pointers
+        "Array<.*>": lambda s: f"List[{to_pyi_type(s[6:-1].strip())}]",
         r"std::function<.*>": lambda s: convert_std_function(s[14:-1].strip()),
         r"char\[\s*\d*\s*\]": "str",
         r".*\s*\*\s*$": lambda s: f"Optional[{to_pyi_type(s[:-1].strip())}]",
         r"const (.*)": lambda s: to_pyi_type(s[6:].strip()),
         r".*\s*&\s*$": lambda s: to_pyi_type(s[:-1].strip()),
-        r".*\s*\[\s*\d*\s*\]\s*$": lambda s: f"{to_pyi_type(s[:s.rindex('[')].strip())}[]",
+        r".*\s*\[\s*\d*\s*\]\s*$": lambda s: f"List[{to_pyi_type(s[:s.rindex('[')].strip())}]",
     }
 
     stripped = type_str.strip()
@@ -87,3 +87,24 @@ def convert_std_function(type_str: str) -> str:
         python_type = f"Callable[[{', '.join(param_list)}], {return_type}]"
 
     return python_type
+
+
+def is_array_type(type_str: str) -> bool:
+    stripped = type_str.strip()
+    return (
+        re.fullmatch(r".*\s*\[\s*\d*\s*\]\s*$", stripped) is not None
+        or re.fullmatch(r"Array<.*>", stripped) is not None
+    )
+
+
+def get_array_element_type(type_str: str) -> str:
+    stripped = type_str.strip()
+    array_match = re.fullmatch(r"(.*)\s*\[\s*\d*\s*\]\s*$", stripped)
+    if array_match:
+        return to_pyi_type(array_match.group(1).strip())
+
+    array_template_match = re.fullmatch(r"Array<(.*)>", stripped)
+    if array_template_match:
+        return to_pyi_type(array_template_match.group(1).strip())
+
+    return stripped

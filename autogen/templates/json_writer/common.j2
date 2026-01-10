@@ -1,0 +1,112 @@
+{% macro get_json_field_name(field)-%}
+{%- if "name_alias" in field.annotations-%}
+{{ field.annotations["name_alias"] }}
+{%- else -%}
+{{ field.name }}
+{%- endif -%}
+{%- endmacro %}
+
+{% macro from_json_array_field(parser, struct, field) -%}
+for (const auto& item : json["{{ get_json_field_name(field) }}"]) {
+    {%- set element_type = get_array_element_type(field.type) -%}
+    {%-if element_type in parser.PrimitiveTypes-%}
+    obj.{{ field.name }}.push_back(item);
+    {%- elif element_type in parser.EnumTypes-%}
+    obj.{{ field.name }}.push_back(static_cast<{{ element_type }}>(item.get<u32>()));
+    {%- elif element_type in parser.JsonStructTypes-%}
+    obj.{{ field.name }}.push_back({{ element_type }}FromJson(item));
+    {%-else -%}
+    {{ field.type }}
+    {%- endif %}}
+{%-endmacro %}
+
+{% macro from_json_field(parser, struct, field) -%}
+{%-if is_array_type(field.type) -%}
+{{ from_json_array_field(parser, struct, field) }}
+{%-elif field.type in parser.PrimitiveTypes-%}
+obj.{{ field.name }} = json["{{ get_json_field_name(field) }}"].get<{{ field.type }}>();
+{%-elif field.type in parser.EnumTypes-%}
+obj.{{ field.name }} = static_cast<{{ field.type }}>(json["{{ get_json_field_name(field) }}"].get<u32>());
+{%-elif field.type in parser.JsonStructTypes-%}
+obj.{{ field.name }} = {{ field.type }}FromJson(json["{{ get_json_field_name(field) }}"]);
+{%-endif-%}
+{%-endmacro %}
+
+{% macro to_json_array_field(parser, struct, field) -%}
+for (const auto& item : obj.{{ field.name }}) {
+    {%- set element_type = get_array_element_type(field.type) -%}
+    {%-if element_type in parser.PrimitiveTypes-%}
+    json["{{ get_json_field_name(field) }}"].push_back(item);
+    {%- elif element_type in parser.EnumTypes-%}
+    json["{{ get_json_field_name(field) }}"].push_back(static_cast<u32>(item));
+    {%- elif element_type in parser.JsonStructTypes-%}
+    json["{{ get_json_field_name(field) }}"].push_back({{ element_type }}ToJson(item));
+    {%- endif %}}
+{%-endmacro %}
+
+{% macro to_json_field(parser, struct, field) -%}
+{%-if is_array_type(field.type) -%}
+{{ to_json_array_field(parser, struct, field) }}
+{%-elif field.type in parser.PrimitiveTypes-%}
+json["{{ get_json_field_name(field) }}"] = obj.{{ field.name }};
+{%-elif field.type in parser.EnumTypes-%}
+json["{{ get_json_field_name(field) }}"] = static_cast<u32>(obj.{{ field.name }});
+{%-elif field.type in parser.JsonStructTypes-%}
+json["{{ get_json_field_name(field) }}"] = {{ field.type }}ToJson(obj.{{ field.name }});
+{%-endif-%}
+{%-endmacro %}
+
+{% macro generate_to_json(parser, struct) -%}
+Json {{ struct.name }}ToJson(const {{ struct.name }}& obj)
+{
+    Json json;
+    {%- for field in struct.fields %}
+    {% if "hidden" not in field.annotations-%}
+    {% if "default_value" in field.annotations-%}
+    if (obj.{{ field.name }} != {{ field.annotations["default_value"] }}) 
+    { 
+        {{ to_json_field(parser, struct, field) }} 
+    }
+    {%- else -%}
+    {{ to_json_field(parser, struct, field) }}
+    {%-endif%}
+    {%-endif %}
+    {%- endfor %}
+    return json;
+}
+
+{{ struct.name }} {{ struct.name }}FromJson(const Json& json)
+{
+    {{ struct.name }} obj;
+    {%- for field in struct.fields %}
+    {% if "hidden" not in field.annotations-%}
+    {% if "default_value" in field.annotations-%}
+    if (json.contains("{{ get_json_field_name(field) }}")) 
+    { 
+        {{ from_json_field(parser, struct, field) }} 
+    }
+    else 
+    {
+        obj.{{ field.name }} = {{ field.annotations["default_value"] }};
+    }
+    {%- else -%}
+    {{ from_json_field(parser, struct, field) }}
+    {%-endif %}
+    {%-endif %}
+    {%- endfor %}
+    return obj;
+}
+
+String {{ struct.name }}ToJsonString(const {{ struct.name }}& obj)
+{
+    Json json = {{ struct.name }}ToJson(obj);
+    return jsonToString(json);
+}
+
+{{ struct.name }} {{ struct.name }}FromJsonString(const String& jsonStr)
+{
+    Json json = Json::parse(jsonStr.c_str());
+    return {{ struct.name }}FromJson(json);
+}
+
+{%- endmacro %}

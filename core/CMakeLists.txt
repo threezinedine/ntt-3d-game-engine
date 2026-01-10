@@ -18,10 +18,22 @@ file(
     "include/*.h"
 )
 
+set(
+    GENERATED_SOURCE_FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/temp/json_writer.cpp"
+)
+
+
 file(
     GLOB_RECURSE 
     HEADER_FILES
     "include/*.h"
+)
+
+set(PROJECT_SOURCES
+    ${SOURCE_FILES}
+    ${HEADER_FILES}
+    ${GENERATED_SOURCE_FILES}
 )
 
 set(TARGET_INCLUDE_DIRS
@@ -53,8 +65,7 @@ endif()
 add_library(
     ${PROJECT_NAME}
     STATIC
-    ${SOURCE_FILES}
-    ${HEADER_FILES}
+    ${PROJECT_SOURCES}
 )
 
 target_include_directories(
@@ -146,8 +157,7 @@ if (NTT_ENGINE_CORE_TESTS_ENABLE)
     add_executable(
         ${TEST_PROJECT_NAME}
         ${TEST_SOURCE_FILES}
-        ${HEADER_FILES}
-        ${SOURCE_FILES}
+        ${PROJECT_SOURCES}
     )
 
     target_link_libraries(
@@ -161,6 +171,7 @@ if (NTT_ENGINE_CORE_TESTS_ENABLE)
         ${TEST_PROJECT_NAME}
         PRIVATE
         ${TARGET_INCLUDE_DIRS}
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests
     )
 
     target_compile_definitions(

@@ -18,6 +18,7 @@ class PyField(PyVariable):
             raise ValueError(f"Unknown access specifier: {cursor.access_specifier}")
 
     def __repr__(self) -> str:
+        print(self.annotations)
         return f"<Field name={self.name} type={self.type} access={self.access}>"
 
 

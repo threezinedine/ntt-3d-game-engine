@@ -31,6 +31,20 @@
 			"template": "pyi.j2"
 		},
 		{
+			"output": "core/temp/json_writer.cpp",
+			"input": "core/include/engine/engine.h",
+			"dependencies": [
+				"core/include/**/*.h",
+				"core/include/**/**/*.h",
+				"autogen/parser/*.py",
+				"autogen/templates/*.j2",
+				"autogen/templates/**/*.j2",
+				"autogen/templates/**/**/*.j2"
+			],
+			"includes": ["{{ BASE_DIR }}/core/include"],
+			"template": "json_writer.j2"
+		},
+		{
 			"output": "core/temp/bindings.cpp",
 			"input": "core/include/engine/engine.h",
 			"dependencies": [

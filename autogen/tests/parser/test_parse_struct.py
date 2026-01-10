@@ -81,7 +81,8 @@ def test_parse_struct_with_annotations():
     struct = parser.Structs[0]
     assert struct.name == "Vector3"
     assert len(struct.annotations) == 1
-    assert "py:vector3" in struct.annotations
+    assert "py" in struct.annotations
+    assert struct.annotations["py"] == "vector3"
 
     assert len(struct.fields) == 3
     field1 = struct.fields[0]
@@ -93,7 +94,8 @@ def test_parse_struct_with_annotations():
     assert field2.name == "y"
     assert field2.type == "float"
     assert len(field2.annotations) == 1
-    assert "py:important" in field2.annotations
+    assert "py" in field2.annotations
+    assert field2.annotations["py"] == "important"
 
     field3 = struct.fields[2]
     assert field3.name == "z"
@@ -318,3 +320,31 @@ def test_parse_struct_with_inheritance():
     base_class2 = derived_struct.base_classes[1]
     assert base_class2.name == "test::Base2"
     assert base_class2.access == "private"
+
+
+def test_parse_array_field_struct():
+    parser = Parser()
+
+    parser.add_code(
+        "struct_with_array.cpp",
+        """
+        struct ArrayHolder {
+            int numbers[10];
+            float values[5];
+        };
+        """,
+    )
+
+    parser.parse("struct_with_array.cpp")
+    assert len(parser.Structs) == 1
+    struct = parser.Structs[0]
+    assert struct.name == "ArrayHolder"
+    assert len(struct.fields) == 2
+
+    field1 = struct.fields[0]
+    assert field1.name == "numbers"
+    assert field1.type == "int[10]"
+
+    field2 = struct.fields[1]
+    assert field2.name == "values"
+    assert field2.type == "float[5]"
