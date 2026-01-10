@@ -71,3 +71,52 @@ TEST(TestJsonWriter, SkipDefaultValues)
 	EXPECT_FALSE(json.contains("Major")); // Should be skipped
 	EXPECT_FALSE(json.contains("Patch")); // Should be skipped
 }
+
+TEST(TestJsonWriter, OtherType)
+{
+	TestSpectType originalSpect;
+	originalSpect.typeA = 42;
+	originalSpect.typeB = 3.14f; // Default value
+	originalSpect.typeC = {1, 2, 3, 4, 5};
+	originalSpect.typeD = "default_string"; // Default value
+
+	Json		  json	= TestSpectTypeToJson(originalSpect);
+	TestSpectType spect = TestSpectTypeFromJson(json);
+
+	EXPECT_EQ(originalSpect.typeA, spect.typeA);
+	EXPECT_EQ(originalSpect.typeB, spect.typeB);
+	EXPECT_EQ(originalSpect.typeC.size(), spect.typeC.size());
+	for (size_t i = 0; i < originalSpect.typeC.size(); ++i)
+	{
+		EXPECT_EQ(originalSpect.typeC[i], spect.typeC[i]);
+	}
+	EXPECT_EQ(originalSpect.typeD, spect.typeD);
+}
+
+TEST(TestJsonWriter, NestedStructs)
+{
+	NestedStruct originalNested;
+	originalNested.version.major = 1;
+	originalNested.version.minor = 2;
+	originalNested.version.patch = 3;
+	originalNested.versionList	 = {
+		  {1, 0, 0},
+		 {2, 1, 1},
+		{3, 2, 2}
+	 };
+
+	Json		 json	= NestedStructToJson(originalNested);
+	NestedStruct nested = NestedStructFromJson(json);
+
+	EXPECT_EQ(originalNested.version.major, nested.version.major);
+	EXPECT_EQ(originalNested.version.minor, nested.version.minor);
+	EXPECT_EQ(originalNested.version.patch, nested.version.patch);
+
+	EXPECT_EQ(originalNested.versionList.size(), nested.versionList.size());
+	for (size_t i = 0; i < originalNested.versionList.size(); ++i)
+	{
+		EXPECT_EQ(originalNested.versionList[i].major, nested.versionList[i].major);
+		EXPECT_EQ(originalNested.versionList[i].minor, nested.versionList[i].minor);
+		EXPECT_EQ(originalNested.versionList[i].patch, nested.versionList[i].patch);
+	}
+}

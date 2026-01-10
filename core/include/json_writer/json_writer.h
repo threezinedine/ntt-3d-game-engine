@@ -18,4 +18,22 @@ struct NTT_JSON TestVersion
 	// clang-format on
 };
 
+NTT_JSON_DEFINE(TestSpectType);
+struct NTT_JSON TestSpectType
+{
+	// clang-format off
+	u32		   typeA;
+	f32        typeB  NTT_DEFAULT_VALUE(3.14);
+	Array<i16> typeC;
+	String     typeD  NTT_DEFAULT_VALUE("default_string");
+	// clang-format on
+};
+
+NTT_JSON_DEFINE(NestedStruct);
+struct NTT_JSON NestedStruct
+{
+	TestVersion		   version;
+	Array<TestVersion> versionList;
+};
+
 } // namespace ntt
