@@ -1,0 +1,5 @@
+{% for typedef in parser.Typedefs-%}
+{% if "binding" in typedef.annotations-%}
+{{ typedef.name }}: TypeAlias = {{ typedef.underlying_type }}
+{% endif-%}
+{% endfor-%}

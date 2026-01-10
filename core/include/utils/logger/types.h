@@ -50,6 +50,6 @@ enum NTT_BINDING LogHandlerType : u8
 	LOG_HANDLER_TYPE_COUNT NTT_HIDDEN
 };
 
-typedef u8 LogHandlerTypes;
+typedef NTT_BINDING u8 LogHandlerTypes;
 
 } // namespace ntt

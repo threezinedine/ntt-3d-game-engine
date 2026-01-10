@@ -123,12 +123,11 @@ static void truncateString(const String& input, char* output, size_t maxLength)
 
 	if (input.length() <= maxLength)
 	{
-		std::strncpy(output, input.c_str(), maxLength);
+		std::sprintf(output, "%s", input.c_str());
 	}
 	else
 	{
-		std::strncpy(output, input.c_str(), maxLength - etcLength);
-		std::strncpy(output + maxLength - etcLength, etc.c_str(), etcLength);
+		std::sprintf(output, "%.*s%s", static_cast<int>(maxLength - etcLength), input.c_str(), etc.c_str());
 	}
 }
 
