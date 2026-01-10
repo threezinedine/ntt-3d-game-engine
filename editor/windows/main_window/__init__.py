@@ -1,1 +1,1 @@
-from .view import *
+from .main_window_view import *

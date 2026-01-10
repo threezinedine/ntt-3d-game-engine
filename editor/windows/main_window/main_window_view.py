@@ -2,9 +2,10 @@ from typing import Any
 from PySide6.QtWidgets import QMainWindow
 from converted.editor_main_window import Ui_GameEngineEditorWindow
 from di import *
-from .view_model import EditorMainWindowViewModel
+from .main_window_view_model import EditorMainWindowViewModel
 from PySide6.QtGui import QKeyEvent
 from PySide6.QtCore import Qt
+from .widgets import *
 
 
 @as_transient
@@ -22,6 +23,9 @@ class EditorMainWindow(QMainWindow):
         self.ui.setupUi(self)  # type: ignore
 
         self.viewModel = viewModel
+
+        self.logWidget = di_get(LogWidget)
+        self.ui.logDockWidget.setWidget(self.logWidget)
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         if event.key() == Qt.Key.Key_Escape:

@@ -1,5 +1,5 @@
 from di import *
-from .model import EditorMainWindowModel
+from .main_window_model import EditorMainWindowModel
 
 
 @as_transient
