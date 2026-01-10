@@ -3,6 +3,7 @@ import sysconfig
 
 CPP_BUILD_TYPES = ["debug", "release", "test"]
 CPP_BUILD_PLATFORMS = ["linux", "windows", "macos", "web", "android"]
+CPP_GENERATORS = ["unix", "mingw", "msvc"]
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

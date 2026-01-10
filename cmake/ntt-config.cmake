@@ -3,7 +3,6 @@ macro(ntt_project PROJECT)
         set(TOP_LEVEL_PROJECT ${PROJECT})
     endif()
 
-    project(${PROJECT})
     if (${PROJECT_NAME} STREQUAL TOP_LEVEL_PROJECT)
         set(IS_TOP_LEVEL_PROJECT TRUE)
     else()
@@ -36,6 +35,7 @@ macro(ntt_configure)
     ntt_option("NTT_ENGINE_BINDING" "ON")
     ntt_option("NTT_NO_ANALYZE" "OFF")
     ntt_option("NTT_ENGINE_CORE_TESTS_ENABLE" "ON")
+    ntt_option("NTT_ENGINE_EDITOR_BINDING" "OFF")
 
     ntt_detect_graphics_api()
 
@@ -45,6 +45,10 @@ macro(ntt_configure)
     endif()
 
     ntt_remove_duplicates()
+
+    if (IS_TOP_LEVEL_PROJECT)
+        ntt_print_configuration()
+    endif()
 endmacro()
 
 macro(ntt_detect_graphics_api)

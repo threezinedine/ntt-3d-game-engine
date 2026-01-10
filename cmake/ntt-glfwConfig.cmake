@@ -18,3 +18,4 @@ endif()
 
 add_library(${LIB_NAME} INTERFACE)
 target_link_libraries(${LIB_NAME} INTERFACE glfw)
+set(${LIB_NAME}_FOUND TRUE)

@@ -21,7 +21,7 @@
 		{
 			"relPath": "editor",
 			"preRun": {
-				"command": "uv run helper.py run autogen && uv run helper.py build core --platform=linux --type=release"
+				"command": "uv run helper.py run autogen && uv run helper.py build core --platform=linux --type=release --sections editor"
 			},
 			"install": {
 				"command": "uv --quiet run install.py",
@@ -30,7 +30,7 @@
 			"cleans": [
 				"editor/Engine/EngineCoreBinding.so",
 				"editor/main.spec",
-				"core/build/*_release/EngineCoreBinding.so.stamp"
+				"core/build/*_editor*/EngineCoreBinding.so.stamp"
 			]
 		},
 		{

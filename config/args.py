@@ -161,6 +161,24 @@ class Args:
             help="Regenerate the build files before building the project.",
         )
 
+        parser.add_argument(
+            "-g",
+            "--generator",
+            type=str,
+            choices=CPP_GENERATORS,
+            default="msvc" if PLATFORM_IS_WINDOWS else "unix",
+            help='The CMake generator to use (unix, mingw, msvc). "msvc" default for Windows and "unix" default for others.',
+        )
+
+        parser.add_argument(
+            "-s",
+            "--sections",
+            nargs="+",
+            type=str,
+            default=[],
+            help="Additional configuration sections to include.",
+        )
+
     @property
     def verbose(self) -> bool:
         return self.args.verbose
@@ -173,6 +191,8 @@ class Args:
         """
         Process the command line arguments and execute the appropriate actions.
         """
+        command_logger.debug(f"Parsed arguments: {self.args}")
+
         if self.args.command == "run":
             if self.settings.is_python_project(self.args.project):
                 python_project = self.settings.get_python_project(self.args.project)
@@ -181,7 +201,7 @@ class Args:
                 command_logger.debug(f"Running {self.args.project}...")
                 if python_project.preRun is not None:
                     command_logger.debug(
-                        f"Running pre-run command for {self.args.project}..."
+                        f"Running pre-run command for {self.args.project}: {python_project.preRun.command}"
                     )
                     run_command(
                         python_project.preRun.command,
