@@ -10,13 +10,17 @@ class Signal:
         self._listeners: list[Callable[..., Any]] = []
         self._signals: list["Signal"] = []
 
-    def connect(self, listener: Callable[..., Any]) -> None:
+    def connect(self, listener: Callable[..., Any], autorun: bool = False) -> None:
         """
         Connect a listener to the signal.
 
         :param listener: The listener to connect.
+        :param autorun: If True, the listener will be called immediately upon connection.
         """
         self._listeners.append(listener)
+
+        if autorun:
+            listener()
 
     def attach(self, signal: "Signal") -> None:
         """

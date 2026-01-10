@@ -29,7 +29,7 @@ void ConsoleHandler::Process(const LogRecord& record)
 		NTT_UNREACHABLE();
 	}
 
-	ntt::Console::printf("%s", record.message.c_str());
+	ntt::Console::printf("%s", record.finalMessage.c_str());
 }
 
 } // namespace ntt

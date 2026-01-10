@@ -40,6 +40,7 @@ struct NTT_BINDING LogRecord
 	String		  file;
 	int			  line;
 	LogTagMaskBit tag;
+	String		  finalMessage;
 };
 
 enum NTT_BINDING LogHandlerType : u8
@@ -50,6 +51,9 @@ enum NTT_BINDING LogHandlerType : u8
 	LOG_HANDLER_TYPE_EDITOR	 = NTT_BIT(3),
 	LOG_HANDLER_TYPE_COUNT NTT_HIDDEN
 };
+
+const char* NTT_BINDING convertLoggerLevelToString(LogLevel level);
+const char* NTT_BINDING convertLoggerTagToString(LogTagMaskBit tag);
 
 typedef NTT_BINDING u8 LogHandlerTypes;
 

@@ -35,6 +35,8 @@ def main():
     window.showMaximized()
     app.exec()
 
+    Logger.Release()
+
 
 if __name__ == "__main__":
     main()

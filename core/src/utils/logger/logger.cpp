@@ -40,9 +40,7 @@ void Logger::Setup(LogLevel level, const char* format, LogHandlerTypes types, u3
 	m_format = format;
 }
 
-static const char* convertLoggerLevelToString(LogLevel level);
-static const char* convertLoggerTagToString(LogTagMaskBit tag);
-static void		   truncateString(const String& input, char* output, size_t maxLength);
+static void truncateString(const String& input, char* output, size_t maxLength);
 
 void Logger::Log(LogLevel level, LogTagMaskBit tag, const char* message, const char* file, u8 line)
 {
@@ -52,10 +50,11 @@ void Logger::Log(LogLevel level, LogTagMaskBit tag, const char* message, const c
 	}
 
 	LogRecord record;
-	record.level = level;
-	record.file	 = file;
-	record.line	 = line;
-	record.tag	 = tag;
+	record.level   = level;
+	record.message = String(message);
+	record.file	   = file;
+	record.line	   = line;
+	record.tag	   = tag;
 
 	if (!(tag & m_tagMask))
 	{
@@ -72,56 +71,12 @@ void Logger::Log(LogLevel level, LogTagMaskBit tag, const char* message, const c
 	char messageBuffer[LOGGER_BUFFER_SIZE];
 	std::memset(messageBuffer, 0, LOGGER_BUFFER_SIZE);
 	std::sprintf(messageBuffer, "[%7s] - [%7s] - %20s:%-4d - %s", tagStr, levelStr, finalFilename, line, message);
-	record.message = String(messageBuffer);
+	record.finalMessage = String(messageBuffer);
 
 	for (auto& handler : m_handlers)
 	{
 		handler->Process(record);
 	}
-}
-
-static const char* convertLoggerLevelToString(LogLevel level)
-{
-	switch (level)
-	{
-	case LOG_LEVEL_TRACE:
-		return "TRACE";
-	case LOG_LEVEL_DEBUG:
-		return "DEBUG";
-	case LOG_LEVEL_INFO:
-		return "INFO";
-	case LOG_LEVEL_WARN:
-		return "WARN";
-	case LOG_LEVEL_ERROR:
-		return "ERROR";
-	case LOG_LEVEL_FATAL:
-		return "FATAL";
-
-	case LOG_LEVEL_COUNT:
-		break;
-	}
-
-	NTT_UNREACHABLE();
-	return "";
-}
-
-static const char* convertLoggerTagToString(LogTagMaskBit tag)
-{
-	switch (tag)
-	{
-	case LOG_TAG_MASK_SYSTEM:
-		return "SYSTEM";
-	case LOG_TAG_MASK_RESOURCE:
-		return "RESOURCE";
-		// Add more tags here
-		// Add more tags here
-
-	case LOG_TAG_MASK_ALL:
-		return "ALL";
-	}
-
-	NTT_UNREACHABLE();
-	return "UNKNOWN";
 }
 
 static void truncateString(const String& input, char* output, size_t maxLength)

@@ -1,0 +1,7 @@
+{% import "pyi/common.j2" as pyi_common %}
+
+{% for function in parser.Functions-%}
+{% if "binding" in function.annotations-%}
+{{ pyi_common.print_function(function) }}
+{% endif -%}
+{%- endfor %}

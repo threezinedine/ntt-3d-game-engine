@@ -61,3 +61,13 @@ def test_signal_emit_with_circular_reference():
     mock_listener1.assert_called_once_with("test")
     mock_listener2.assert_called_once_with("test")
     mock_listener3.assert_called_once_with("test")
+
+
+def test_signal_attach_with_autorun_limit():
+    signal = Signal()
+
+    mock_listener = MagicMock()
+
+    signal.connect(mock_listener, True)
+
+    mock_listener.assert_called_once()

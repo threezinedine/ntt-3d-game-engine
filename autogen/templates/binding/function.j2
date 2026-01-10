@@ -1,0 +1,5 @@
+{% for function in parser.Functions-%}
+{% if "binding" in function.annotations-%}
+m.def("{{function.name}}", &{{function.name}});
+{% endif -%}
+{%- endfor %}

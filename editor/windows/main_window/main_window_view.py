@@ -9,8 +9,6 @@ from di import *
 from .main_window_view_model import EditorMainWindowViewModel
 from .widgets import *
 
-from Engine import *
-
 
 @as_singleton
 @as_dependencies(EditorMainWindowViewModel)
@@ -62,5 +60,4 @@ class EditorMainWindow(QMainWindow):
         if event.key() == Qt.Key.Key_Escape:
             self.close()
 
-        Logger.Release()
         return super().keyPressEvent(event)

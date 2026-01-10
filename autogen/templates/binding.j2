@@ -10,6 +10,7 @@ PYBIND11_MODULE(EngineCoreBinding, m)
 
 // clang-format off
 {% include "binding/enum.j2" %}
+{% include "binding/function.j2" %}
 {% include "binding/struct.j2" %}
 {% include "binding/class.j2" %}
 // clang-format on
