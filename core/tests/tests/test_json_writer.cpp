@@ -120,3 +120,33 @@ TEST(TestJsonWriter, NestedStructs)
 		EXPECT_EQ(originalNested.versionList[i].patch, nested.versionList[i].patch);
 	}
 }
+
+TEST(TestJsonWriter, GlmType)
+{
+	GlmTest originalGlm;
+	originalGlm.position = Vec2(1.0f, 2.0f);
+
+	Json	json	= GlmTestToJson(originalGlm);
+	GlmTest glmTest = GlmTestFromJson(json);
+
+	EXPECT_EQ(originalGlm.position.x, glmTest.position.x);
+	EXPECT_EQ(originalGlm.position.y, glmTest.position.y);
+}
+
+TEST(TestJsonWriter, GlmTypeDefaultValue)
+{
+	GlmTest originalGlm;
+	originalGlm.position = Vec2(0.0f, 1.0f); // Default value
+
+	Json json = GlmTestToJson(originalGlm);
+	EXPECT_FALSE(json.contains("position")); // Should be skipped
+}
+
+TEST(TestJsonWriter, MissingGlmType)
+{
+	Json	json	= Json::parse(R"({})");
+	GlmTest glmTest = GlmTestFromJson(json);
+
+	EXPECT_EQ(glmTest.position.x, 0.0f);
+	EXPECT_EQ(glmTest.position.y, 1.0f);
+}

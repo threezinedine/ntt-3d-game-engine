@@ -140,6 +140,8 @@ class Parser:
             if typedef.underlying_type in self.PrimitiveTypes:
                 self.PrimitiveTypes.append(typedef.name)
 
+        self.PrimitiveTypes.extend(["Vec2", "Vec3", "Vec4", "IVec2", "IVec3", "IVec4"])
+
     def __repr__(self) -> str:
         return f"""
 <Parser

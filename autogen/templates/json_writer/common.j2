@@ -24,7 +24,7 @@ for (const auto& item : json["{{ get_json_field_name(field) }}"]) {
 {%-if is_array_type(field.type) -%}
 {{ from_json_array_field(parser, struct, field) }}
 {%-elif field.type in parser.PrimitiveTypes-%}
-obj.{{ field.name }} = json["{{ get_json_field_name(field) }}"].get<{{ field.type }}>();
+obj.{{ field.name }} = {{ field.type }}FromJson(json["{{ get_json_field_name(field) }}"]);
 {%-elif field.type in parser.EnumTypes-%}
 obj.{{ field.name }} = static_cast<{{ field.type }}>(json["{{ get_json_field_name(field) }}"].get<u32>());
 {%-elif field.type in parser.JsonStructTypes-%}
@@ -48,7 +48,7 @@ for (const auto& item : obj.{{ field.name }}) {
 {%-if is_array_type(field.type) -%}
 {{ to_json_array_field(parser, struct, field) }}
 {%-elif field.type in parser.PrimitiveTypes-%}
-json["{{ get_json_field_name(field) }}"] = obj.{{ field.name }};
+json["{{ get_json_field_name(field) }}"] = {{ field.type}}ToJson(obj.{{ field.name }});
 {%-elif field.type in parser.EnumTypes-%}
 json["{{ get_json_field_name(field) }}"] = static_cast<u32>(obj.{{ field.name }});
 {%-elif field.type in parser.JsonStructTypes-%}
