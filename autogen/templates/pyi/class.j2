@@ -5,7 +5,7 @@
 class {{cls.name}}:
     {% for method in cls.methods-%}
     {% if "binding" in method.annotations-%}
-    {% if method.is_static-%}
+    {% if method.is_static or "singleton" in cls.annotations -%}
     @staticmethod
     {{ pyi_common.print_function(method) }}
     {% else-%}

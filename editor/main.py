@@ -17,8 +17,17 @@ def main():
 
     if parser.parse_args().verbose:
         editor_logger.setLevel(logging.DEBUG)
+        level = LOG_LEVEL_DEBUG
     else:
         editor_logger.setLevel(logging.INFO)
+        level = LOG_LEVEL_INFO
+
+    Logger.Setup(
+        level,
+        "",
+        LOG_HANDLER_TYPE_EDITOR,
+        LOG_TAG_MASK_ALL,
+    )
 
     app = QApplication([])
     window = di_get(EditorMainWindow)

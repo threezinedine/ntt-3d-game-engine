@@ -5,3 +5,15 @@
 .def("{{method.name}}", &{{cls.name}}::{{method.name}})
 {%- endif-%}
 {%- endmacro %}
+
+{% macro print_method_arguments(method)-%}
+{%- for argument in method.arguments -%}
+{{ argument.type }} {{ argument.name }}{% if not loop.last %}, {% endif %}
+{%- endfor -%}
+{%-endmacro%}
+
+{% macro print_singleton_method(cls, method) -%}
+.def_static("{{method.name}}", []({{ print_method_arguments(method) }}) {
+    return {{cls.name}}::GetInstance()->{{method.name}}({{ method.arguments | map(attribute='name') | join(', ') }});
+})
+{%-endmacro %}

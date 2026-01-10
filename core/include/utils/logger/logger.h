@@ -34,12 +34,24 @@ public:
 	 */
 	void Log(LogLevel level, LogTagMaskBit tag, const char* message, const char* file, u8 line) NTT_BINDING;
 
+	/**
+	 * The interface whereas the editor can be notified of log messages from the engine.
+	 * @param callback The callback function to be called for each log message.
+	 */
+	inline void SetupEditorCallback(LogEditorCallbackFn callback) NTT_BINDING;
+
 private:
 	Array<Scope<Handler>> m_handlers;
 	LogLevel			  m_logLevel;
 	u32					  m_tagMask;
 	const char*			  m_format;
+	LogEditorCallbackFn	  m_editorCallback;
 };
+
+inline void Logger::SetupEditorCallback(LogEditorCallbackFn callback)
+{
+	m_editorCallback = callback;
+}
 
 } // namespace ntt
 

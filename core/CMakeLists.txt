@@ -142,11 +142,11 @@ if (NTT_ENGINE_BINDING)
         OUTPUT ${AUTOGEN_STAMP}
         COMMAND cd ${BASE_DIRECTORY} && ${PYTHON_EXECUTABLE} helper.py run autogen
         COMMAND ${CMAKE_COMMAND} -E touch ${AUTOGEN_STAMP}
-        DEPENDS ${HEADER_FILES}
+        DEPENDS ${HEADER_FILES} ${PROJECT_NAME}
         COMMENT "Running autogen script"
     )
 
-    add_custom_target(run_autogen ALL DEPENDS ${HEADER_FILES} ${AUTOGEN_STAMP})
+    add_custom_target(run_autogen ALL DEPENDS ${HEADER_FILES} ${AUTOGEN_STAMP} ${PROJECT_NAME})
 endif()
 
 if (NTT_ENGINE_CORE_TESTS_ENABLE)

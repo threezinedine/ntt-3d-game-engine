@@ -1,4 +1,5 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/functional.h>
 #include <engine/engine.h>
 
 namespace py = pybind11;
@@ -7,8 +8,10 @@ using namespace ntt;
 PYBIND11_MODULE(EngineCoreBinding, m)
 {
 
+// clang-format off
 {% include "binding/enum.j2" %}
-
+{% include "binding/struct.j2" %}
 {% include "binding/class.j2" %}
+// clang-format on
 
 }

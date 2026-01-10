@@ -1,5 +1,5 @@
 {% for typedef in parser.Typedefs-%}
-{% if "binding" in typedef.annotations-%}
-{{ typedef.name }}: TypeAlias = {{ typedef.underlying_type }}
+{% if not "hidden" in typedef.annotations and typedef.namespace == "ntt" -%}
+{{ typedef.name }}: TypeAlias = {{ to_pyi_type(typedef.underlying_type) }}
 {% endif-%}
 {% endfor-%}

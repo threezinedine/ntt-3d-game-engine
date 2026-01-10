@@ -22,6 +22,7 @@
 			"dependencies": [
 				"core/include/**/*.h",
 				"core/include/**/**/*.h",
+				"autogen/parser/*.py",
 				"autogen/templates/*.j2",
 				"autogen/templates/**/*.j2",
 				"autogen/templates/**/**/*.j2"
@@ -35,6 +36,7 @@
 			"dependencies": [
 				"core/include/**/*.h",
 				"core/include/**/**/*.h",
+				"autogen/parser/*.py",
 				"autogen/templates/*.j2",
 				"autogen/templates/**/*.j2",
 				"autogen/templates/**/**/*.j2"

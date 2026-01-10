@@ -102,6 +102,14 @@ def _generate_binding(binding: Binding) -> bool:
         if key.isupper():
             const_variables[key] = value
 
+    env.globals.update(  # type: ignore
+        {
+            "to_pyi_type": to_pyi_type,
+            "is_type_function_pointer": is_type_function_pointer,
+            "convert_function_pointer_type": convert_function_pointer_type,
+        }
+    )
+
     output_content = template.render(
         **const_variables,
         INPUT=binding.input,

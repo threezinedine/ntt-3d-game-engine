@@ -25,13 +25,13 @@ class CommandLoggerHandler(logging.StreamHandler[TextIO]):
         print(f"{color}{self.formatter.format(record)}{Fore.RESET}")
 
 
-class Logger:
+class EditorLogger:
     loggers: dict[str, logging.Logger] = {}
 
     @staticmethod
     def get_logger(name: str) -> logging.Logger:
-        if name in Logger.loggers:
-            return Logger.loggers[name]
+        if name in EditorLogger.loggers:
+            return EditorLogger.loggers[name]
 
         logger = logging.getLogger(name)
 
@@ -43,9 +43,9 @@ class Logger:
 
         logger.addHandler(handler)
 
-        Logger.loggers[name] = logger
+        EditorLogger.loggers[name] = logger
 
         return logger
 
 
-editor_logger = Logger.get_logger("EDITOR")
+editor_logger = EditorLogger.get_logger("EDITOR")

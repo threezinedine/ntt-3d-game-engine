@@ -1,7 +1,7 @@
 from log import autogen_logger
 import clang.cindex as cindex  # type: ignore
 from .py_enum import PyEnum
-from .py_typedef import PyTypedef
+from .py_typedef import PyTypeAlias, PyTypedef
 from .py_variable import PyVariable
 from .py_union import PyUnion
 from .py_function import PyFunction
@@ -16,7 +16,7 @@ class Parser:
 
         self.tu: cindex.TranslationUnit | None = None
         self.Enums: list[PyEnum] = []
-        self.Typedefs: list[PyTypedef] = []
+        self.Typedefs: list[PyTypedef | PyTypeAlias] = []
         self.Variables: list[PyVariable] = []
         self.Unions: list[PyUnion] = []
         self.Functions: list[PyFunction] = []
@@ -74,6 +74,9 @@ class Parser:
             elif cursor.kind == cindex.CursorKind.CLASS_DECL:
                 py_class = PyClass(self.tu, cursor)
                 self.Classes.append(py_class)
+            elif cursor.kind == cindex.CursorKind.TYPE_ALIAS_DECL:
+                py_type_alias = PyTypeAlias(self.tu, cursor)
+                self.Typedefs.append(py_type_alias)
             elif cursor.kind == cindex.CursorKind.NAMESPACE:
                 namespace = cursor.spelling
                 for child in cursor.get_children():
@@ -105,6 +108,10 @@ class Parser:
                         py_class = PyClass(self.tu, child)
                         py_class.namespace = namespace
                         self.Classes.append(py_class)
+                    elif child.kind == cindex.CursorKind.TYPE_ALIAS_DECL:
+                        py_type_alias = PyTypeAlias(self.tu, child)
+                        py_type_alias.namespace = namespace
+                        self.Typedefs.append(py_type_alias)
 
     def __repr__(self) -> str:
         return f"""

@@ -33,11 +33,11 @@ enum NTT_BINDING LogTagMaskBit : u32
 /**
  * The whole information of the message.
  */
-struct LogRecord
+struct NTT_BINDING LogRecord
 {
 	LogLevel	  level;
-	char		  message[LOGGER_BUFFER_SIZE];
-	const char*	  file;
+	String		  message;
+	String		  file;
 	int			  line;
 	LogTagMaskBit tag;
 };
@@ -47,9 +47,12 @@ enum NTT_BINDING LogHandlerType : u8
 	LOG_HANDLER_TYPE_CONSOLE = NTT_BIT(0),
 	LOG_HANDLER_TYPE_FILE	 = NTT_BIT(1),
 	LOG_HANDLER_TYPE_NETWORK = NTT_BIT(2),
+	LOG_HANDLER_TYPE_EDITOR	 = NTT_BIT(3),
 	LOG_HANDLER_TYPE_COUNT NTT_HIDDEN
 };
 
 typedef NTT_BINDING u8 LogHandlerTypes;
+
+using LogEditorCallbackFn = std::function<void(const LogRecord& record)>;
 
 } // namespace ntt

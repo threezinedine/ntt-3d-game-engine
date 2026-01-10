@@ -5,7 +5,7 @@ from di import *
 from .log_widget_view_model import LogWidgetViewModel
 
 
-@as_transient
+@as_singleton
 @as_dependencies(LogWidgetViewModel)
 class LogWidget(QWidget):
     def __init__(

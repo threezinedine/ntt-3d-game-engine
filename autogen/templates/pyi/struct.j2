@@ -1,0 +1,12 @@
+{% import "pyi/common.j2" as pyi_common %}
+
+{% for struct in parser.Structs-%}
+{% if "binding" in struct.annotations-%}
+class {{struct.name}}:
+    {% for field in struct.fields -%}
+    {% if "hidden" not in field.annotations-%}
+    {{field.name}}: {{ to_pyi_type(field.type) }}
+    {% endif-%}
+    {% endfor-%}
+{%- endif %}
+{% endfor -%}

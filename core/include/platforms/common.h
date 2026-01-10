@@ -1,6 +1,7 @@
 #pragma once
 #include <cstddef>
 #include <cstring>
+#include <functional>
 #include <glm/glm.hpp>
 #include <memory>
 #include <string>
@@ -140,14 +141,8 @@ typedef glm::mat4 Mat4;
 
 #define NTT_SINGLETON_DECLARE(class)                                                                                   \
 public:                                                                                                                \
-	static Scope<class>& GetInstance()                                                                                 \
-	{                                                                                                                  \
-		if (s_instance == NTT_NULLPTR)                                                                                 \
-		{                                                                                                              \
-			s_instance = CreateScope<class>();                                                                         \
-		}                                                                                                              \
-		return s_instance;                                                                                             \
-	}                                                                                                                  \
+	static Scope<class>& GetInstance();                                                                                \
+	static void			 Release() NTT_BINDING;                                                                        \
 	class();                                                                                                           \
 	NTT_DELETE_COPY(class)                                                                                             \
 	NTT_DELETE_MOVE(class)                                                                                             \
@@ -156,4 +151,18 @@ public:                                                                         
 private:                                                                                                               \
 	static Scope<class> s_instance;
 
-#define NTT_SINGLETON_DEFINE(class) Scope<class> class ::s_instance = NTT_NULLPTR;
+#define NTT_SINGLETON_DEFINE(class)                                                                                    \
+	Scope<class> class ::s_instance = NTT_NULLPTR;                                                                     \
+	Scope<class>& class ::GetInstance()                                                                                \
+	{                                                                                                                  \
+		if (s_instance == NTT_NULLPTR)                                                                                 \
+		{                                                                                                              \
+			s_instance = CreateScope<class>();                                                                         \
+		}                                                                                                              \
+		return s_instance;                                                                                             \
+	}                                                                                                                  \
+	void class ::Release()                                                                                             \
+	{                                                                                                                  \
+		NTT_ASSERT(s_instance != NTT_NULLPTR);                                                                         \
+		s_instance.reset();                                                                                            \
+	}

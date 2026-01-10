@@ -1,5 +1,6 @@
 #include "utils/logger/logger.h"
 #include "console_handler.h"
+#include "editor_handler.h"
 #include <filesystem>
 
 #define LOG_LEVEL_TAG_STRING_MAX_LENGTH 10
@@ -12,6 +13,8 @@ NTT_SINGLETON_DEFINE(Logger)
 Logger::Logger()
 	: m_logLevel(LOG_LEVEL_INFO)
 	, m_tagMask(LOG_TAG_MASK_ALL)
+	, m_format(nullptr)
+	, m_editorCallback(nullptr)
 {
 }
 
@@ -27,6 +30,11 @@ void Logger::Setup(LogLevel level, const char* format, LogHandlerTypes types, u3
 	if (types & LOG_HANDLER_TYPE_CONSOLE)
 	{
 		m_handlers.push_back(CreateScope<ConsoleHandler>());
+	}
+
+	if (types & LOG_HANDLER_TYPE_EDITOR)
+	{
+		m_handlers.push_back(CreateScope<EditorLogHandler>(m_editorCallback));
 	}
 
 	m_format = format;
@@ -61,8 +69,10 @@ void Logger::Log(LogLevel level, LogTagMaskBit tag, const char* message, const c
 	char   finalFilename[LOG_FILENAME_MAX_LENGTH + 1];
 	truncateString(filename, finalFilename, LOG_FILENAME_MAX_LENGTH);
 
-	std::memset(record.message, 0, LOGGER_BUFFER_SIZE);
-	std::sprintf(record.message, "[%7s] - [%7s] - %20s:%-4d - %s", tagStr, levelStr, finalFilename, line, message);
+	char messageBuffer[LOGGER_BUFFER_SIZE];
+	std::memset(messageBuffer, 0, LOGGER_BUFFER_SIZE);
+	std::sprintf(messageBuffer, "[%7s] - [%7s] - %20s:%-4d - %s", tagStr, levelStr, finalFilename, line, message);
+	record.message = messageBuffer;
 
 	for (auto& handler : m_handlers)
 	{

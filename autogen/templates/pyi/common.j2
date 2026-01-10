@@ -1,26 +1,12 @@
-{% macro convert_type(type)-%}
-{%- if type in ["int", "char", "short", "long", "unsigned int", "unsigned char", "unsigned short", "unsigned long"] -%}
-int
-{%- elif type in ["float", "double"] -%}
-float
-{%- elif type == "bool" -%}
-bool
-{%- elif type in ["std::string", "const char *"] -%}
-str
-{%- else -%}
-{{ type }}
-{%- endif -%}
-{%- endmacro %}
-
 {% macro print_argument(argument)-%}
-{{argument.name}}: {{ convert_type(argument.type) }}{% if argument.default_value != None %} = {{argument.default_value}}{% endif %}
+{{argument.name}}: {{ to_pyi_type(argument.type) }}{% if argument.default_value != None %} = {{argument.default_value}}{% endif %}
 {%- endmacro %}
 
 {% macro print_return_type(function)-%}
 {%- if function.return_type == "void" -%}
 None
 {%- else -%}
-{{ convert_type(function.return_type) }}
+{{ to_pyi_type(function.return_type) }}
 {%- endif -%}
 {%- endmacro %}
 

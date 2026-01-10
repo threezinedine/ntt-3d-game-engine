@@ -14,7 +14,10 @@ i64: TypeAlias = int
 f32: TypeAlias = float
 f64: TypeAlias = float
 
+String: TypeAlias = str
+
 {% include "pyi/typedef.j2" %}
 
 {% include "pyi/enum.j2" %}
+{% include "pyi/struct.j2" %}
 {% include "pyi/class.j2" %}

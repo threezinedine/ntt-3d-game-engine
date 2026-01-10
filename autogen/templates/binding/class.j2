@@ -5,7 +5,11 @@
 py::class_<{{cls.name}}>(m, "{{cls.name}}")
     {% for method in cls.methods-%}
     {% if "binding" in method.annotations-%}
+    {% if "singleton" in cls.annotations and not method.is_static %}
+    {{ class_common.print_singleton_method(cls, method) }}
+    {% else -%}
     {{ class_common.print_method(cls, method) }}
+    {% endif %}
     {% endif-%}
     {% endfor-%};
 {%- endif %}

@@ -14,3 +14,11 @@ class PyTypedef:
 
     def __repr__(self) -> str:
         return f"<TypeDef name={self.name} underlying_type={self.underlying_type}>"
+
+
+class PyTypeAlias(PyTypedef):
+    def __init__(self, tu: cindex.TranslationUnit, cursor: cindex.Cursor) -> None:
+        super().__init__(tu, cursor)
+
+    def __repr__(self) -> str:
+        return f"<TypeAlias name={self.name} underlying_type={self.underlying_type}>"
