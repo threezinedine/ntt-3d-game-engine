@@ -37,7 +37,7 @@ class Logger:
 
         handler = CommandLoggerHandler()
         formatter = logging.Formatter(
-            "[%(name)7s] - [%(levelname)7s] - %(filename)-20s:%(lineno)-4d - %(message)s"
+            "[%(name)7s] - [%(levelname)7s] - %(filename)20s:%(lineno)-4d - %(message)s"
         )
         handler.setFormatter(formatter)
 

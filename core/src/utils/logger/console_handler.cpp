@@ -25,11 +25,11 @@ void ConsoleHandler::Process(const LogRecord& record)
 		ntt::Console::setColor(CONSOLE_COLOR_MAGENTA);
 		break;
 
-	default:
+	case LOG_LEVEL_COUNT:
 		NTT_UNREACHABLE();
 	}
 
-	ntt::Console::printf("%s\n", record.message);
+	ntt::Console::printf("%s", record.message);
 }
 
 } // namespace ntt

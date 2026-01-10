@@ -1,11 +1,17 @@
 #include "utils/logger/logger.h"
 #include "console_handler.h"
+#include <filesystem>
+
+#define LOG_LEVEL_TAG_STRING_MAX_LENGTH 10
+#define LOG_LEVEL_STRING_MAX_LENGTH		7
+#define LOG_FILENAME_MAX_LENGTH			20
 
 namespace ntt {
 NTT_SINGLETON_DEFINE(Logger)
 
 Logger::Logger()
 	: m_logLevel(LOG_LEVEL_INFO)
+	, m_tagMask(LOG_TAG_MASK_ALL)
 {
 }
 
@@ -13,9 +19,10 @@ Logger::~Logger()
 {
 }
 
-void Logger::Setup(LogLevel level, const char* format, LogHandlerTypes types)
+void Logger::Setup(LogLevel level, const char* format, LogHandlerTypes types, u32 tagMask)
 {
 	m_logLevel = level;
+	m_tagMask  = tagMask;
 
 	if (types & LOG_HANDLER_TYPE_CONSOLE)
 	{
@@ -25,7 +32,11 @@ void Logger::Setup(LogLevel level, const char* format, LogHandlerTypes types)
 	m_format = format;
 }
 
-void Logger::Log(LogLevel level, const char* message, const char* file, u8 line)
+static const char* convertLoggerLevelToString(LogLevel level);
+static const char* convertLoggerTagToString(LogTagMaskBit tag);
+static void		   truncateString(const String& input, char* output, size_t maxLength);
+
+void Logger::Log(LogLevel level, LogTagMaskBit tag, const char* message, const char* file, u8 line)
 {
 	if (level < m_logLevel)
 	{
@@ -33,16 +44,91 @@ void Logger::Log(LogLevel level, const char* message, const char* file, u8 line)
 	}
 
 	LogRecord record;
-	record.level   = level;
-	record.message = message;
-	record.file	   = file;
-	record.line	   = line;
+	record.level = level;
+	record.file	 = file;
+	record.line	 = line;
+	record.tag	 = tag;
 
-	// Handle message here
+	if (!(tag & m_tagMask))
+	{
+		return;
+	}
+
+	const char* levelStr = convertLoggerLevelToString(level);
+	const char* tagStr	 = convertLoggerTagToString(tag);
+
+	String filename = std::filesystem::path(file).filename().string();
+	char   finalFilename[LOG_FILENAME_MAX_LENGTH + 1];
+	truncateString(filename, finalFilename, LOG_FILENAME_MAX_LENGTH);
+
+	std::memset(record.message, 0, LOGGER_BUFFER_SIZE);
+	std::sprintf(record.message, "[%7s] - [%7s] - %20s:%-4d - %s", tagStr, levelStr, finalFilename, line, message);
 
 	for (auto& handler : m_handlers)
 	{
 		handler->Process(record);
+	}
+}
+
+static const char* convertLoggerLevelToString(LogLevel level)
+{
+	switch (level)
+	{
+	case LOG_LEVEL_TRACE:
+		return "TRACE";
+	case LOG_LEVEL_DEBUG:
+		return "DEBUG";
+	case LOG_LEVEL_INFO:
+		return "INFO";
+	case LOG_LEVEL_WARN:
+		return "WARN";
+	case LOG_LEVEL_ERROR:
+		return "ERROR";
+	case LOG_LEVEL_FATAL:
+		return "FATAL";
+
+	case LOG_LEVEL_COUNT:
+		break;
+	}
+
+	NTT_UNREACHABLE();
+	return "";
+}
+
+static const char* convertLoggerTagToString(LogTagMaskBit tag)
+{
+	switch (tag)
+	{
+	case LOG_TAG_MASK_SYSTEM:
+		return "SYSTEM";
+	case LOG_TAG_MASK_RESOURCE:
+		return "RESOURCE";
+		// Add more tags here
+		// Add more tags here
+
+	case LOG_TAG_MASK_ALL:
+		return "ALL";
+	}
+
+	NTT_UNREACHABLE();
+	return "UNKNOWN";
+}
+
+static void truncateString(const String& input, char* output, size_t maxLength)
+{
+	std::string etc		  = "...";
+	u32			etcLength = static_cast<u32>(etc.length());
+
+	std::memset(output, 0, maxLength + 1);
+
+	if (input.length() <= maxLength)
+	{
+		std::strncpy(output, input.c_str(), maxLength);
+	}
+	else
+	{
+		std::strncpy(output, input.c_str(), maxLength - etcLength);
+		std::strncpy(output + maxLength - etcLength, etc.c_str(), etcLength);
 	}
 }
 

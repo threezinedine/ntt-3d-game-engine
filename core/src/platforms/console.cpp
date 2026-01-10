@@ -38,8 +38,9 @@ void Console::setColor(ConsoleColor color)
 		std::printf("\033[39m");
 		break;
 
-	default:
+	case CONSOLE_COLOR_COUNT:
 		NTT_UNREACHABLE();
+		break;
 	}
 }
 

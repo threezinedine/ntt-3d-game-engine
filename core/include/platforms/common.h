@@ -1,5 +1,6 @@
 #pragma once
 #include <cstddef>
+#include <cstring>
 #include <memory>
 #include <string>
 #include <vector>
@@ -52,6 +53,8 @@ using String = std::string;
 #define NTT_KB 1024ULL
 #define NTT_MB 1024ULL * NTT_KB
 #define NTT_GB 1024ULL * NTT_MB
+
+#define NTT_BIT(n) (1ULL << (n))
 
 #define NTT_PI	3.14159265358979323846f
 #define NTT_ESP 1e-5f
