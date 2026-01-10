@@ -11,6 +11,7 @@ int main()
 	NTT_SYSTEM_LOG_INFO("Loading configuration files");
 
 	InitializeWindowingSystem();
+	Input::Initialize();
 
 	Window window("NTT Engine Window", 1280, 720);
 
@@ -21,6 +22,12 @@ int main()
 	while (window.IsOpen())
 	{
 		window.PollEvents();
+
+		if (Input::IsKeyPressed(KEY_CODE_ESCAPE))
+		{
+			NTT_SYSTEM_LOG_INFO("Escape key pressed. Closing the window.");
+			break;
+		}
 
 		Renderer::BeginFrame();
 
@@ -33,6 +40,7 @@ int main()
 	Renderer::Shutdown();
 	window.Shutdown();
 
+	Input::Shutdown();
 	ShutdownWindowingSystem();
 
 	return 0;
