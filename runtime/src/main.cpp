@@ -21,6 +21,11 @@ int main()
 	while (window.IsOpen())
 	{
 		window.PollEvents();
+
+		Renderer::BeginFrame();
+
+		Renderer::EndFrame();
+		Renderer::PresentFrame();
 	}
 
 	NTT_SYSTEM_LOG_INFO("Shutting down application");

@@ -7,7 +7,8 @@
 #include "graphics/renderer.h"
 
 namespace ntt {
-b8 Renderer::m_isInitialized = NTT_FALSE;
+b8			 Renderer::m_isInitialized = NTT_FALSE;
+Ref<Surface> Renderer::s_pSurface	   = nullptr;
 
 void Renderer::Initialize()
 {
@@ -20,11 +21,31 @@ void Renderer::Initialize()
 	m_isInitialized = NTT_TRUE;
 }
 
-void Renderer::AttachSurface(Ref<Surface>& surface)
+void Renderer::AttachSurface(Ref<Surface>& pSurface)
 {
 	NTT_ASSERT(m_isInitialized);
-	surface->Bind();
+	s_pSurface = pSurface;
+	s_pSurface->Bind();
 	NTT_ASSERT(gladLoadGLLoader((GLADloadproc)glfwGetProcAddress));
+}
+
+void Renderer::BeginFrame()
+{
+	NTT_ASSERT(m_isInitialized);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+}
+
+void Renderer::EndFrame()
+{
+	NTT_ASSERT(m_isInitialized);
+	// Any end of frame operations can be added here
+}
+
+void Renderer::PresentFrame()
+{
+	NTT_ASSERT(m_isInitialized);
+	glfwSwapBuffers(s_pSurface->GetGLFWWindow());
 }
 
 void Renderer::Shutdown()
