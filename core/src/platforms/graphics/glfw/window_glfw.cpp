@@ -184,6 +184,12 @@ void Window::PollEvents()
 	}
 }
 
+void Window::Close()
+{
+	NTT_ASSERT(m_pSurface != nullptr);
+	glfwSetWindowShouldClose(m_pSurface->GetGLFWWindow(), GLFW_TRUE);
+}
+
 void InitializeWindowingSystem()
 {
 	NTT_ASSERT(glfwInit());

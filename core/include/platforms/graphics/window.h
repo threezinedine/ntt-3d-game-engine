@@ -41,6 +41,11 @@ public:
 		return m_pSurface;
 	}
 
+	/**
+	 * Close the window programmatically.
+	 */
+	void Close();
+
 private:
 	u32	   m_width;
 	u32	   m_height;

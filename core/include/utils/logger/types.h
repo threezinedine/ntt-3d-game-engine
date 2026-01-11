@@ -23,11 +23,12 @@ enum NTT_BINDING LogLevel
  */
 enum NTT_BINDING LogTagMaskBit : u32
 {
-	LOG_TAG_MASK_SYSTEM	  = NTT_BIT(0), /// All utilities/core related messages
-	LOG_TAG_MASK_RESOURCE = NTT_BIT(1), /// Resource management related messages
+	LOG_TAG_MASK_SYSTEM		 = NTT_BIT(0), /// All utilities/core related messages
+	LOG_TAG_MASK_RESOURCE	 = NTT_BIT(1), /// Resource management related messages
+	LOG_TAG_MASK_APPLICATION = NTT_BIT(2), /// Application level messages
 	// Add more tags here
 	// Add more tags here
-	LOG_TAG_MASK_ALL	  = ~0u
+	LOG_TAG_MASK_ALL		 = ~0u
 };
 
 /**

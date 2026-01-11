@@ -13,15 +13,27 @@ EditorApplication::~EditorApplication()
 {
 }
 
-void EditorApplication::onStartImpl()
+void EditorApplication::startBeginImpl()
 {
 }
 
-void EditorApplication::onUpdateImpl(f32 deltaTime)
+void EditorApplication::startEndImpl()
 {
 }
 
-void EditorApplication::onShutdownImpl()
+void EditorApplication::updateBeginImpl(f32 deltaTime)
+{
+}
+
+void EditorApplication::updateEndImpl(f32 deltaTime)
+{
+}
+
+void EditorApplication::shutdownBeginImpl()
+{
+}
+
+void EditorApplication::shutdownEndImpl()
 {
 }
 

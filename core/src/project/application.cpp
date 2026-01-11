@@ -1,4 +1,6 @@
 #include "project/application.h"
+#include "graphics/graphics.h"
+#include "input/input.h"
 
 namespace ntt {
 
@@ -11,19 +13,40 @@ Application::~Application()
 {
 }
 
-void Application::OnStart()
+void Application::Start()
 {
-	onStartImpl();
+	NTT_APPLICATION_LOG_INFO("Starting application ...");
+
+	startBeginImpl();
+	Input::Initialize();
+
+	startEndImpl();
+
+	NTT_APPLICATION_LOG_INFO("Application started.");
 }
 
-void Application::OnUpdate(f32 deltaTime)
+void Application::Update(f32 deltaTime)
 {
-	onUpdateImpl(deltaTime);
+	updateBeginImpl(deltaTime);
+
+	Renderer::BeginFrame();
+
+	Renderer::EndFrame();
+	Renderer::PresentFrame();
+
+	updateEndImpl(deltaTime);
 }
 
-void Application::OnShutdown()
+void Application::Shutdown()
 {
-	onShutdownImpl();
+	NTT_APPLICATION_LOG_INFO("Shutting down application ...");
+
+	shutdownBeginImpl();
+
+	Input::Shutdown();
+	shutdownEndImpl();
+
+	NTT_APPLICATION_LOG_INFO("Application shut down.");
 }
 
 } // namespace ntt

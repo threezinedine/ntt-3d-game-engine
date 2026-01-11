@@ -34,6 +34,8 @@ const char* convertLoggerTagToString(LogTagMaskBit tag)
 		return "SYSTEM";
 	case LOG_TAG_MASK_RESOURCE:
 		return "RESOURCE";
+	case LOG_TAG_MASK_APPLICATION:
+		return "APP";
 		// Add more tags here
 		// Add more tags here
 
