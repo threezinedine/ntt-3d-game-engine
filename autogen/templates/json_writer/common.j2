@@ -63,7 +63,7 @@ Json {{ struct.name }}ToJson(const {{ struct.name }}& obj)
     {%- for field in struct.fields %}
     {% if "hidden" not in field.annotations-%}
     {% if "default_value" in field.annotations-%}
-    if (obj.{{ field.name }} != {{ field.annotations["default_value"] }}) 
+    if (!{{field.type}}IsEqual(obj.{{ field.name }}, {{ field.annotations["default_value"] }}))
     { 
         {{ to_json_field(parser, struct, field) }} 
     }

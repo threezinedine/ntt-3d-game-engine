@@ -3,9 +3,11 @@
 #include <cstring>
 #include <functional>
 #include <glm/glm.hpp>
+#include <map>
 #include <memory>
 #include <nlohmann/json.hpp>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 // =============== Typedef =============
@@ -50,9 +52,21 @@ constexpr Ref<T> CreateRef(Args&&... args)
 #if NTT_NO_ANALYZE
 template <typename T>
 using Array = std::vector<T>;
+
+template <typename K, typename V>
+using UnorderMap = std::unordered_map<K, V>;
+
+template <typename K, typename V>
+using Map = std::map<K, V>;
 #else
 template <typename T>
 class Array;
+
+template <typename K, typename V>
+class UnorderMap;
+
+template <typename K, typename V>
+class Map;
 #endif
 
 using String = std::string;
@@ -156,6 +170,10 @@ typedef nlohmann::json Json;
 #define NTT_DELETE_MOVE(class)                                                                                         \
 	class(class&&)			  = delete;                                                                                \
 	class& operator=(class&&) = delete;
+
+#define NTT_DEFINE_COPY(class)                                                                                         \
+	class(const class& other);                                                                                         \
+	class& operator=(const class& other);
 
 #define NTT_SINGLETON_DECLARE(class)                                                                                   \
 public:                                                                                                                \

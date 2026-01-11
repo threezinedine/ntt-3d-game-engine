@@ -1,4 +1,5 @@
 #pragma once
+#include "utils/id/id.h"
 #include <platforms/common.h>
 
 /**
@@ -8,7 +9,8 @@
 
 #define NTT_JSON_PREMIVE_TYPE(type)                                                                                    \
 	Json type##ToJson(const type& value);                                                                              \
-	type type##FromJson(const Json& json);
+	type type##FromJson(const Json& json);                                                                             \
+	b8	 type##IsEqual(const type& value, const type& defaultValue);
 
 NTT_JSON_PREMIVE_TYPE(u64)
 NTT_JSON_PREMIVE_TYPE(u32)
@@ -28,6 +30,10 @@ NTT_JSON_PREMIVE_TYPE(Vec4)
 NTT_JSON_PREMIVE_TYPE(IVec2)
 NTT_JSON_PREMIVE_TYPE(IVec3)
 NTT_JSON_PREMIVE_TYPE(IVec4)
+
+namespace ntt {
+NTT_JSON_PREMIVE_TYPE(ID);
+} // namespace ntt
 
 namespace ntt {
 NTT_JSON_DEFINE(TestVersion);
@@ -50,6 +56,7 @@ struct NTT_JSON TestSpectType
 	Array<i16> typeC;
 	String     typeD  NTT_DEFAULT_VALUE("default_string");
 	b8         typeE  NTT_DEFAULT_VALUE(true);
+	ntt::ID    typeF  NTT_DEFAULT_VALUE(ntt::INVALID_ID_RAW);
 	// clang-format on
 };
 

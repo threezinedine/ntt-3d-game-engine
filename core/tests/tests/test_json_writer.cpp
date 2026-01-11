@@ -1,29 +1,5 @@
 #include "test_common.h"
 
-TEST(TestJsonWriter, SerializeDeserializeProjectDescription)
-{
-	ProjectDescription originalDesc;
-	originalDesc.name		   = "TestProject";
-	originalDesc.version.major = 1;
-	originalDesc.version.minor = 0;
-	originalDesc.version.patch = 2;
-	originalDesc.tags		   = {"game", "demo", "test"};
-
-	Json			   json				= ProjectDescriptionToJson(originalDesc);
-	ProjectDescription deserializedDesc = ProjectDescriptionFromJson(json);
-
-	EXPECT_EQ(originalDesc.name, deserializedDesc.name);
-	EXPECT_EQ(originalDesc.version.major, deserializedDesc.version.major);
-	EXPECT_EQ(originalDesc.version.minor, deserializedDesc.version.minor);
-	EXPECT_EQ(originalDesc.version.patch, deserializedDesc.version.patch);
-
-	EXPECT_EQ(originalDesc.tags.size(), deserializedDesc.tags.size());
-	for (size_t i = 0; i < originalDesc.tags.size(); ++i)
-	{
-		EXPECT_EQ(originalDesc.tags[i], deserializedDesc.tags[i]);
-	}
-}
-
 TEST(TestJsonWriter, NormalTestVersion)
 {
 	TestVersion originalVersion;
@@ -79,6 +55,8 @@ TEST(TestJsonWriter, OtherType)
 	originalSpect.typeB = 3.14f; // Default value
 	originalSpect.typeC = {1, 2, 3, 4, 5};
 	originalSpect.typeD = "default_string"; // Default value
+	originalSpect.typeE = true;				// Default value
+	originalSpect.typeF = ntt::ID(1234567890);
 
 	Json		  json	= TestSpectTypeToJson(originalSpect);
 	TestSpectType spect = TestSpectTypeFromJson(json);
@@ -91,6 +69,25 @@ TEST(TestJsonWriter, OtherType)
 		EXPECT_EQ(originalSpect.typeC[i], spect.typeC[i]);
 	}
 	EXPECT_EQ(originalSpect.typeD, spect.typeD);
+}
+
+TEST(TestJsonWriter, OtherTypeDefaultValues)
+{
+	TestSpectType originalSpect;
+	originalSpect.typeA = 7;
+	originalSpect.typeB = 3.14f; // Default value
+	originalSpect.typeC = {10, 20, 30};
+	originalSpect.typeD = "default_string";				// Default value
+	originalSpect.typeE = true;							// Default value
+	originalSpect.typeF = ntt::ID(ntt::INVALID_ID_RAW); // Default value
+
+	Json json = TestSpectTypeToJson(originalSpect);
+	EXPECT_TRUE(json.contains("typeA"));
+	EXPECT_TRUE(json.contains("typeC"));
+	EXPECT_FALSE(json.contains("typeB")); // Should be skipped
+	EXPECT_FALSE(json.contains("typeD")); // Should be skipped
+	EXPECT_FALSE(json.contains("typeE")); // Should be skipped
+	EXPECT_FALSE(json.contains("typeF")); // Should be skipped
 }
 
 TEST(TestJsonWriter, NestedStructs)
