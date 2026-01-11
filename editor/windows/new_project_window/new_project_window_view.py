@@ -93,9 +93,10 @@ class NewProjectWindowView(QMainWindow):
         with open(self.viewModel.project_full_path, "w") as f:
             f.write(ProjectDescriptionToJsonString(desc))
 
-        di_get(ApplicationContext).application.LoadProject(
-            self.viewModel.project_full_path
-        )
+        appContext = di_get(ApplicationContext)
+        appContext.application.LoadProject(self.viewModel.project_full_path)
+        appContext.project_desc = desc
+        appContext.project_desc_signal.emit()
 
         self.hide()
 

@@ -12,7 +12,10 @@ def test_create_window(
     setup_engine: EngineSetup,
     qtbot: QtBot,
 ) -> None:
-    os.mkdir("/projects")
+    TEST_PROJECT_DIR = "/projects"
+    TEST_PROJECT_NAME = "TestProject"
+
+    os.mkdir(TEST_PROJECT_DIR)
 
     widget = di_get(EditorMainWindow)
     qtbot.addWidget(widget)
@@ -34,22 +37,30 @@ def test_create_window(
     assert newProjectWindow.isVisible()  # Not closed when the project name is empty
 
     # Create a new project successfully
-    newProjectWindow.ui.nameInput.setText("TestProject")
+    newProjectWindow.ui.nameInput.setText(TEST_PROJECT_NAME)
     with patch(
-        "PySide6.QtWidgets.QFileDialog.getExistingDirectory", return_value="/projects"
+        "PySide6.QtWidgets.QFileDialog.getExistingDirectory",
+        return_value=TEST_PROJECT_DIR,
     ):
         newProjectWindow.ui.browseButton.clicked.emit()
-    assert not os.path.exists(os.path.join("/projects", "TestProject", PROJECT_FILE))
+    assert not os.path.exists(
+        os.path.join(TEST_PROJECT_DIR, TEST_PROJECT_NAME, PROJECT_FILE)
+    )
+    assert widget.windowTitle() == WINDOW_TITLE.format(NO_PROJECT_LOADED)
     newProjectWindow.ui.confirmButtonBox.accepted.emit()
+    assert widget.windowTitle() == WINDOW_TITLE.format(TEST_PROJECT_NAME)
     assert not newProjectWindow.isVisible()
-    assert os.path.exists(os.path.join("/projects", "TestProject", PROJECT_FILE))
+    assert os.path.exists(
+        os.path.join(TEST_PROJECT_DIR, TEST_PROJECT_NAME, PROJECT_FILE)
+    )
 
     # Cannot create a project that already exists
     widget.ui.actionNewProject.trigger()
     assert widget.newProjectWindow.isVisible()
-    newProjectWindow.ui.nameInput.setText("TestProject")
+    newProjectWindow.ui.nameInput.setText(TEST_PROJECT_NAME)
     with patch(
-        "PySide6.QtWidgets.QFileDialog.getExistingDirectory", return_value="/projects"
+        "PySide6.QtWidgets.QFileDialog.getExistingDirectory",
+        return_value=TEST_PROJECT_DIR,
     ):
         newProjectWindow.ui.browseButton.clicked.emit()
     newProjectWindow.ui.confirmButtonBox.accepted.emit()

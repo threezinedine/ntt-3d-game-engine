@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QMainWindow, QDockWidget, QWidgetAction
 from PySide6.QtGui import QKeyEvent, QCloseEvent
 from PySide6.QtCore import Qt
 
+from constants import *
 from converted.editor_main_window import Ui_GameEngineEditorWindow
 from di import *
 from .main_window_view_model import EditorMainWindowViewModel
@@ -45,6 +46,10 @@ class EditorMainWindow(QMainWindow):
     def setup_menu(self) -> None:
         self.ui.actionNewProject.triggered.connect(self.newProjectWindow.show)
 
+        di_get(ApplicationContext).project_desc_signal.connect(
+            self.on_open_project, True
+        )
+
     def setup_docks(self) -> None:
         dockViews: list[QDockWidget] = [
             self.ui.logDockWidget,
@@ -71,3 +76,14 @@ class EditorMainWindow(QMainWindow):
     def closeEvent(self, event: QCloseEvent) -> None:
         self.application.Shutdown()
         return super().closeEvent(event)
+
+    def on_open_project(self) -> None:
+        final_title: str
+        project_desc = di_get(ApplicationContext).project_desc
+
+        if project_desc is not None:
+            final_title = WINDOW_TITLE.format(project_desc.name)
+        else:
+            final_title = WINDOW_TITLE.format(NO_PROJECT_LOADED)
+
+        self.setWindowTitle(final_title)
