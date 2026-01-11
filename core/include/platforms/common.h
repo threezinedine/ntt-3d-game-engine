@@ -5,7 +5,9 @@
 #include <glm/glm.hpp>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <nlohmann/json.hpp>
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -41,10 +43,10 @@ constexpr Scope<T> CreateScope(Args&&... args)
 }
 
 template <typename T>
-using Ref = std::shared_ptr<T>;
+using Reference = std::shared_ptr<T>;
 
 template <typename T, typename... Args>
-constexpr Ref<T> CreateRef(Args&&... args)
+constexpr Reference<T> CreateRef(Args&&... args)
 {
 	return std::make_shared<T>(std::forward<Args>(args)...);
 }
@@ -58,6 +60,9 @@ using UnorderMap = std::unordered_map<K, V>;
 
 template <typename K, typename V>
 using Map = std::map<K, V>;
+
+template <typename T>
+using Set = std::set<T>;
 #else
 template <typename T>
 class Array;
@@ -67,7 +72,12 @@ class UnorderMap;
 
 template <typename K, typename V>
 class Map;
+
+template <typename T>
+class Set;
 #endif
+
+using Mutex = std::mutex;
 
 using String = std::string;
 

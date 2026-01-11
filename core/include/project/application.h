@@ -17,9 +17,25 @@ public:
 
 public:
 	void OnStart();
+	void OnUpdate(f32 deltaTime);
+	void OnShutdown();
 
 public:
-	void onStartImpl();
+	/**
+	 * Default empty user-defined start implementation.
+	 */
+	virtual void onStartImpl() {};
+
+	/**
+	 * Default empty user-defined update implementation.
+	 * @param deltaTime The time elapsed since the last frame.
+	 */
+	virtual void onUpdateImpl(f32 deltaTime) {};
+
+	/**
+	 * Default empty user-defined shutdown implementation.
+	 */
+	virtual void onShutdownImpl() {};
 
 private:
 	Scope<Project> m_pProject;

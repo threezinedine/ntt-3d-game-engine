@@ -36,7 +36,7 @@ public:
 		return m_isOpen;
 	}
 
-	inline Ref<Surface>& GetSurface()
+	inline Reference<Surface>& GetSurface()
 	{
 		return m_pSurface;
 	}
@@ -47,8 +47,8 @@ private:
 	String m_title;
 
 private:
-	b8			 m_isOpen;
-	Ref<Surface> m_pSurface;
+	b8				   m_isOpen;
+	Reference<Surface> m_pSurface;
 
 private:
 	class WindowInternal;

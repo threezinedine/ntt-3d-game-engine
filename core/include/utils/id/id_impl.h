@@ -3,6 +3,8 @@
 
 namespace ntt {
 
+class IDManager;
+
 // ===================== Modify ID Configuration below this line =====================
 #define ID_UNIQUE_BITS		  32
 #define ID_REVERSED_BITS_BITS 8
@@ -92,6 +94,8 @@ public:
 	/**
 	 * Converts the ID to its raw 64-bit integer representation.
 	 * @return The raw 64-bit integer representing the ID.
+	 *
+	 * @note The raw type does not contains the version information.
 	 */
 	IDRawType ToRaw() const NTT_BINDING;
 
@@ -137,6 +141,16 @@ public:
 		*this = ID(rawId);
 	}
 
+	inline IDTypeType GetType() const NTT_BINDING
+	{
+		return m_type;
+	}
+
+	inline IDUniqueType GetUniqueID() const NTT_BINDING
+	{
+		return m_uniqueId;
+	}
+
 public:
 	/**
 	 * Checking whether current ID is valid or not.
@@ -160,11 +174,40 @@ public:
 	 */
 	b8 IsType(IDType type) const NTT_BINDING;
 
+	/**
+	 * Increment the global version of the ID, indicating a state change.
+	 * If the ID is not valid, not latest or not managed by the IDManager, this
+	 * function will trigger an assertion failure.
+	 */
+	void Update() NTT_BINDING;
+
+private:
+	/**
+	 * Used only by the IDManager reset the version of the ID when the state changes.
+	 */
+	void ResetVersion();
+
 private:
 	IDVersionType	   m_version;
 	IDTypes			   m_type;
 	IDReversedBitsType m_reversedBits;
 	IDUniqueType	   m_uniqueId;
+
+public:
+	friend class IDManager;
 };
 
 } // namespace ntt
+
+// --- Hashing for ID to be used in unordered containers ---
+namespace std {
+template <>
+struct hash<ntt::ID>
+{
+	size_t operator()(const ntt::ID& id) const noexcept
+	{
+		return std::hash<ntt::IDRawType>()(static_cast<ntt::IDRawType>(id));
+	}
+};
+
+} // namespace std

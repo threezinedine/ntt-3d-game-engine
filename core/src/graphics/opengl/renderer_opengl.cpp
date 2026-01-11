@@ -7,8 +7,8 @@
 #include "graphics/renderer.h"
 
 namespace ntt {
-b8			 Renderer::m_isInitialized = NTT_FALSE;
-Ref<Surface> Renderer::s_pSurface	   = nullptr;
+b8				   Renderer::m_isInitialized = NTT_FALSE;
+Reference<Surface> Renderer::s_pSurface		 = nullptr;
 
 void Renderer::Initialize()
 {
@@ -21,7 +21,7 @@ void Renderer::Initialize()
 	m_isInitialized = NTT_TRUE;
 }
 
-void Renderer::AttachSurface(Ref<Surface>& pSurface)
+void Renderer::AttachSurface(Reference<Surface>& pSurface)
 {
 	NTT_ASSERT(m_isInitialized);
 	s_pSurface = pSurface;

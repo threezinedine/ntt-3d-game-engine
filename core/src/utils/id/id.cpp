@@ -1,4 +1,5 @@
 #include "utils/id/id.h"
+#include "utils/logger/logger.h"
 
 #define ID_UNIQUE_ID_SHIFT	   (0)
 #define ID_REVERSED_BITS_SHIFT (ID_UNIQUE_ID_SHIFT + ID_UNIQUE_BITS)
@@ -89,8 +90,7 @@ void ID::operator=(ID&& other) noexcept
 
 u64 ID::ToRaw() const
 {
-	return (static_cast<u64>(m_version) << ID_VERSION_SHIFT) | (static_cast<u64>(m_type) << ID_TYPE_SHIFT) |
-		   (static_cast<u64>(m_reversedBits) << ID_REVERSED_BITS_SHIFT) |
+	return (static_cast<u64>(m_type) << ID_TYPE_SHIFT) | (static_cast<u64>(m_reversedBits) << ID_REVERSED_BITS_SHIFT) |
 		   (static_cast<u64>(m_uniqueId) << ID_UNIQUE_ID_SHIFT);
 }
 
@@ -106,14 +106,42 @@ b8 ID::IsValid() const
 
 b8 ID::IsLatest() const
 {
-	// Note: The actual implementation would require access to the ID Manager to verify the latest version.
-	// Here we provide a placeholder implementation that always returns true for demonstration purposes.
-	return NTT_TRUE;
+	return IDManager::GetInstance()->GetCurrentVersion(*this) == m_version;
 }
 
 b8 ID::IsType(IDType type) const
 {
 	return (m_type & type) != 0;
+}
+
+void ID::ResetVersion()
+{
+	m_version = 0;
+}
+
+void ID::Update()
+{
+	IDManager::GetInstance()->LockID(*this);
+	NTT_ASSERT(IsValid());
+	NTT_ASSERT(IsLatest());
+
+	ID* globalID = IDManager::GetInstance()->GetGlobalID(*this);
+
+	if (globalID == NTT_NULLPTR)
+	{
+		NTT_SYSTEM_LOG_ERROR("ID::Update() - ID is not managed by the IDManager.");
+		return;
+	}
+
+	if (m_version != globalID->m_version)
+	{
+		NTT_SYSTEM_LOG_ERROR("ID::Update() - ID is not the latest version.");
+		return;
+	}
+
+	IDManager::GetInstance()->UpdateID(*this);
+	m_version = globalID->m_version;
+	IDManager::GetInstance()->UnlockID(*this);
 }
 
 } // namespace ntt
