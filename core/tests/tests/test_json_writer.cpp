@@ -2,13 +2,13 @@
 
 TEST(TestJsonWriter, NormalTestVersion)
 {
-	TestVersion originalVersion;
+	VersionTest originalVersion;
 	originalVersion.major = 2;
 	originalVersion.minor = 1;
 	originalVersion.patch = 3;
 
 	Json		json	= TestVersionToJson(originalVersion);
-	TestVersion version = TestVersionFromJson(json);
+	VersionTest version = TestVersionFromJson(json);
 
 	EXPECT_EQ(originalVersion.major, version.major);
 	EXPECT_EQ(originalVersion.minor, version.minor);
@@ -18,7 +18,7 @@ TEST(TestJsonWriter, NormalTestVersion)
 TEST(TestJsonWriter, FromString)
 {
 	String		jsonStr = R"({"Major":3,"minor":2,"Patch":1})";
-	TestVersion version = TestVersionFromJsonString(jsonStr);
+	VersionTest version = TestVersionFromJsonString(jsonStr);
 
 	EXPECT_EQ(version.major, 3);
 	EXPECT_EQ(version.minor, 2);
@@ -28,7 +28,7 @@ TEST(TestJsonWriter, FromString)
 TEST(TestJsonWriter, MissingFields)
 {
 	Json		json	= Json::parse(R"({"Major":2,"minor":5})");
-	TestVersion version = TestVersionFromJson(json);
+	VersionTest version = TestVersionFromJson(json);
 
 	EXPECT_EQ(version.major, 2);
 	EXPECT_EQ(version.minor, 5);
@@ -37,7 +37,7 @@ TEST(TestJsonWriter, MissingFields)
 
 TEST(TestJsonWriter, SkipDefaultValues)
 {
-	TestVersion originalVersion;
+	VersionTest originalVersion;
 	originalVersion.major = 1; // Default value
 	originalVersion.minor = 4;
 	originalVersion.patch = 0; // Default value
@@ -50,7 +50,7 @@ TEST(TestJsonWriter, SkipDefaultValues)
 
 TEST(TestJsonWriter, OtherType)
 {
-	TestSpectType originalSpect;
+	SpectTypeTest originalSpect;
 	originalSpect.typeA = 42;
 	originalSpect.typeB = 3.14f; // Default value
 	originalSpect.typeC = {1, 2, 3, 4, 5};
@@ -59,7 +59,7 @@ TEST(TestJsonWriter, OtherType)
 	originalSpect.typeF = ntt::ID(1234567890);
 
 	Json		  json	= TestSpectTypeToJson(originalSpect);
-	TestSpectType spect = TestSpectTypeFromJson(json);
+	SpectTypeTest spect = TestSpectTypeFromJson(json);
 
 	EXPECT_EQ(originalSpect.typeA, spect.typeA);
 	EXPECT_EQ(originalSpect.typeB, spect.typeB);
@@ -73,7 +73,7 @@ TEST(TestJsonWriter, OtherType)
 
 TEST(TestJsonWriter, OtherTypeDefaultValues)
 {
-	TestSpectType originalSpect;
+	SpectTypeTest originalSpect;
 	originalSpect.typeA = 7;
 	originalSpect.typeB = 3.14f; // Default value
 	originalSpect.typeC = {10, 20, 30};
