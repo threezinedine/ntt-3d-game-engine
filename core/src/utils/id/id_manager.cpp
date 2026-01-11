@@ -14,25 +14,15 @@ IDManager::~IDManager()
 {
 }
 
-ID IDManager::CreateID(IDTypes type)
+ID IDManager::RegisterID(IDTypes type, IDUniqueType uniqueId)
 {
-	ID newID;
-
-	// Check if there are any freed IDs available for reuse
-	if (!m_freedIDs.empty())
+	auto it = m_activeIDs.find(ID(0, type, uniqueId));
+	if (it != m_activeIDs.end())
 	{
-		auto it = m_freedIDs.begin();
-		newID	= *it;
+		return *it;
+	}
 
-		m_freedIDs.erase(it);
-		newID.ResetVersion();
-	}
-	else
-	{
-		// Generate a new unique ID
-		IDUniqueType newUniqueID = static_cast<IDUniqueType>(m_activeIDs.size() + 1);
-		newID					 = ID(0, type, newUniqueID);
-	}
+	ID newID(0, type, uniqueId);
 
 	m_activeIDs.insert(newID);
 	m_activeMutexes.try_emplace(newID);
@@ -51,27 +41,25 @@ void IDManager::UnlockID(const ID& id)
 	m_activeMutexes[id].unlock();
 }
 
-void IDManager::FreeID(const ID& id)
+void IDManager::UnRegisterID(const ID& id)
 {
 	LockID(id);
 
 	m_activeIDs.erase(id);
-	m_freedIDs.insert(id);
 
 	UnlockID(id);
-}
 
-IDVersionType IDManager::GetCurrentVersion(const ID& id) const
-{
-	auto it = m_activeIDs.find(id);
-	NTT_ASSERT(it != m_activeIDs.end());
-	return it->m_version;
+	m_activeMutexes.erase(id);
 }
 
 ID* IDManager::GetGlobalID(const ID& id)
 {
 	auto it = m_activeIDs.find(id);
-	NTT_ASSERT(it != m_activeIDs.end());
+
+	if (it == m_activeIDs.end())
+	{
+		return NTT_NULLPTR;
+	}
 
 	return const_cast<ID*>(&(*it));
 }

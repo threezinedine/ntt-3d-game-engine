@@ -106,7 +106,13 @@ b8 ID::IsValid() const
 
 b8 ID::IsLatest() const
 {
-	return IDManager::GetInstance()->GetCurrentVersion(*this) == m_version;
+	ID* globalID = IDManager::GetInstance()->GetGlobalID(*this);
+	if (globalID == NTT_NULLPTR)
+	{
+		return NTT_FALSE;
+	}
+
+	return m_version == globalID->m_version;
 }
 
 b8 ID::IsType(IDType type) const

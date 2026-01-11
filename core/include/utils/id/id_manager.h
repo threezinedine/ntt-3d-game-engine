@@ -18,23 +18,20 @@ public:
 	 * Acquires a new unique ID of the specified type. It can reuse freed IDs if available.
 	 *
 	 * @param type The type of the ID to create.
-	 * @return A new unique ID of the specified type.
+	 * @param uniqueId The unique identifier for the ID.
+	 * @return A new unique ID of the specified type if not existed, if existed, return the existing latest ID (latest
+	 * version).
+	 *
+	 * @note If a new ID is created, it can reuse a previously freed ID to optimize resource usage.
 	 */
-	ID CreateID(IDTypes type);
+	ID RegisterID(IDTypes type, IDUniqueType uniqueId);
 
 	/**
 	 * Frees an ID, making it available for reuse.
 	 *
 	 * @param id The ID to free.
 	 */
-	void FreeID(const ID& id);
-
-	/**
-	 * Check the latest version of the given ID.
-	 * @param id The ID to check.
-	 * @return The latest version of the ID.
-	 */
-	IDVersionType GetCurrentVersion(const ID& id) const;
+	void UnRegisterID(const ID& id);
 
 	/**
 	 * Lock an ID to prevent it from being updated.
@@ -62,7 +59,6 @@ public:
 private:
 	Set<ID>		   m_activeIDs;
 	Map<ID, Mutex> m_activeMutexes;
-	Set<ID>		   m_freedIDs;
 };
 
 } // namespace ntt

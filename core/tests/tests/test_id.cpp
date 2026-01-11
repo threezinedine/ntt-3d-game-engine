@@ -59,18 +59,39 @@ TEST(IDTest, CheckLatestVersion)
 {
 	Scope<IDManager>& idManager = IDManager::GetInstance();
 
-	ID id1 = idManager->CreateID(IDType::ID_TYPE_ENTITY);
+	ID id1 = idManager->RegisterID(IDType::ID_TYPE_ENTITY, 0x03);
 	ID id2 = id1;
+
+	ID id3 = idManager->RegisterID(IDType::ID_TYPE_ENTITY, 0x04);
 
 	EXPECT_TRUE(id1.IsLatest());
 	EXPECT_TRUE(id2.IsLatest());
+	EXPECT_TRUE(id3.IsLatest());
 
 	id1.Update();
 
 	EXPECT_TRUE(id1.IsLatest());
 	EXPECT_FALSE(id2.IsLatest());
+	EXPECT_TRUE(id3.IsLatest());
 
 	id2.Update(); // do nothing
 	EXPECT_TRUE(id1.IsLatest());
+	EXPECT_FALSE(id2.IsLatest());
+	EXPECT_TRUE(id3.IsLatest());
+}
+
+TEST(IDTest, UnregisterIDThenOtherWillBeNotLatest)
+{
+	Scope<IDManager>& idManager = IDManager::GetInstance();
+
+	ID id1 = idManager->RegisterID(IDType::ID_TYPE_RESOURCE, 0x05);
+	ID id2 = id1;
+
+	EXPECT_TRUE(id1.IsLatest());
+	EXPECT_TRUE(id2.IsLatest());
+
+	idManager->UnRegisterID(id1);
+
+	// After unregistering, id2 should no longer be considered latest
 	EXPECT_FALSE(id2.IsLatest());
 }

@@ -12,7 +12,7 @@
 			"name": "Core Test (Linux)",
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/core/build/debug_linux_unix/EngineTests",
+			"program": "${workspaceFolder}/core/build/debug_linux_unix/EngineCoreTests",
 			"preLaunchTask": "Build Debug Linux",
 			"args": [],
 			"cwd": "${workspaceFolder}/core/build/debug_linux_unix/"
