@@ -63,3 +63,36 @@ def test_parse_static_method():
     assert method.name == "add"
     assert method.return_type == "int"
     assert method.is_static is True
+
+
+def test_parse_inheritance():
+    parser = Parser()
+
+    parser.add_code(
+        "inheritance.cpp",
+        """
+        class Vehicle {
+        public:
+            void move();
+        };
+
+        class Car : public Vehicle {
+        public:
+            void honk();
+        };
+        """,
+    )
+
+    parser.parse("inheritance.cpp")
+
+    assert len(parser.Classes) == 2
+
+    vehicle_cls = next(cls for cls in parser.Classes if cls.name == "Vehicle")
+    assert len(vehicle_cls.methods) == 1
+    vehicle_method = vehicle_cls.methods[0]
+    assert vehicle_method.name == "move"
+
+    car_cls = next(cls for cls in parser.Classes if cls.name == "Car")
+    assert len(car_cls.methods) == 1
+    car_method = car_cls.methods[0]
+    assert car_method.name == "honk"

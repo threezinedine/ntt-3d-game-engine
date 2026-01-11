@@ -20,7 +20,7 @@ enum NTT_BINDING ConsoleColor
 /**
  * Unified console interface for different platforms.
  */
-class NTT_BINDING Console
+class NTT_BINDING NTT_SINGLETON Console
 {
 public:
 	/**

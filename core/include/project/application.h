@@ -9,16 +9,33 @@ namespace ntt {
  * The global access point for the whole runtime application.
  * This is the interface for the user-defined application class.
  */
-class Application
+class NTT_BINDING Application
 {
 public:
-	Application();
+	/**
+	 * Constructor and Destructor
+	 * @param projectFilePath The file path to the project configuration file.
+	 * Relative path to the executable.
+	 */
+	Application(const String& projectFilePath);
 	virtual ~Application();
 
 public:
-	void OnStart();
-	void OnUpdate(f32 deltaTime);
-	void OnShutdown();
+	/**
+	 * Be called at the starting of the runtime.
+	 */
+	void OnStart() NTT_BINDING;
+
+	/**
+	 * Be called every frame to update the application.
+	 * @param deltaTime The time elapsed since the last frame.
+	 */
+	void OnUpdate(f32 deltaTime) NTT_BINDING;
+
+	/**
+	 * Be called at the shutting down of the runtime.
+	 */
+	void OnShutdown() NTT_BINDING;
 
 public:
 	/**

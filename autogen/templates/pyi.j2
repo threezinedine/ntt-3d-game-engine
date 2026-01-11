@@ -14,8 +14,40 @@ i64: TypeAlias = int
 f32: TypeAlias = float
 f64: TypeAlias = float
 
+b8: TypeAlias = bool
+
 String: TypeAlias = str
 Json: TypeAlias = Dict[str, Any]
+
+class Vec2:
+    x: f32
+    y: f32
+
+class Vec3:
+    x: f32
+    y: f32
+    z: f32
+
+class Vec4:
+    x: f32
+    y: f32
+    z: f32
+    w: f32
+
+class IVec2:
+    x: i32
+    y: i32
+
+class IVec3:
+    x: i32
+    y: i32
+    z: i32
+
+class IVec4:
+    x: i32
+    y: i32
+    z: i32
+    w: i32
 
 {% include "pyi/typedef.j2" %}
 

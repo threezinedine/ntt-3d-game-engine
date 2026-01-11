@@ -26,6 +26,7 @@ def to_pyi_type(type_str: str) -> str:
         "const char *": "str",
         "Array<.*>": lambda s: f"List[{to_pyi_type(s[6:-1].strip())}]",
         r"std::function<.*>": lambda s: convert_std_function(s[14:-1].strip()),
+        r".*\s*::\s*.*": lambda s: to_pyi_type(s[s.rindex("::") + 2 :].strip()),
         r"char\[\s*\d*\s*\]": "str",
         r".*\s*\*\s*$": lambda s: f"Optional[{to_pyi_type(s[:-1].strip())}]",
         r"const (.*)": lambda s: to_pyi_type(s[6:].strip()),

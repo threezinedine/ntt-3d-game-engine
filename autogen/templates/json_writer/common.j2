@@ -52,7 +52,7 @@ json["{{ get_json_field_name(field) }}"] = {{ field.type}}ToJson(obj.{{ field.na
 {%-elif field.type in parser.EnumTypes-%}
 json["{{ get_json_field_name(field) }}"] = static_cast<u32>(obj.{{ field.name }});
 {%-elif field.type in parser.JsonStructTypes-%}
-json["{{ get_json_field_name(field) }}"] = {{ field.type }}ToJson(obj.{{ field.name }});
+{ Json result = {{ field.type }}ToJson(obj.{{ field.name }}); if (!result.is_null()) json["{{ get_json_field_name(field) }}"] = result; }
 {%-endif-%}
 {%-endmacro %}
 

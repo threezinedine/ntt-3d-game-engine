@@ -3,6 +3,9 @@
 {% for cls in parser.Classes-%}
 {% if "binding" in cls.annotations-%}
 class {{cls.name}}:
+    {% if "singleton" not in cls.annotations-%}
+    def __init__(self, *args: Any, **kwargs: Any) -> None: ...
+    {%-endif %}
     {% for method in cls.methods-%}
     {% if "binding" in method.annotations-%}
     {% if method.is_static or "singleton" in cls.annotations -%}
