@@ -8,8 +8,9 @@ from converted.editor_main_window import Ui_GameEngineEditorWindow
 from di import *
 from .main_window_view_model import EditorMainWindowViewModel
 from .widgets import *
+from common_models import *  # type: ignore
 
-from windows.new_project_window.new_project_window_view import *
+from windows.new_project_window.new_project_window_view import *  # type: ignore
 from components import *  # type: ignore
 
 
@@ -34,7 +35,7 @@ class EditorMainWindow(QMainWindow):
         self.logWidget = di_get(LogWidget)
         self.ui.logDockWidget.setWidget(self.logWidget)
 
-        self.application = EditorApplication()
+        self.application = di_get(ApplicationContext).application
         shared = di_get(GLShared)
         shared.application = self.application
 
