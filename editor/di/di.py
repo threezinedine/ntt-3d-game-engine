@@ -15,9 +15,9 @@ def clean_instances() -> None:
     Clean all singleton instances. Used for testing purposes.
     """
     _instances.clear()
-    _instanceFactories.clear()
-    _transientFactories.clear()
-    _dependentClasses.clear()
+    # _instanceFactories.clear()
+    # _transientFactories.clear()
+    # _dependentClasses.clear()
 
 
 def di_get(clsName: Type[T], *args: Any, **kwargs: Any) -> T:

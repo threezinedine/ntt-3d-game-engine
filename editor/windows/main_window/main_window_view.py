@@ -31,6 +31,8 @@ class EditorMainWindow(QMainWindow):
         self.ui.setupUi(self)  # type: ignore
 
         self.viewModel = viewModel
+        self.viewModel.load_appsetting()
+
         self.newProjectWindow = newProjectWindow
 
         self.logWidget = di_get(LogWidget)

@@ -1,11 +1,50 @@
 import os
+import json
+from dataclasses import asdict
 from constants import *
+from common_models import *
 from unittest.mock import patch
 from pytestqt import qtbot  # type: ignore
 from pytestqt.qtbot import QtBot
 from di import di_get
 from windows.main_window import EditorMainWindow
-from .e2e_utils import *
+from .e2e_utils import *  # type: ignore
+
+
+def test_application_settings_auto_create(
+    setup_engine: EngineSetup,
+    qtbot: QtBot,
+) -> None:
+    assert not os.path.exists(APP_SETTINGS_FILE)
+
+    wigdet = di_get(EditorMainWindow)
+    qtbot.addWidget(wigdet)
+    wigdet.show()
+    assert wigdet.isVisible()
+
+    assert os.path.exists(APP_SETTINGS_FILE)
+
+
+def test_auto_load_application_settings_if_exists(
+    setup_engine: EngineSetup,
+    qtbot: QtBot,
+) -> None:
+    assert not os.path.exists(APP_SETTINGS_FILE)
+
+    app_setting = ApplicationSetting()
+    app_setting.recentProjects.append("/some/fake/project/path")
+
+    with open(APP_SETTINGS_FILE, "w", encoding="utf-8") as f:
+        f.write(json.dumps(asdict(app_setting)))
+
+    widget = di_get(EditorMainWindow)
+    qtbot.addWidget(widget)
+    widget.show()
+    assert widget.isVisible()
+
+    app_context = di_get(ApplicationContext)
+    assert app_context.app_settings is not None
+    assert app_context.app_settings.recentProjects == ["/some/fake/project/path"]
 
 
 def test_create_window(

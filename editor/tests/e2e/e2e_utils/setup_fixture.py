@@ -4,6 +4,7 @@ from typing import Generator
 from Engine import *
 from pyfakefs.fake_filesystem import FakeFilesystem
 from constants import *
+from di import *
 
 
 class EngineSetup:
@@ -21,4 +22,5 @@ def setup_engine(fs: FakeFilesystem) -> Generator[EngineSetup, None, None]:
     engine_setup = EngineSetup()
     yield engine_setup
     Logger.Release()
+    clean_instances()
     # Teardown code after the test

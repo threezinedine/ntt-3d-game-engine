@@ -1,3 +1,4 @@
+import common_models  # type: ignore
 from PySide6.QtWidgets import QApplication
 
 from Engine import *

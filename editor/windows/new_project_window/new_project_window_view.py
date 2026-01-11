@@ -1,11 +1,11 @@
 import os
 from PySide6.QtGui import QCloseEvent, QKeyEvent
-from common_models.application_context import ApplicationContext
 from di import *
 from PySide6.QtWidgets import QMainWindow
 from converted.new_project import Ui_NewProjectWindow
 from PySide6.QtWidgets import QFileDialog
 from PySide6.QtCore import Qt
+from utils import *
 
 from .new_project_window_view_model import NewProjectWindowViewModel
 from pyqttoast import Toast, ToastPreset, ToastPosition  # type: ignore
@@ -69,6 +69,7 @@ class NewProjectWindowView(QMainWindow):
             toast.applyPreset(ToastPreset.ERROR)
             toast.setPosition(ToastPosition.TOP_RIGHT)
             toast.show()
+            editor_logger.error("Project name cannot be empty.")
             return
 
         if os.path.exists(self.viewModel.project_full_path):
@@ -79,25 +80,10 @@ class NewProjectWindowView(QMainWindow):
             toast.applyPreset(ToastPreset.ERROR)
             toast.setPosition(ToastPosition.TOP_RIGHT)
             toast.show()
+            editor_logger.error("Project already exists at the specified location.")
             return
 
-        # TODO: Update later with editor setting
-        desc = ProjectDescription()
-        desc.name = self.viewModel.model.project_name
-        desc.version.major = 1
-        desc.version.minor = 0
-        desc.version.patch = 0
-
-        os.makedirs(os.path.dirname(self.viewModel.project_full_path), exist_ok=True)
-
-        with open(self.viewModel.project_full_path, "w") as f:
-            f.write(ProjectDescriptionToJsonString(desc))
-
-        appContext = di_get(ApplicationContext)
-        appContext.application.LoadProject(self.viewModel.project_full_path)
-        appContext.project_desc = desc
-        appContext.project_desc_signal.emit()
-
+        self.viewModel.create_project()
         self.hide()
 
     def keyPressEvent(self, event: QKeyEvent) -> None:

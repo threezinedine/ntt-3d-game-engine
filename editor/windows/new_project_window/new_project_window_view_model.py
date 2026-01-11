@@ -1,8 +1,10 @@
 import os
+from common_models.application_context import ApplicationContext
 from di import *
 from .new_project_window_model import NewProjectWindowModel
 from utils import *
 from constants import *
+from Engine import *
 
 
 @as_singleton
@@ -46,3 +48,25 @@ class NewProjectWindowViewModel:
     def clear(self) -> None:
         self.model.project_name = ""
         self.model.project_path = ""
+
+    def create_project(self) -> bool:
+        # TODO: Update later with editor setting
+        desc = ProjectDescription()
+        desc.name = self.model.project_name
+        desc.version.major = 1
+        desc.version.minor = 0
+        desc.version.patch = 0
+
+        os.makedirs(os.path.dirname(self.project_full_path), exist_ok=True)
+
+        with open(self.project_full_path, "w") as f:
+            f.write(ProjectDescriptionToJsonString(desc))
+
+        appContext = di_get(ApplicationContext)
+        appContext.application.LoadProject(self.project_full_path)
+        appContext.project_desc = desc
+        appContext.project_desc_signal.emit()
+
+        editor_logger.info(f"Created new project at path: {self.project_full_path}")
+
+        return True
