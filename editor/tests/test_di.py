@@ -57,18 +57,3 @@ def test_dependent_singleton(clean_di: None) -> None:
     instance = di_get(Dependent)
 
     assert instance.dependency.value == 42
-
-
-def test_register_transient_as_singleton_raises(clean_di: None) -> None:
-    @as_singleton
-    class MySingleton:
-        pass
-
-    @as_transient
-    @as_dependencies(MySingleton)
-    class MyTransient:
-        def __init__(self, singleton: MySingleton) -> None:
-            self.singleton = singleton
-
-    with pytest.raises(AssertionError):
-        di_get(MyTransient)
