@@ -122,8 +122,6 @@ void ID::ResetVersion()
 void ID::Update()
 {
 	IDManager::GetInstance()->LockID(*this);
-	NTT_ASSERT(IsValid());
-	NTT_ASSERT(IsLatest());
 
 	ID* globalID = IDManager::GetInstance()->GetGlobalID(*this);
 

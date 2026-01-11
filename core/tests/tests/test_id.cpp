@@ -69,4 +69,8 @@ TEST(IDTest, CheckLatestVersion)
 
 	EXPECT_TRUE(id1.IsLatest());
 	EXPECT_FALSE(id2.IsLatest());
+
+	id2.Update(); // do nothing
+	EXPECT_TRUE(id1.IsLatest());
+	EXPECT_FALSE(id2.IsLatest());
 }

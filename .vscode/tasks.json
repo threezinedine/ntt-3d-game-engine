@@ -1,0 +1,14 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build Debug Linux",
+			"type": "shell",
+			"command": "./main",
+			"args": ["build", "core"],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			}
+		}
+	]
+}

@@ -7,6 +7,15 @@
 			"program": "${workspaceFolder}/helper.py",
 			"args": ["-v", "run", "autogen"],
 			"cwd": "${workspaceFolder}"
+		},
+		{
+			"name": "Core Test (Linux)",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/core/build/debug_linux_unix/EngineTests",
+			"preLaunchTask": "Build Debug Linux",
+			"args": [],
+			"cwd": "${workspaceFolder}/core/build/debug_linux_unix/"
 		}
 	]
 }
