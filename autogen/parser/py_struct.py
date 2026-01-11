@@ -11,6 +11,7 @@ class PyStruct(PyObject):
         self.constructors: list[PyMethod] = []
         self.destructor: PyMethod | None = None
         self.base_classes: list[PyBase] = []
+        self.is_abstract: bool = False
 
         for child in cursor.get_children():
             if child.kind == cindex.CursorKind.FIELD_DECL:
@@ -28,6 +29,11 @@ class PyStruct(PyObject):
             elif child.kind == cindex.CursorKind.CXX_BASE_SPECIFIER:
                 base = PyBase(tu, child)
                 self.base_classes.append(base)
+
+        for method in self.methods:
+            if method.is_pure_virtual:
+                self.is_abstract = True
+                break
 
     def __repr__(self) -> str:
         return f"<Struct name={self.name} fields={self.fields} methods={len(self.methods)}>"

@@ -1,6 +1,7 @@
 #if NTT_ENGINE_EDITOR_BINDING
 
 #include "project/editor_application.h"
+#include "graphics/graphics.h"
 
 namespace ntt {
 
@@ -15,10 +16,12 @@ EditorApplication::~EditorApplication()
 
 void EditorApplication::startBeginImpl()
 {
+	Renderer::Initialize();
 }
 
 void EditorApplication::startEndImpl()
 {
+	Renderer::AttachSurface(nullptr);
 }
 
 void EditorApplication::updateBeginImpl(f32 deltaTime)

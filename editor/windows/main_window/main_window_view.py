@@ -9,13 +9,16 @@ from di import *
 from .main_window_view_model import EditorMainWindowViewModel
 from .widgets import *
 
+from windows.new_project_window.new_project_window_view import *
+
 
 @as_singleton
-@as_dependencies(EditorMainWindowViewModel)
+@as_dependencies(EditorMainWindowViewModel, NewProjectWindowView)
 class EditorMainWindow(QMainWindow):
     def __init__(
         self,
         viewModel: EditorMainWindowViewModel,
+        newProjectWindow: NewProjectWindowView,
         *args: Any,
         **kwargs: Any,
     ) -> None:
@@ -25,10 +28,12 @@ class EditorMainWindow(QMainWindow):
         self.ui.setupUi(self)  # type: ignore
 
         self.viewModel = viewModel
+        self.newProjectWindow = newProjectWindow
 
         self.logWidget = di_get(LogWidget)
         self.ui.logDockWidget.setWidget(self.logWidget)
 
+        self.setup_menu()
         self.setup_docks()
 
         Logger.Log(
@@ -38,6 +43,9 @@ class EditorMainWindow(QMainWindow):
             "file.py",
             30,
         )
+
+    def setup_menu(self) -> None:
+        self.ui.actionNewProject.triggered.connect(self.newProjectWindow.show)
 
     def setup_docks(self) -> None:
         dockViews: list[QDockWidget] = [

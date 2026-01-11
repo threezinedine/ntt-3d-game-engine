@@ -80,9 +80,6 @@ def as_transient(cls: Type[T]) -> Type[T]:
     def _factory(*args: Any, **kwargs: Any) -> T:
         deps: list[Any] = []
         for depCls in _dependentClasses.get(cls, []):
-            assert (
-                depCls not in _instances and depCls not in _instanceFactories
-            ), f"Transient {cls} cannot depend on singleton {depCls}."
             deps.append(di_get(depCls))
         return cls(*deps, *args, **kwargs)
 
@@ -97,7 +94,7 @@ def as_dependencies(*depClasses: Type[Any]) -> Callable[[Type[T]], Type[T]]:
     """
 
     def _decorator(cls: Type[T]) -> Type[T]:
-        _dependentClasses[cls] = list(set(depClasses))  # type: ignore
+        _dependentClasses[cls] = list(depClasses)  # type: ignore
         return cls
 
     return _decorator

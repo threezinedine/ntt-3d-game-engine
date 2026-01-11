@@ -16,6 +16,10 @@ macro(ntt_configure)
         set(BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/..")
     endif()
 
+    if (NTT_ENGINE_EDITOR_BINDING)
+        set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+    endif()
+
     option(CMAKE_BUILD_TYPE "Build type" "Debug") 
     set(TARGET_COMPILE_OPTIONS)
     set(TARGET_DEFINITIONS)

@@ -11,6 +11,11 @@ public:
 	EditorApplication(const String& projectFilePath);
 	virtual ~EditorApplication();
 
+	inline b8 IsOpen() const override
+	{
+		return true;
+	}
+
 protected:
 	virtual void startBeginImpl() override;
 	virtual void startEndImpl() override;

@@ -1,9 +1,9 @@
 {% import 'binding/class/common.j2' as class_common -%}
 
 {% for cls in parser.Classes-%}
-{% if "binding" in cls.annotations-%}
-py::class_<{{cls.name}}>(m, "{{cls.name}}")
-    {% if "singleton" not in cls.annotations-%}
+{% if "binding" in cls.annotations -%}
+py::class_<{{ class_common.print_class_list(cls) }}>(m, "{{cls.name}}")
+    {% if "singleton" not in cls.annotations and not cls.is_abstract -%}
     {% for constructor in cls.constructors-%}
     {% if not constructor.is_copyconstructor and not constructor.is_move_constructor -%}
     {{ class_common.print_constructor(cls, constructor) }}

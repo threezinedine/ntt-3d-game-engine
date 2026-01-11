@@ -145,3 +145,40 @@ def test_parse_copy_constructor():
     assert constructor3.is_constructor is True
     assert constructor3.is_copy_constructor is False
     assert constructor3.is_move_constructor is True
+
+
+def test_parse_abstract_class():
+    parser = Parser()
+
+    parser.add_code(
+        "abstract_class.cpp",
+        """
+        class Shape {
+        public:
+            virtual void draw() = 0; // Pure virtual function
+        };
+
+        class Circle : public Shape {
+        public:
+            void draw() override;
+        };
+        """,
+    )
+
+    parser.parse("abstract_class.cpp")
+
+    assert len(parser.Classes) == 2
+    cls = parser.Classes[0]
+    assert cls.is_abstract is True
+
+    assert len(cls.methods) == 1
+    method = cls.methods[0]
+    assert method.name == "draw"
+    assert method.is_pure_virtual is True
+
+    cls2 = parser.Classes[1]
+    assert cls2.is_abstract is False
+    assert len(cls2.methods) == 1
+    method2 = cls2.methods[0]
+    assert method2.name == "draw"
+    assert method2.is_pure_virtual is False

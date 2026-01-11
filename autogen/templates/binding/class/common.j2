@@ -1,7 +1,15 @@
+{% macro print_class_list(cls) -%}
+{% if cls.base_classes| length > 0 -%}
+{{cls.name}}, {{ cls.base_classes | map(attribute='name') | join(', ') }}
+{%-else -%}
+{{cls.name}}
+{%- endif-%}
+{%-endmacro-%}
+
 {% macro print_method(cls, method)-%}
 {%-if method.is_static-%}
 .def_static("{{method.name}}", &{{cls.name}}::{{method.name}})
-{%-else-%}
+{%-elif not method.is_pure_virtual -%}
 .def("{{method.name}}", &{{cls.name}}::{{method.name}})
 {%- endif-%}
 {%- endmacro %}

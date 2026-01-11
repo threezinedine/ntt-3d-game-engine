@@ -57,8 +57,10 @@ if (NTT_USE_GLFW)
     list(APPEND TARGET_LINK_LIBRARIES ntt-glfw)
 
     if (NTT_USE_GRAPHICS_OPENGL)
-        ntt_find_package(ntt-glad "Dependencies")
-        list(APPEND TARGET_LINK_LIBRARIES ntt-glad)
+        # ntt_find_package(ntt-glad "Dependencies")
+        # list(APPEND TARGET_LINK_LIBRARIES ntt-glad)
+        ntt_find_package(ntt-glew "Dependencies")
+        list(APPEND TARGET_LINK_LIBRARIES ntt-glew)
     endif()
 endif()
 
@@ -120,6 +122,12 @@ if (NTT_ENGINE_EDITOR_BINDING)
         ${PROJECT_NAME}
     )
 
+    target_compile_options(
+        ${BINDING_PROJECT_NAME}
+        PUBLIC
+        -fPIC
+    )
+
     if (NTT_PLATFORM_WINDOWS)
         set(BINDING_OUTPUT_SUFFIX ".pyd")
     elseif(NTT_PLATFORM_LINUX)
@@ -144,7 +152,7 @@ if (NTT_ENGINE_EDITOR_BINDING)
     )
 endif()
 
-if (NTT_ENGINE_CORE_TESTS_ENABLE)
+if (NTT_ENGINE_CORE_TESTS_ENABLE AND NOT NTT_ENGINE_EDITOR_BINDING)
     ntt_find_package(ntt-googletest "Dependencies")
     file(
         GLOB_RECURSE 

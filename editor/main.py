@@ -1,7 +1,8 @@
 from PySide6.QtWidgets import QApplication
+
 from Engine import *
 from utils import *
-from windows.main_window import EditorMainWindow
+from windows.main_window.main_window_view import EditorMainWindow
 from di import *
 from argparse import ArgumentParser
 
@@ -39,4 +40,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        editor_logger.exception(f"Unhandled exception: {e}")

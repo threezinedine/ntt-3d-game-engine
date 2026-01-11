@@ -1,6 +1,10 @@
 #if NTT_USE_GRAPHICS_OPENGL
 // clang-format off
+#if 0
 #include <glad/glad.h>
+#else 
+#include <GL/glew.h>
+#endif
 #include <GLFW/glfw3.h>
 // clang-format on
 
@@ -14,19 +18,32 @@ void Renderer::Initialize()
 {
 	NTT_ASSERT(!m_isInitialized);
 
+#if !NTT_ENGINE_EDITOR_BINDING
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#endif
 
+	NTT_RENDERER_LOG_INFO("OpenGL Renderer initialized.");
 	m_isInitialized = NTT_TRUE;
 }
 
-void Renderer::AttachSurface(Reference<Surface>& pSurface)
+void Renderer::AttachSurface(Reference<Surface> pSurface)
 {
 	NTT_ASSERT(m_isInitialized);
+
+#if NTT_ENGINE_EDITOR_BINDING
+	NTT_UNUSED(pSurface);
+#else
 	s_pSurface = pSurface;
 	s_pSurface->Bind();
-	NTT_ASSERT(gladLoadGLLoader((GLADloadproc)glfwGetProcAddress));
+	NTT_RENDERER_LOG_DEBUG("Surface attached to OpenGL Renderer.");
+#endif
+
+	NTT_ASSERT(glewInit() == GLEW_OK);
+
+	auto version = glGetString(GL_VERSION);
+	NTT_RENDERER_LOG_INFO("OpenGL Version: %s", version);
 }
 
 void Renderer::BeginFrame()
@@ -45,7 +62,10 @@ void Renderer::EndFrame()
 void Renderer::PresentFrame()
 {
 	NTT_ASSERT(m_isInitialized);
+
+#if !NTT_ENGINE_EDITOR_BINDING
 	glfwSwapBuffers(s_pSurface->GetGLFWWindow());
+#endif
 }
 
 void Renderer::Shutdown()

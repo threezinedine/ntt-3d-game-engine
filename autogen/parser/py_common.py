@@ -30,6 +30,7 @@ class PyMethod(PyFunction):
         self.is_constructor = cursor.kind == cindex.CursorKind.CONSTRUCTOR
         self.is_copy_constructor = False
         self.is_move_constructor = False
+        self.is_pure_virtual = cursor.is_pure_virtual_method()
 
         if self.is_constructor:
             params = list(cursor.get_arguments())
