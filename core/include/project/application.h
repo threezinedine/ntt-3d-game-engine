@@ -37,7 +37,7 @@ public:
 	 */
 	void OnShutdown() NTT_BINDING;
 
-public:
+protected:
 	/**
 	 * Default empty user-defined start implementation.
 	 */

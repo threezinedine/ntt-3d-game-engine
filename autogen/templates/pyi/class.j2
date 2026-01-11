@@ -2,7 +2,7 @@
 
 {% for cls in parser.Classes-%}
 {% if "binding" in cls.annotations-%}
-class {{cls.name}}:
+class {{cls.name}}({{ cls.base_classes | map(attribute='name') | join(', ') }}):
     {% if "singleton" not in cls.annotations-%}
     def __init__(self, *args: Any, **kwargs: Any) -> None: ...
     {%-endif %}

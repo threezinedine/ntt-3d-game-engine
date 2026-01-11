@@ -16,7 +16,7 @@ def to_pyi_type(type_str: str) -> str:
         "char": "str",
         "bool": "bool",
         "void": "None",
-        "std::string": "str",
+        "string": "str",
         "long": "int",
         "short": "int",
         "unsigned int": "int",

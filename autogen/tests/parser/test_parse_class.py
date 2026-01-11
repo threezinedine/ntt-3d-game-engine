@@ -96,3 +96,52 @@ def test_parse_inheritance():
     assert len(car_cls.methods) == 1
     car_method = car_cls.methods[0]
     assert car_method.name == "honk"
+
+    assert len(car_cls.base_classes) == 1
+    base = car_cls.base_classes[0]
+    assert base.name == "Vehicle"
+
+
+def test_parse_copy_constructor():
+    parser = Parser()
+
+    parser.add_code(
+        "copy_constructor.cpp",
+        """
+        class Point {
+        public:
+            Point(int x, int y);
+            Point(const Point& other); // Copy constructor
+            Point(Point&& other); // Move constructor
+        private:
+            int x;
+            int y;
+        };
+        """,
+    )
+
+    parser.parse("copy_constructor.cpp")
+
+    assert len(parser.Classes) == 1
+    cls = parser.Classes[0]
+    assert cls.name == "Point"
+
+    assert len(cls.constructors) == 3
+
+    constructor1 = cls.constructors[0]
+    assert constructor1.name == "Point"
+    assert constructor1.is_constructor is True
+    assert constructor1.is_copy_constructor is False
+    assert constructor1.is_move_constructor is False
+
+    constructor2 = cls.constructors[1]
+    assert constructor2.name == "Point"
+    assert constructor2.is_constructor is True
+    assert constructor2.is_copy_constructor is True
+    assert constructor2.is_move_constructor is False
+
+    constructor3 = cls.constructors[2]
+    assert constructor3.name == "Point"
+    assert constructor3.is_constructor is True
+    assert constructor3.is_copy_constructor is False
+    assert constructor3.is_move_constructor is True

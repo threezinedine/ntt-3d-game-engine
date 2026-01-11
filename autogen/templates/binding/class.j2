@@ -3,13 +3,20 @@
 {% for cls in parser.Classes-%}
 {% if "binding" in cls.annotations-%}
 py::class_<{{cls.name}}>(m, "{{cls.name}}")
+    {% if "singleton" not in cls.annotations-%}
+    {% for constructor in cls.constructors-%}
+    {% if not constructor.is_copyconstructor and not constructor.is_move_constructor -%}
+    {{ class_common.print_constructor(cls, constructor) }}
+    {% endif-%}
+    {% endfor-%}
+    {%-endif %}
     {% for method in cls.methods-%}
     {% if "binding" in method.annotations-%}
-    {% if "singleton" in cls.annotations and not method.is_static %}
+    {% if "singleton" in cls.annotations and not method.is_static-%}
     {{ class_common.print_singleton_method(cls, method) }}
     {% else -%}
     {{ class_common.print_method(cls, method) }}
-    {% endif %}
+    {% endif-%}
     {% endif-%}
     {% endfor-%};
 {%- endif %}

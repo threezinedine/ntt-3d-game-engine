@@ -27,6 +27,26 @@ class PyMethod(PyFunction):
         super().__init__(tu, cursor)
         self.access = "public"
         self.is_static = cursor.is_static_method()
+        self.is_constructor = cursor.kind == cindex.CursorKind.CONSTRUCTOR
+        self.is_copy_constructor = False
+        self.is_move_constructor = False
+
+        if self.is_constructor:
+            params = list(cursor.get_arguments())
+            if len(params) == 1:
+                param = params[0]
+                parent_type = cursor.semantic_parent.type
+                if (
+                    parent_type.spelling
+                    in param.type.get_pointee().get_canonical().spelling
+                ):
+                    if (
+                        param.type.get_canonical().kind
+                        == cindex.TypeKind.LVALUEREFERENCE
+                    ):
+                        self.is_copy_constructor = True
+                    else:
+                        self.is_move_constructor = True
 
         if cursor.access_specifier == cindex.AccessSpecifier.PRIVATE:
             self.access = "private"

@@ -13,7 +13,9 @@
 {%-endmacro%}
 
 {% macro print_singleton_method(cls, method) -%}
-.def_static("{{method.name}}", []({{ print_method_arguments(method) }}) {
-    return {{cls.name}}::GetInstance()->{{method.name}}({{ method.arguments | map(attribute='name') | join(', ') }});
-})
+.def_static("{{method.name}}", []({{ print_method_arguments(method) }}) { return {{cls.name}}::GetInstance()->{{method.name}}({{ method.arguments | map(attribute='name') | join(', ') }}); })
+{%-endmacro %}
+
+{% macro print_constructor(cls, constructor) -%}
+.def(py::init<{{constructor.arguments | map(attribute='type') | join(', ')}}>())
 {%-endmacro %}
