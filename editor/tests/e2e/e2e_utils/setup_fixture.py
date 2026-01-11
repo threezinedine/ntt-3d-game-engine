@@ -1,6 +1,9 @@
+import os
 import pytest
 from typing import Generator
 from Engine import *
+from pyfakefs.fake_filesystem import FakeFilesystem
+from constants import *
 
 
 class EngineSetup:
@@ -9,10 +12,11 @@ class EngineSetup:
 
 
 @pytest.fixture
-def setup_engine() -> Generator[EngineSetup, None, None]:
+def setup_engine(fs: FakeFilesystem) -> Generator[EngineSetup, None, None]:
     """
     Fixture to set up and tear down the engine for end-to-end tests.
     """
+    fs.add_real_directory(os.path.join(BASE_DIR, ".venv"))  # type: ignore
     # Setup code before the test
     engine_setup = EngineSetup()
     yield engine_setup
