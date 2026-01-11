@@ -8,7 +8,7 @@ namespace ntt {
 class NTT_BINDING EditorApplication : public Application
 {
 public:
-	EditorApplication(const String& projectFilePath);
+	EditorApplication();
 	virtual ~EditorApplication();
 
 	inline b8 IsOpen() const override

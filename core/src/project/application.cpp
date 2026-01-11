@@ -4,10 +4,10 @@
 
 namespace ntt {
 
-Application::Application(const String& projectFilePath)
-	: m_isInitialized(NTT_FALSE)
+Application::Application()
+	: m_pProject(nullptr)
+	, m_isInitialized(NTT_FALSE)
 {
-	m_pProject = CreateScope<Project>();
 }
 
 Application::~Application()

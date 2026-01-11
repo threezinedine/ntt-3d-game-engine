@@ -34,7 +34,7 @@ class EditorMainWindow(QMainWindow):
         self.logWidget = di_get(LogWidget)
         self.ui.logDockWidget.setWidget(self.logWidget)
 
-        self.application = EditorApplication("test.txt")
+        self.application = EditorApplication()
         shared = di_get(GLShared)
         shared.application = self.application
 

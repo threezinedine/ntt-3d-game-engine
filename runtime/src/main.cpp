@@ -7,7 +7,7 @@ int main()
 	Logger::GetInstance()->Setup(
 		LOG_LEVEL_DEBUG, "[@5:name] - [@7:level] - @:message", LOG_HANDLER_TYPE_CONSOLE, LOG_TAG_MASK_ALL);
 
-	Scope<Application> app = CreateScope<RuntimeApplication>("path/to/project.nttproj");
+	Scope<Application> app = CreateScope<RuntimeApplication>();
 
 	app->Start();
 

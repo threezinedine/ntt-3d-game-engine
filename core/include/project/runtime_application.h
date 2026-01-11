@@ -10,7 +10,7 @@ class Window;
 class RuntimeApplication : public Application
 {
 public:
-	RuntimeApplication(const String& projectFilePath);
+	RuntimeApplication();
 	virtual ~RuntimeApplication();
 
 	virtual b8 IsOpen() const override;

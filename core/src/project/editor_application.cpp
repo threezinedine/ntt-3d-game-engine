@@ -5,8 +5,8 @@
 
 namespace ntt {
 
-EditorApplication::EditorApplication(const String& projectFilePath)
-	: Application(projectFilePath)
+EditorApplication::EditorApplication()
+	: Application()
 {
 }
 

@@ -7,8 +7,8 @@
 
 namespace ntt {
 
-RuntimeApplication::RuntimeApplication(const String& projectFilePath)
-	: Application(projectFilePath)
+RuntimeApplication::RuntimeApplication()
+	: Application()
 {
 }
 

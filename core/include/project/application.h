@@ -30,10 +30,8 @@ class NTT_BINDING Application
 public:
 	/**
 	 * Constructor and Destructor
-	 * @param projectFilePath The file path to the project configuration file.
-	 * Relative path to the executable.
 	 */
-	Application(const String& projectFilePath);
+	Application();
 	virtual ~Application();
 
 public:
