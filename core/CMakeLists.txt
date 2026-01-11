@@ -20,7 +20,7 @@ file(
 
 set(
     GENERATED_SOURCE_FILES
-    "${CMAKE_CURRENT_SOURCE_DIR}/temp/json_writer.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/temp/generated_json_writer.cpp"
 )
 
 
@@ -113,7 +113,7 @@ if (NTT_ENGINE_EDITOR_BINDING)
     set(BINDING_PROJECT_NAME EngineCoreBinding)
     pybind11_add_module(
         ${BINDING_PROJECT_NAME}
-        "temp/bindings.cpp"
+        "temp/generated_bindings.cpp"
     )
 
     target_link_libraries(

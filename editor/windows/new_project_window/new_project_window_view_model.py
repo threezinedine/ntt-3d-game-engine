@@ -51,13 +51,18 @@ class NewProjectWindowViewModel:
 
     def create_project(self) -> bool:
         # TODO: Update later with editor setting
+        app_setting = di_get(ApplicationContext).app_settings
+        assert app_setting is not None
         desc = ProjectDescription()
         desc.name = self.model.project_name
-        desc.version.major = 1
-        desc.version.minor = 0
-        desc.version.patch = 0
+        desc.version.major = app_setting.version.major
+        desc.version.minor = app_setting.version.minor
+        desc.version.patch = app_setting.version.patch
 
         os.makedirs(os.path.dirname(self.project_full_path), exist_ok=True)
+
+        app_setting.recentProjects.insert(0, self.project_full_path)
+        di_get(ApplicationContext).save_app_settings()
 
         with open(self.project_full_path, "w") as f:
             f.write(ProjectDescriptionToJsonString(desc))

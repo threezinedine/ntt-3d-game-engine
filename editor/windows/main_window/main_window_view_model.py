@@ -32,3 +32,19 @@ class EditorMainWindowViewModel:
                 data_class=type(app_context.app_settings),
                 data=data,
             )
+
+    def load_default_project(self) -> None:
+        app_context = di_get(ApplicationContext)
+        assert app_context.app_settings is not None
+
+        if len(app_context.app_settings.recentProjects) == 0:
+            return
+
+        default_project_path = app_context.app_settings.recentProjects[0]
+        if not os.path.exists(default_project_path):
+            app_context.app_settings.recentProjects.pop(0)
+            app_context.save_app_settings()
+            return
+
+        editor_logger.info(f"Loading default project from path: {default_project_path}")
+        app_context.load_project_from_path(default_project_path)

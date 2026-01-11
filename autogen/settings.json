@@ -31,7 +31,7 @@
 			"template": "pyi.j2"
 		},
 		{
-			"output": "core/temp/json_writer.cpp",
+			"output": "core/temp/generated_json_writer.cpp",
 			"input": "core/include/engine/engine.h",
 			"dependencies": [
 				"core/include/**/*.h",
@@ -45,7 +45,7 @@
 			"template": "json_writer.j2"
 		},
 		{
-			"output": "core/temp/bindings.cpp",
+			"output": "core/temp/generated_bindings.cpp",
 			"input": "core/include/engine/engine.h",
 			"dependencies": [
 				"core/include/**/*.h",

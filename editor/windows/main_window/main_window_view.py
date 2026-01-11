@@ -13,6 +13,8 @@ from common_models import *  # type: ignore
 
 from windows.new_project_window.new_project_window_view import *  # type: ignore
 from components import *  # type: ignore
+from Engine import *  # type: ignore
+from functools import partial
 
 
 @as_singleton
@@ -32,6 +34,7 @@ class EditorMainWindow(QMainWindow):
 
         self.viewModel = viewModel
         self.viewModel.load_appsetting()
+        self.viewModel.load_default_project()
 
         self.newProjectWindow = newProjectWindow
 
@@ -50,6 +53,9 @@ class EditorMainWindow(QMainWindow):
 
         di_get(ApplicationContext).project_desc_signal.connect(
             self.on_open_project, True
+        )
+        di_get(ApplicationContext).app_settings_signal.connect(
+            self.on_app_settings_changed, True
         )
 
     def setup_docks(self) -> None:
@@ -89,3 +95,35 @@ class EditorMainWindow(QMainWindow):
             final_title = WINDOW_TITLE.format(NO_PROJECT_LOADED)
 
         self.setWindowTitle(final_title)
+
+    def on_app_settings_changed(self) -> None:
+        app_settings = di_get(ApplicationContext).app_settings
+
+        if app_settings is None or len(app_settings.recentProjects) == 0:
+            editor_logger.info(f"No recent projects")
+
+        self.ui.menuRecents.clear()
+
+        assert app_settings is not None
+        for recent_path in app_settings.recentProjects:
+            action = self.ui.menuRecents.addAction(recent_path)
+
+            def on_open_recent_project(checked: bool, path: str = recent_path) -> None:
+                try:
+                    app_context = di_get(ApplicationContext)
+                    app_context.load_project_from_path(path)
+                    editor_logger.info(f"Opened recent project at path: {path}")
+                    app_settings.recentProjects.remove(path)
+                    app_settings.recentProjects.insert(0, path)
+                    app_context.save_app_settings()
+                except Exception as e:
+                    editor_logger.error(
+                        f"Failed to open recent project at path: {path} with error: {e}"
+                    )
+                    app_settings.recentProjects.remove(path)
+
+                di_get(ApplicationContext).save_app_settings()
+
+            action.triggered.connect(
+                partial(on_open_recent_project, False, recent_path)
+            )

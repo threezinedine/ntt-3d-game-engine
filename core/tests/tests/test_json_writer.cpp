@@ -1,14 +1,14 @@
 #include "test_common.h"
 
-TEST(TestJsonWriter, NormalTestVersion)
+TEST(TestJsonWriter, NormalVersionTest)
 {
 	VersionTest originalVersion;
 	originalVersion.major = 2;
 	originalVersion.minor = 1;
 	originalVersion.patch = 3;
 
-	Json		json	= TestVersionToJson(originalVersion);
-	VersionTest version = TestVersionFromJson(json);
+	Json		json	= VersionTestToJson(originalVersion);
+	VersionTest version = VersionTestFromJson(json);
 
 	EXPECT_EQ(originalVersion.major, version.major);
 	EXPECT_EQ(originalVersion.minor, version.minor);
@@ -18,7 +18,7 @@ TEST(TestJsonWriter, NormalTestVersion)
 TEST(TestJsonWriter, FromString)
 {
 	String		jsonStr = R"({"Major":3,"minor":2,"Patch":1})";
-	VersionTest version = TestVersionFromJsonString(jsonStr);
+	VersionTest version = VersionTestFromJsonString(jsonStr);
 
 	EXPECT_EQ(version.major, 3);
 	EXPECT_EQ(version.minor, 2);
@@ -28,7 +28,7 @@ TEST(TestJsonWriter, FromString)
 TEST(TestJsonWriter, MissingFields)
 {
 	Json		json	= Json::parse(R"({"Major":2,"minor":5})");
-	VersionTest version = TestVersionFromJson(json);
+	VersionTest version = VersionTestFromJson(json);
 
 	EXPECT_EQ(version.major, 2);
 	EXPECT_EQ(version.minor, 5);
@@ -42,7 +42,7 @@ TEST(TestJsonWriter, SkipDefaultValues)
 	originalVersion.minor = 4;
 	originalVersion.patch = 0; // Default value
 
-	Json json = TestVersionToJson(originalVersion);
+	Json json = VersionTestToJson(originalVersion);
 	EXPECT_TRUE(json.contains("minor"));
 	EXPECT_FALSE(json.contains("Major")); // Should be skipped
 	EXPECT_FALSE(json.contains("Patch")); // Should be skipped
@@ -58,8 +58,8 @@ TEST(TestJsonWriter, OtherType)
 	originalSpect.typeE = true;				// Default value
 	originalSpect.typeF = ntt::ID(1234567890);
 
-	Json		  json	= TestSpectTypeToJson(originalSpect);
-	SpectTypeTest spect = TestSpectTypeFromJson(json);
+	Json		  json	= SpectTypeTestToJson(originalSpect);
+	SpectTypeTest spect = SpectTypeTestFromJson(json);
 
 	EXPECT_EQ(originalSpect.typeA, spect.typeA);
 	EXPECT_EQ(originalSpect.typeB, spect.typeB);
@@ -81,7 +81,7 @@ TEST(TestJsonWriter, OtherTypeDefaultValues)
 	originalSpect.typeE = true;							// Default value
 	originalSpect.typeF = ntt::ID(ntt::INVALID_ID_RAW); // Default value
 
-	Json json = TestSpectTypeToJson(originalSpect);
+	Json json = SpectTypeTestToJson(originalSpect);
 	EXPECT_TRUE(json.contains("typeA"));
 	EXPECT_TRUE(json.contains("typeC"));
 	EXPECT_FALSE(json.contains("typeB")); // Should be skipped
