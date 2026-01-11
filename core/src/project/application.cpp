@@ -5,6 +5,7 @@
 namespace ntt {
 
 Application::Application(const String& projectFilePath)
+	: m_isInitialized(NTT_FALSE)
 {
 	m_pProject = CreateScope<Project>();
 }
@@ -15,6 +16,8 @@ Application::~Application()
 
 void Application::Start()
 {
+	NTT_ASSERT(!m_isInitialized);
+
 	NTT_APPLICATION_LOG_INFO("Starting application ...");
 
 	startBeginImpl();
@@ -23,10 +26,14 @@ void Application::Start()
 	startEndImpl();
 
 	NTT_APPLICATION_LOG_INFO("Application started.");
+
+	m_isInitialized = NTT_TRUE;
 }
 
 void Application::Update(f32 deltaTime)
 {
+	NTT_ASSERT(m_isInitialized);
+
 	updateBeginImpl(deltaTime);
 
 	Renderer::BeginFrame();
@@ -39,6 +46,8 @@ void Application::Update(f32 deltaTime)
 
 void Application::Shutdown()
 {
+	NTT_ASSERT(m_isInitialized);
+
 	NTT_APPLICATION_LOG_INFO("Shutting down application ...");
 
 	shutdownBeginImpl();

@@ -38,6 +38,7 @@ void EditorApplication::shutdownBeginImpl()
 
 void EditorApplication::shutdownEndImpl()
 {
+	Renderer::Shutdown();
 }
 
 } // namespace ntt

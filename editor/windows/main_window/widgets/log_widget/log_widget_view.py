@@ -77,7 +77,7 @@ class LogWidget(QWidget):
             col.setBackground(QBrush(bgColor))
             col.setForeground(QBrush(textColor))
 
-            self.ui.logTable.setItem(i, 3, QTableWidgetItem(log.line))
+            self.ui.logTable.setItem(i, 3, QTableWidgetItem(str(log.line)))
             col = self.ui.logTable.item(i, 3)
             assert col is not None
             col.setBackground(QBrush(bgColor))

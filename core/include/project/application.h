@@ -37,6 +37,8 @@ public:
 	virtual ~Application();
 
 public:
+	inline b8 IsInitialized() const NTT_BINDING;
+
 	/**
 	 * Be called at the starting of the runtime.
 	 */
@@ -91,6 +93,12 @@ protected:
 
 private:
 	Scope<Project> m_pProject;
+	b8			   m_isInitialized;
 };
+
+inline b8 Application::IsInitialized() const
+{
+	return m_isInitialized;
+}
 
 } // namespace ntt

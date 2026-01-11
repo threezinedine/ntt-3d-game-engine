@@ -71,6 +71,7 @@ void Renderer::PresentFrame()
 void Renderer::Shutdown()
 {
 	NTT_ASSERT(m_isInitialized);
+	NTT_RENDERER_LOG_INFO("OpenGL Renderer shut down.");
 	m_isInitialized = NTT_FALSE;
 }
 

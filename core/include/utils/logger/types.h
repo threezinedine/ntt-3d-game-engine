@@ -42,6 +42,7 @@ struct NTT_BINDING LogRecord
 	String		  file;
 	int			  line;
 	LogTagMaskBit tag;
+	String		  fullFilePath;
 	String		  finalMessage;
 };
 

@@ -50,11 +50,11 @@ void Logger::Log(LogLevel level, LogTagMaskBit tag, const char* message, const c
 	}
 
 	LogRecord record;
-	record.level   = level;
-	record.message = String(message);
-	record.file	   = file;
-	record.line	   = line;
-	record.tag	   = tag;
+	record.level		= level;
+	record.message		= String(message);
+	record.fullFilePath = file;
+	record.line			= line;
+	record.tag			= tag;
 
 	if (!(tag & m_tagMask))
 	{
@@ -64,7 +64,7 @@ void Logger::Log(LogLevel level, LogTagMaskBit tag, const char* message, const c
 	const char* levelStr = convertLoggerLevelToString(level);
 	const char* tagStr	 = convertLoggerTagToString(tag);
 
-	String filename = std::filesystem::path(file).filename().string();
+	String filename = std::filesystem::path(record.fullFilePath).filename().string();
 	char   finalFilename[LOG_FILENAME_MAX_LENGTH + 1];
 	truncateString(filename, finalFilename, LOG_FILENAME_MAX_LENGTH);
 
@@ -72,6 +72,7 @@ void Logger::Log(LogLevel level, LogTagMaskBit tag, const char* message, const c
 	std::memset(messageBuffer, 0, LOGGER_BUFFER_SIZE);
 	std::sprintf(messageBuffer, "[%7s] - [%7s] - %20s:%-4d - %s", tagStr, levelStr, finalFilename, line, message);
 	record.finalMessage = String(messageBuffer);
+	record.file			= String(finalFilename);
 
 	for (auto& handler : m_handlers)
 	{

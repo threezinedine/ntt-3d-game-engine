@@ -18,25 +18,28 @@ class GLWidget(QOpenGLWidget):
         super().__init__(*args, **kwargs)
 
         self.viewModel = di_get(GLWidgetViewModel)
+        self.shared = self.viewModel.model.shared
 
         if self.viewModel.getSharedContext() is not None:
             self.setShareContext(self.viewModel.getSharedContext())  # type: ignore
         else:
             self.viewModel.setSharedContext(self.context())
 
-        self.application = EditorApplication("test.txt")
-
     def initializeGL(self) -> None:
         editor_logger.debug("GLWidget: OpenGL initialized.")
-        self.application.Start()
+        assert self.shared.application is not None
+        if not self.shared.application.IsInitialized():
+            self.shared.application.Start()
 
     def paintGL(self) -> None:
         editor_logger.debug("GLWidget: paintGL called.")
-        self.application.Update(0)
+        if self.shared.application:
+            self.shared.application.Update(
+                0.016
+            )  # Assuming a fixed timestep for simplicity
 
     def resizeGL(self, w: int, h: int) -> None:
         editor_logger.debug(f"GLWidget: resizeGL called. New size: {w}x{h}")
 
     def closeEvent(self, event: QCloseEvent) -> None:
-        self.application.Shutdown()
         super().closeEvent(event)
