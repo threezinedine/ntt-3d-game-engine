@@ -37,6 +37,8 @@ class ApplicationContext:
 
         editor_logger.info("Saving application settings...")
 
+        self.app_settings.recentProjects = self.app_settings.recentProjects[:10]
+
         with open(APP_SETTINGS_FILE, "w", encoding="utf-8") as f:
             json.dump(asdict(self.app_settings), f, indent=4)
 
