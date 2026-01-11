@@ -54,3 +54,24 @@ target_link_libraries(
     PRIVATE
     EngineCore
 )
+
+if (NTT_BOOTAPP_COPY)
+    set(SRC_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/bootapp")
+    set(DEST_FOLDER "${CMAKE_CURRENT_BINARY_DIR}/appdata")
+    set(COPY_BOOTAPP_STAMP "${CMAKE_CURRENT_BINARY_DIR}/appdata/bootapp_copied.stamp")
+    file(
+        GLOB_RECURSE
+        BOOTAPP_FILES
+        "${SRC_FOLDER}/*"
+    )
+
+    add_custom_command(
+        OUTPUT ${COPY_BOOTAPP_STAMP}
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${SRC_FOLDER} ${DEST_FOLDER}
+        COMMAND ${CMAKE_COMMAND} -E touch ${COPY_BOOTAPP_STAMP}
+        DEPENDS ${BOOTAPP_FILES}
+        COMMENT "Copying bootapp files..."
+    )
+
+    add_custom_target(copy_bootapp_directory ALL DEPENDS ${BOOTAPP_FILES} ${COPY_BOOTAPP_STAMP})
+endif()

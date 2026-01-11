@@ -36,6 +36,7 @@ macro(ntt_configure)
     ntt_option("NTT_NO_ANALYZE" "OFF")
     ntt_option("NTT_ENGINE_CORE_TESTS_ENABLE" "ON")
     ntt_option("NTT_ENGINE_EDITOR_BINDING" "OFF")
+    ntt_option("NTT_BOOTAPP_COPY" "ON")
 
     ntt_detect_graphics_api()
 
