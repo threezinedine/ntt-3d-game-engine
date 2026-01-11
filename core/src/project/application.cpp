@@ -1,6 +1,8 @@
 #include "project/application.h"
 #include "graphics/graphics.h"
 #include "input/input.h"
+#include <filesystem>
+#include <fstream>
 
 namespace ntt {
 
@@ -12,6 +14,39 @@ Application::Application()
 
 Application::~Application()
 {
+}
+
+void Application::LoadProject(const String& projectFilePath)
+{
+	NTT_APPLICATION_LOG_INFO("Loading project from file path: %s", projectFilePath.c_str());
+
+	// check if the file exists
+	if (!std::filesystem::exists(projectFilePath))
+	{
+		NTT_APPLICATION_LOG_WARN("Project file does not exist: %s", projectFilePath.c_str());
+		return;
+	}
+
+	// Unload current project if any
+	if (m_pProject)
+	{
+		NTT_APPLICATION_LOG_INFO("Unloading current project ...");
+		m_pProject.reset();
+	}
+
+	// Load new project
+	std::ifstream fileStream(projectFilePath);
+	if (!fileStream.is_open())
+	{
+		NTT_APPLICATION_LOG_ERROR("Failed to open project file: %s", projectFilePath.c_str());
+		return;
+	}
+
+	ProjectDescription description = ProjectDescriptionFromJsonString(
+		String(std::istreambuf_iterator<char>(fileStream), std::istreambuf_iterator<char>()));
+	m_pProject = CreateScope<Project>(description);
+
+	NTT_APPLICATION_LOG_INFO("Project '%s' loaded successfully.", description.name.c_str());
 }
 
 void Application::Start()

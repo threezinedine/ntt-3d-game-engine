@@ -2,7 +2,9 @@
 
 namespace ntt {
 
-Project::Project()
+Project::Project(ProjectDescription const& description)
+	: m_name(description.name)
+	, m_version(description.version)
 {
 }
 

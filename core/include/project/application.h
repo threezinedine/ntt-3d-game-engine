@@ -35,7 +35,20 @@ public:
 	virtual ~Application();
 
 public:
+	/**
+	 * Get whether the application is initialized.
+	 * @return True if initialized, false otherwise.
+	 */
 	inline b8 IsInitialized() const NTT_BINDING;
+
+	/**
+	 * Load a project from the specified file path.
+	 * @param projectFilePath The file path of the project to load. The path is absolute or relative to the current
+	 * working directory.
+	 *
+	 * @note If there is currently has a project loadded, it will be unloaded first before loading the new project.
+	 */
+	void LoadProject(const String& projectFilePath) NTT_BINDING;
 
 	/**
 	 * Be called at the starting of the runtime.

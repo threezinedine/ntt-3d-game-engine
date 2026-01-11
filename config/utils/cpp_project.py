@@ -141,20 +141,20 @@ def run_cpp_executable(
 
     if platform.lower() == "windows":
         executable_name += ".exe"
+    else:
+        executable_name = "./" + executable_name
 
     if generator is not None and "Visual Studio" in generator:
-        executable_path = os.path.join(
-            target_folder, type.capitalize(), executable_name
-        )
-    else:
-        executable_path = os.path.join(target_folder, executable_name)
+        target_folder = os.path.join(target_folder, type.capitalize())
+
+    final_cwd = os.path.join(project, target_folder)
 
     assert os.path.exists(
-        os.path.join(project, executable_path)
-    ), f"Executable not found at {executable_path}. Please build the project first."
+        os.path.join(final_cwd, executable_name)
+    ), f"Executable not found at {os.path.join(final_cwd, executable_name)}. Please build the project first."
 
-    command_logger.info(f"Running executable: {executable_path} at {project}")
-    run_command(executable_path, directory=project)
+    command_logger.info(f"Running executable: {executable_name} at {final_cwd}")
+    run_command(executable_name, directory=final_cwd)
 
 
 def clean_cpp_project(project: str, **kwargs: Any) -> None:

@@ -11,6 +11,8 @@ int main()
 
 	app->Start();
 
+	app->LoadProject("./appdata/project.json");
+
 	while (app->IsOpen())
 	{
 		app->Update(0.016f); // Assuming a fixed delta time for simplicity
