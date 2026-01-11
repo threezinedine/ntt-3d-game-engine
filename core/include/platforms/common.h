@@ -9,6 +9,7 @@
 #include <nlohmann/json.hpp>
 #include <set>
 #include <string>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -77,7 +78,8 @@ template <typename T>
 class Set;
 #endif
 
-using Mutex = std::mutex;
+using Thread = std::thread;
+using Mutex	 = std::mutex;
 
 using String = std::string;
 

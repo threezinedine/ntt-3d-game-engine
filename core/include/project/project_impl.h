@@ -14,6 +14,11 @@ public:
 	~Project();
 
 public:
+	inline const String& GetName() const
+	{
+		return m_name;
+	}
+
 private:
 	String	m_name;
 	Version m_version;
