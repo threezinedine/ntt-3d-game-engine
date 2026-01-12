@@ -56,11 +56,16 @@ macro(ntt_configure)
     endif()
 endmacro()
 
-macro(ntt_detect_graphics_api)
-    ntt_option("NTT_USE_GRAPHICS_OPENGL" "OFF")
-    ntt_option("NTT_USE_GRAPHICS_VULKAN" "ON")
+macro(ntt_log_var VAR_NAME)
+    message(STATUS "${VAR_NAME}: ${${VAR_NAME}}")
+    
+endmacro()
 
-    ntt_option("NTT_USE_GLFW" "OFF")
+
+macro(ntt_detect_graphics_api)
+    ntt_option("NTT_USE_GRAPHICS_OPENGL" OFF)
+    ntt_option("NTT_USE_GRAPHICS_VULKAN" ON)
+    ntt_option("NTT_USE_GLFW" OFF)
 
     if (NTT_USE_GRAPHICS_VULKAN)
         list(APPEND TARGET_DEFINITIONS "NTT_USE_GRAPHICS_OPENGL=0")
@@ -70,7 +75,6 @@ macro(ntt_detect_graphics_api)
             message(WARNING "Both OpenGL and Vulkan graphics APIs are enabled. Vulkan will be used as the primary graphics API.")
             list(REMOVE_ITEM TARGET_DEFINITIONS "NTT_USE_GRAPHICS_OPENGL=1")
             set(NTT_USE_GRAPHICS_OPENGL OFF)
-            set(NTT_USE_GRAPHICS_OPENGL ON)
         endif()
     else()
         list(APPEND TARGET_DEFINITIONS "NTT_USE_GRAPHICS_OPENGL=1")

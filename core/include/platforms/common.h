@@ -8,6 +8,7 @@
 #include <mutex>
 #include <nlohmann/json.hpp>
 #include <set>
+#include <stack>
 #include <string>
 #include <thread>
 #include <unordered_map>
@@ -64,6 +65,9 @@ using Map = std::map<K, V>;
 
 template <typename T>
 using Set = std::set<T>;
+
+template <typename T>
+using Stack = std::stack<T>;
 #else
 template <typename T>
 class Array;
@@ -76,7 +80,14 @@ class Map;
 
 template <typename T>
 class Set;
+
+template <typename T>
+class Stack;
 #endif
+
+// template <typename T, typename... Args>
+// using Function = std::function<T(Args...)>;
+#define Function std::function
 
 using Thread = std::thread;
 using Mutex	 = std::mutex;

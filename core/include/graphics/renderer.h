@@ -10,22 +10,5 @@
 #define NTT_RENDERER_LOG_ERROR(message, ...) NTT_LOG_ERROR(LogTagMaskBit::LOG_TAG_MASK_RENDERER, message, ##__VA_ARGS__)
 #define NTT_RENDERER_LOG_FATAL(message, ...) NTT_LOG_FATAL(LogTagMaskBit::LOG_TAG_MASK_RENDERER, message, ##__VA_ARGS__)
 
-namespace ntt {
-class Renderer
-{
-public:
-	static void Initialize();
-	static void Shutdown();
-
-	static void AttachSurface(Reference<Surface> pSurface);
-
-	static void BeginFrame();
-	static void EndFrame();
-	static void PresentFrame();
-
-private:
-	static b8				  m_isInitialized;
-	static Reference<Surface> s_pSurface;
-};
-
-} // namespace ntt
+#include "opengl/opengl_renderer.h"
+#include "vulkan/vulkan_renderer.h"

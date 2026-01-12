@@ -64,6 +64,11 @@ if (NTT_USE_GLFW)
     endif()
 endif()
 
+if (NTT_USE_GRAPHICS_VULKAN)
+    ntt_find_package(ntt-vulkan "Dependencies")
+    list(APPEND TARGET_LINK_LIBRARIES ntt-vulkan)
+endif()
+
 add_library(
     ${PROJECT_NAME}
     STATIC
