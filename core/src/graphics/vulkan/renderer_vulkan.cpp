@@ -2,6 +2,7 @@
 #include "graphics/renderer.h"
 #include "graphics/surface.h"
 #include "graphics/vulkan/vulkan_device.h"
+#include "graphics/vulkan/vulkan_swapchain.h"
 
 #if NTT_USE_GLFW
 #include <GLFW/glfw3.h>
@@ -12,19 +13,87 @@ namespace ntt {
 VkInstance		   Renderer::s_vkInstance		   = VK_NULL_HANDLE;
 VkPhysicalDevice   Renderer::s_vkPhysicalDevice	   = VK_NULL_HANDLE;
 Reference<Surface> Renderer::s_pSurface			   = nullptr;
+Scope<Swapchain>   Renderer::s_pSwapchain		   = nullptr;
 QueueFamily		   Renderer::s_renderQueueFamily   = {};
 QueueFamily		   Renderer::s_computeQueueFamily  = {};
 QueueFamily		   Renderer::s_transferQueueFamily = {};
+
+#if NTT_DEBUG
+VkDebugUtilsMessengerEXT Renderer::s_vkDebugMessenger = VK_NULL_HANDLE;
+#endif // NTT_DEBUG
 
 Device		 Renderer::s_device;
 ReleaseStack Renderer::s_releaseStack;
 
 void Renderer::Initialize()
 {
-	CreateInstance({"VK_KHR_surface"}, {});
+	CreateInstance({"VK_KHR_surface"
+#if NTT_DEBUG
+					,
+					"VK_EXT_debug_utils"
+#endif // NTT_DEBUG
+				   },
+				   {
+#if NTT_DEBUG
+					   "VK_LAYER_KHRONOS_validation"
+#endif // NTT_DEBUG
+				   });
+
+#if NTT_DEBUG
+	void CreateDebugUtilsMessenger();
+#endif // NTT_DEBUG
+
 	ChoosePhysicalDevice();
 	ChooseQueueFamilies();
 }
+
+#if NTT_DEBUG
+static VkBool32 VKAPI_PTR vulkanDebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT	  messageSeverity,
+											  VkDebugUtilsMessageTypeFlagsEXT			  messageTypes,
+											  const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+											  void*										  pUserData)
+{
+	NTT_UNUSED(messageTypes);
+	NTT_UNUSED(pUserData);
+
+	if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
+	{
+		NTT_VULKAN_LOG_ERROR("%s", pCallbackData->pMessage);
+	}
+	else
+	{
+		NTT_VULKAN_LOG_WARN("%s", pCallbackData->pMessage);
+	}
+
+	return VK_FALSE;
+}
+
+void Renderer::CreateDebugUtilsMessenger()
+{
+	VkDebugUtilsMessengerCreateInfoEXT messengerInfo = {};
+	messengerInfo.sType								 = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+	messengerInfo.messageSeverity =
+		VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
+	messengerInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+								VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT |
+								VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT;
+	messengerInfo.pfnUserCallback = vulkanDebugCallback;
+
+	PFN_vkCreateDebugUtilsMessengerEXT createFunc =
+		(PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(s_vkInstance, "vkCreateDebugUtilsMessengerEXT");
+
+	NTT_ASSERT(createFunc != VK_NULL_HANDLE);
+
+	VK_ASSERT(createFunc(s_vkInstance, &messengerInfo, nullptr, &s_vkDebugMessenger));
+	s_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) {
+		PFN_vkDestroyDebugUtilsMessengerEXT destroyFunc =
+			(PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(s_vkInstance, "vkDestroyDebugUtilsMessengerEXT");
+
+		NTT_ASSERT(destroyFunc != VK_NULL_HANDLE);
+		destroyFunc(s_vkInstance, s_vkDebugMessenger, nullptr);
+	});
+}
+#endif // NTT_DEBUG
 
 void Renderer::Shutdown()
 {
@@ -223,8 +292,13 @@ void Renderer::CreateDevice(const Array<const char*>& extensions, const Array<co
 	{
 		VkDeviceQueueCreateInfo queueInfo = {};
 		queueInfo.sType					  = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+#if 0
 		queueInfo.pQueuePriorities =
 			familyIndex == s_renderQueueFamily.familyIndex ? &renderQueuePriority : &otherPriority;
+#else
+		NTT_UNUSED(otherPriority);
+		queueInfo.pQueuePriorities = &renderQueuePriority;
+#endif
 		queueInfo.queueCount	   = 1;
 		queueInfo.queueFamilyIndex = familyIndex;
 
@@ -272,12 +346,29 @@ void Renderer::AttachSurface(Reference<Surface> pSurface)
 {
 	s_pSurface = pSurface;
 	s_pSurface->CreateVkSurface();
+	s_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) { s_pSurface->DestroyVkSurface(); });
 
 	if (!s_device.IsInitialized())
 	{
-		CreateDevice({}, {});
+		CreateDevice({"VK_KHR_swapchain"}, {});
 		CheckingTheSurfaceSupport();
 	}
+
+	s_pSwapchain = CreateScope<Swapchain>(&s_device, s_pSurface);
+	s_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) {
+		s_pSwapchain.reset();
+		NTT_RENDERER_LOG_DEBUG("Swapchain destroyed.");
+	});
+
+	s_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) {
+		vkDeviceWaitIdle(s_device.GetVkDevice());
+		NTT_RENDERER_LOG_DEBUG("Surface detached.");
+	});
+}
+
+u32 Renderer::GetRenderQueueFamilyIndex()
+{
+	return s_renderQueueFamily.familyIndex;
 }
 
 void Renderer::BeginFrame()

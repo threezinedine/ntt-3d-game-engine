@@ -7,6 +7,7 @@
 
 namespace ntt {
 class Device;
+class Swapchain;
 struct QueueFamily;
 
 class Renderer
@@ -27,10 +28,17 @@ public:
 		return s_vkInstance;
 	}
 
+	static inline VkPhysicalDevice GetVkPhysicalDevice()
+	{
+		return s_vkPhysicalDevice;
+	}
+
 	static inline Device& GetDevice()
 	{
 		return s_device;
 	}
+
+	static u32 GetRenderQueueFamilyIndex();
 
 private:
 	static void CreateInstance(const Array<const char*>& extensions, const Array<const char*>& layers);
@@ -40,6 +48,11 @@ private:
 	static void CheckingTheSurfaceSupport();
 
 private:
+#if NTT_DEBUG
+	static void CreateDebugUtilsMessenger();
+#endif // NTT_DEBUG
+
+private:
 	static b8				  m_isInitialized;
 	static Reference<Surface> s_pSurface;
 
@@ -47,10 +60,16 @@ private:
 	static VkInstance		s_vkInstance;
 	static VkPhysicalDevice s_vkPhysicalDevice;
 	static Device			s_device;
+	static Scope<Swapchain> s_pSwapchain;
 
 	static QueueFamily s_renderQueueFamily;
 	static QueueFamily s_computeQueueFamily;
 	static QueueFamily s_transferQueueFamily;
+
+private:
+#if NTT_DEBUG
+	static VkDebugUtilsMessengerEXT s_vkDebugMessenger;
+#endif // NTT_DEBUG
 
 private:
 	static ReleaseStack s_releaseStack;

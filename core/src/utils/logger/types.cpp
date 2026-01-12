@@ -12,7 +12,7 @@ const char* convertLoggerLevelToString(LogLevel level)
 	case LOG_LEVEL_INFO:
 		return "INFO";
 	case LOG_LEVEL_WARN:
-		return "WARN";
+		return "WARNING";
 	case LOG_LEVEL_ERROR:
 		return "ERROR";
 	case LOG_LEVEL_FATAL:
@@ -38,6 +38,8 @@ const char* convertLoggerTagToString(LogTagMaskBit tag)
 		return "APP";
 	case LOG_TAG_MASK_RENDERER:
 		return "RENDER";
+	case LOG_TAG_MASK_VULKAN:
+		return "VULKAN";
 		// Add more tags here
 		// Add more tags here
 

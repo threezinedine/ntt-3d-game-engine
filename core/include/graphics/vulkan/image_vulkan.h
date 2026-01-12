@@ -1,0 +1,37 @@
+#if NTT_USE_GRAPHICS_VULKAN
+#pragma once
+#include "containers/release_stack.h"
+#include "platforms/common.h"
+#include "vulkan_common.h"
+
+namespace ntt {
+class Device;
+
+class Image
+{
+public:
+	Image(Device*	pDevice,
+		  VkImage	image  = VK_NULL_HANDLE,
+		  Format	format = Format::FORMAT_COUNT,
+		  ImageType type   = ImageType::IMAGE_TYPE_2D);
+	NTT_DELETE_COPY(Image)
+	NTT_DELETE_MOVE(Image)
+	~Image();
+
+private:
+	void CreateVkImageView();
+
+private:
+	VkImage		m_vkImage;
+	VkImageView m_vkImageView;
+	Device*		m_pDevice;
+	Format		m_format;
+	ImageType	m_imageType;
+
+private:
+	ReleaseStack m_releaseStack;
+};
+
+} // namespace ntt
+
+#endif // NTT_USE_GRAPHICS_VULKAN
