@@ -18,6 +18,8 @@ macro(ntt_configure)
 
     if (NTT_ENGINE_EDITOR_BINDING)
         set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+    else()
+        set(CMAKE_POSITION_INDEPENDENT_CODE OFF)
     endif()
 
     option(CMAKE_BUILD_TYPE "Build type" "Debug") 

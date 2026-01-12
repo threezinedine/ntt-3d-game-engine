@@ -10,3 +10,12 @@
 		VkResult result = exp;                                                                                         \
 		NTT_ASSERT(result == VK_SUCCESS);                                                                              \
 	} while (0)
+
+namespace ntt {
+struct QueueFamily
+{
+	u32 familyIndex;
+	b8	exist;
+};
+
+} // namespace ntt

@@ -7,6 +7,7 @@
 
 namespace ntt {
 class Device;
+struct QueueFamily;
 
 class Renderer
 {
@@ -29,6 +30,7 @@ public:
 private:
 	static void CreateInstance();
 	static void ChoosePhysicalDevice();
+	static void ChooseQueueFamilies();
 
 private:
 	static b8				  m_isInitialized;
@@ -38,6 +40,10 @@ private:
 	static VkInstance		s_vkInstance;
 	static VkPhysicalDevice s_vkPhysicalDevice;
 	static Device			s_device;
+
+	static QueueFamily s_renderQueueFamily;
+	static QueueFamily s_computeQueueFamily;
+	static QueueFamily s_transferQueueFamily;
 
 private:
 	static ReleaseStack s_releaseStack;

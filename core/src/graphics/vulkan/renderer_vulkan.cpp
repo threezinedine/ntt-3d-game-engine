@@ -6,11 +6,15 @@ namespace ntt {
 VkInstance		 Renderer::s_vkInstance		  = VK_NULL_HANDLE;
 VkPhysicalDevice Renderer::s_vkPhysicalDevice = VK_NULL_HANDLE;
 ReleaseStack	 Renderer::s_releaseStack;
+QueueFamily		 Renderer::s_renderQueueFamily	 = {};
+QueueFamily		 Renderer::s_computeQueueFamily	 = {};
+QueueFamily		 Renderer::s_transferQueueFamily = {};
 
 void Renderer::Initialize()
 {
 	CreateInstance();
 	ChoosePhysicalDevice();
+	ChooseQueueFamilies();
 }
 
 void Renderer::Shutdown()
@@ -102,6 +106,68 @@ static u32 getPhysicalDeviceScore(VkPhysicalDevice physicalDevice)
 	score += properties.limits.maxImageDimension3D;
 
 	return score;
+}
+
+void Renderer::ChooseQueueFamilies()
+{
+	NTT_ASSERT(s_vkPhysicalDevice != VK_NULL_HANDLE);
+
+	u32 queueFamiliesCount = 0;
+	vkGetPhysicalDeviceQueueFamilyProperties(s_vkPhysicalDevice, &queueFamiliesCount, nullptr);
+	NTT_ASSERT(queueFamiliesCount != 0);
+
+	Array<VkQueueFamilyProperties> queueFamiliesProperties(queueFamiliesCount);
+	vkGetPhysicalDeviceQueueFamilyProperties(s_vkPhysicalDevice, &queueFamiliesCount, queueFamiliesProperties.data());
+
+	for (u32 queueFamilyIndex = 0u; queueFamilyIndex < queueFamiliesCount; ++queueFamilyIndex)
+	{
+		VkQueueFamilyProperties familyProperties = queueFamiliesProperties[queueFamilyIndex];
+
+		if (!s_renderQueueFamily.exist && familyProperties.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+		{
+			s_renderQueueFamily.familyIndex = queueFamilyIndex;
+			s_renderQueueFamily.exist		= NTT_TRUE;
+		}
+	}
+
+	NTT_ASSERT(s_renderQueueFamily.exist);
+
+	for (u32 queueFamilyIndex = 0u; queueFamilyIndex < queueFamiliesCount; ++queueFamilyIndex)
+	{
+		VkQueueFamilyProperties familyProperties = queueFamiliesProperties[queueFamilyIndex];
+
+		if (familyProperties.queueFlags & VK_QUEUE_COMPUTE_BIT)
+		{
+			if (!s_computeQueueFamily.exist || queueFamilyIndex != s_renderQueueFamily.familyIndex)
+			{
+				s_computeQueueFamily.familyIndex = queueFamilyIndex;
+				s_computeQueueFamily.exist		 = NTT_TRUE;
+			}
+		}
+
+		if (familyProperties.queueFlags & VK_QUEUE_TRANSFER_BIT)
+		{
+			if (!s_transferQueueFamily.exist || queueFamilyIndex != s_renderQueueFamily.familyIndex)
+			{
+				s_transferQueueFamily.familyIndex = queueFamilyIndex;
+				s_transferQueueFamily.exist		  = NTT_TRUE;
+			}
+		}
+	}
+
+	NTT_RENDERER_LOG_DEBUG("Vulkan - Graphical family index: %d", s_renderQueueFamily.familyIndex);
+
+	if (s_computeQueueFamily.exist)
+	{
+		NTT_RENDERER_LOG_DEBUG("Vulkan - Compute family index: %d", s_computeQueueFamily.familyIndex);
+	}
+	else
+	{
+		NTT_RENDERER_LOG_DEBUG("Vulkan - No compute support");
+	}
+
+	NTT_ASSERT(s_transferQueueFamily.exist);
+	NTT_RENDERER_LOG_DEBUG("Vulkan - Transfer family index: %d", s_transferQueueFamily.familyIndex);
 }
 
 void Renderer::AttachSurface(Reference<Surface> pSurface)
