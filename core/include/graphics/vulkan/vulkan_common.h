@@ -29,6 +29,8 @@ VkImageType		getVkImageTypeFromImageType(ImageType type);
 VkImageViewType getVkImageViewTypeFromImageType(ImageType type);
 VkFormat		getVkFormatFromFormat(Format format);
 
+Format getFormatFromVkFormat(VkFormat format);
+
 #define NTT_VULKAN_LOG_TRACE(message, ...) NTT_LOG_TRACE(LogTagMaskBit::LOG_TAG_MASK_VULKAN, message, ##__VA_ARGS__)
 #define NTT_VULKAN_LOG_DEBUG(message, ...) NTT_LOG_DEBUG(LogTagMaskBit::LOG_TAG_MASK_VULKAN, message, ##__VA_ARGS__)
 #define NTT_VULKAN_LOG_INFO(message, ...)  NTT_LOG_INFO(LogTagMaskBit::LOG_TAG_MASK_VULKAN, message, ##__VA_ARGS__)

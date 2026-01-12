@@ -28,8 +28,11 @@ private:
 	VkSwapchainKHR	   m_vkSwapchain;
 	Device*			   m_pDevice;
 	Reference<Surface> m_pSurface;
-	// Array<Image>	   m_images;
-	ReleaseStack m_releaseStack;
+	ReleaseStack	   m_releaseStack;
+
+private:
+	u32			 m_imagesCount;
+	Array<Image> m_images;
 };
 
 } // namespace ntt

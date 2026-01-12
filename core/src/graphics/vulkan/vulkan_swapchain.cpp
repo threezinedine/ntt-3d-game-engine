@@ -1,5 +1,6 @@
 #if NTT_USE_GRAPHICS_VULKAN
 #include "graphics/vulkan/vulkan_swapchain.h"
+#include "graphics/image.h"
 #include "graphics/surface.h"
 #include "graphics/vulkan/vulkan_device.h"
 
@@ -34,14 +35,29 @@ Swapchain::Swapchain(Device* pDevice, Reference<Surface> pSurface)
 
 	VK_ASSERT(vkCreateSwapchainKHR(pDevice->GetVkDevice(), &swapchainInfo, nullptr, &m_vkSwapchain));
 	NTT_RENDERER_LOG_DEBUG("Swapchain created.");
-	m_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void* pUserData) {
+	m_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) {
 		vkDestroySwapchainKHR(m_pDevice->GetVkDevice(), m_vkSwapchain, nullptr);
 		NTT_RENDERER_LOG_DEBUG("Swapchain destroyed.");
 	});
+
+	// Acquire images
+	vkGetSwapchainImagesKHR(pDevice->GetVkDevice(), m_vkSwapchain, &m_imagesCount, nullptr);
+	Array<VkImage> images(m_imagesCount);
+	vkGetSwapchainImagesKHR(pDevice->GetVkDevice(), m_vkSwapchain, &m_imagesCount, images.data());
+
+	m_images.reserve(m_imagesCount);
+	for (u32 imageIndex = 0u; imageIndex < m_imagesCount; ++imageIndex)
+	{
+		m_images.emplace_back(pDevice,
+							  images[imageIndex],
+							  getFormatFromVkFormat(pSurface->GetSurfaceFormat().format),
+							  ImageType::IMAGE_TYPE_2D);
+	}
 }
 
 Swapchain::~Swapchain()
 {
+	NTT_RENDERER_LOG_DEBUG("Release stack size: %ld", m_releaseStack.Size());
 }
 
 } // namespace ntt

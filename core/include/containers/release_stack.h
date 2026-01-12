@@ -24,6 +24,11 @@ public:
 	 */
 	void ReleaseAll(void);
 
+	inline size_t Size() const
+	{
+		return m_releaseEntries.size();
+	}
+
 private:
 	struct ReleaseEntry
 	{

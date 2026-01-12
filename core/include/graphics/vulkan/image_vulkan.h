@@ -14,8 +14,8 @@ public:
 		  VkImage	image  = VK_NULL_HANDLE,
 		  Format	format = Format::FORMAT_COUNT,
 		  ImageType type   = ImageType::IMAGE_TYPE_2D);
-	NTT_DELETE_COPY(Image)
-	NTT_DELETE_MOVE(Image)
+	Image(const Image& other);
+	Image(Image&& other);
 	~Image();
 
 private:

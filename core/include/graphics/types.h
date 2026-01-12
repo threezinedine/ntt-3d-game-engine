@@ -12,6 +12,8 @@ enum ImageType
 
 enum Format
 {
+	FORMAT_R8G8B8A8_SRGB,
+	FORMAT_B8G8R8A8_SRGB,
 	FORMAT_COUNT
 };
 

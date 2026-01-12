@@ -319,7 +319,7 @@ void Renderer::CreateDevice(const Array<const char*>& extensions, const Array<co
 	s_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) {
 		vkDestroyDevice(s_device.GetVkDevice(), nullptr);
 		NTT_RENDERER_LOG_DEBUG("Logical device is destroyed.");
-	});
+	}); // TODO: Refactor later
 }
 
 void Renderer::CheckingTheSurfaceSupport()
