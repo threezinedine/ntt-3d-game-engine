@@ -16,9 +16,11 @@ public:
 	NTT_DELETE_MOVE(Surface)
 	~Surface();
 
+	void CreateVkSurface();
+
 	inline GLFWwindow* GetGLFWWindow() const
 	{
-		return m_window;
+		return m_pWindow;
 	}
 
 	inline VkSurfaceKHR GetVkSurface() const
@@ -29,7 +31,7 @@ public:
 	void Bind();
 
 private:
-	GLFWwindow*	 m_window;
+	GLFWwindow*	 m_pWindow;
 	VkSurfaceKHR m_vkSurface;
 };
 

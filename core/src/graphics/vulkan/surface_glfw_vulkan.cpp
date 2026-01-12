@@ -6,8 +6,15 @@
 namespace ntt {
 
 Surface::Surface(GLFWwindow* window)
-	: m_window(window)
+	: m_pWindow(window)
 {
+}
+
+void Surface::CreateVkSurface()
+{
+	NTT_ASSERT(Renderer::GetVkInstance() != VK_NULL_HANDLE);
+
+	VK_ASSERT(glfwCreateWindowSurface(Renderer::GetVkInstance(), m_pWindow, nullptr, &m_vkSurface));
 }
 
 Surface::~Surface()
@@ -16,7 +23,7 @@ Surface::~Surface()
 
 void Surface::Bind()
 {
-	glfwMakeContextCurrent(m_window);
+	glfwMakeContextCurrent(m_pWindow);
 }
 
 } // namespace ntt

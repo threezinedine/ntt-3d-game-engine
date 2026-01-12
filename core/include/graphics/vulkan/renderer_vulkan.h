@@ -33,10 +33,11 @@ public:
 	}
 
 private:
-	static void CreateInstance();
+	static void CreateInstance(const Array<const char*>& extensions, const Array<const char*>& layers);
 	static void ChoosePhysicalDevice();
 	static void ChooseQueueFamilies();
-	static void CreateDevice();
+	static void CreateDevice(const Array<const char*>& extensions, const Array<const char*>& layers);
+	static void CheckingTheSurfaceSupport();
 
 private:
 	static b8				  m_isInitialized;

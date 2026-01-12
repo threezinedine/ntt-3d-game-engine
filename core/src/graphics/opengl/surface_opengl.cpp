@@ -5,8 +5,8 @@
 
 namespace ntt {
 
-Surface::Surface(GLFWwindow* window)
-	: m_window(window)
+Surface::Surface(GLFWwindow* pWindow)
+	: m_pWindow(pWindow)
 {
 }
 
@@ -16,7 +16,7 @@ Surface::~Surface()
 
 void Surface::Bind()
 {
-	glfwMakeContextCurrent(m_window);
+	glfwMakeContextCurrent(m_pWindow);
 }
 
 } // namespace ntt

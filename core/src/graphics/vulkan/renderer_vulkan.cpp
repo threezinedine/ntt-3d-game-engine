@@ -1,6 +1,11 @@
 #if NTT_USE_GRAPHICS_VULKAN
 #include "graphics/renderer.h"
+#include "graphics/surface.h"
 #include "graphics/vulkan/vulkan_device.h"
+
+#if NTT_USE_GLFW
+#include <GLFW/glfw3.h>
+#endif
 
 namespace ntt {
 
@@ -16,7 +21,7 @@ ReleaseStack Renderer::s_releaseStack;
 
 void Renderer::Initialize()
 {
-	CreateInstance();
+	CreateInstance({"VK_KHR_surface"}, {});
 	ChoosePhysicalDevice();
 	ChooseQueueFamilies();
 }
@@ -26,7 +31,7 @@ void Renderer::Shutdown()
 	s_releaseStack.ReleaseAll();
 }
 
-void Renderer::CreateInstance()
+void Renderer::CreateInstance(const Array<const char*>& extensions, const Array<const char*>& layers)
 {
 	NTT_ASSERT(s_vkInstance == VK_NULL_HANDLE);
 
@@ -38,9 +43,34 @@ void Renderer::CreateInstance()
 	appInfo.engineVersion	   = VK_MAKE_VERSION(1, 0, 0);
 	appInfo.apiVersion		   = VK_API_VERSION_1_0;
 
-	VkInstanceCreateInfo createInfo = {};
-	createInfo.sType				= VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-	createInfo.pApplicationInfo		= &appInfo;
+#if NTT_USE_GLFW
+	u32			 glfwExtensionsCount = 0;
+	const char** glfwExtensions		 = glfwGetRequiredInstanceExtensions(&glfwExtensionsCount);
+
+	u32				   extensionsCount = u32(extensions.size());
+	Array<const char*> finalExtensions;
+	finalExtensions.reserve(glfwExtensionsCount + extensionsCount);
+
+	for (u32 glfwExtensionIndex = 0u; glfwExtensionIndex < glfwExtensionsCount; ++glfwExtensionIndex)
+	{
+		finalExtensions.push_back(glfwExtensions[glfwExtensionIndex]);
+	}
+
+	for (u32 extensionIndex = 0u; extensionIndex < extensionsCount; ++extensionIndex)
+	{
+		finalExtensions.push_back(extensions[extensionIndex]);
+	}
+#else
+	Array<const char*> finalExtensions(extensions);
+#endif
+
+	VkInstanceCreateInfo createInfo	   = {};
+	createInfo.sType				   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+	createInfo.pApplicationInfo		   = &appInfo;
+	createInfo.enabledExtensionCount   = u32(finalExtensions.size());
+	createInfo.ppEnabledExtensionNames = finalExtensions.data();
+	createInfo.enabledLayerCount	   = u32(layers.size());
+	createInfo.ppEnabledLayerNames	   = layers.data();
 
 	VK_ASSERT(vkCreateInstance(&createInfo, NTT_NULLPTR, &s_vkInstance));
 	s_releaseStack.PushReleaseFunction(NTT_NULLPTR, [](void*) {
@@ -174,7 +204,7 @@ void Renderer::ChooseQueueFamilies()
 	NTT_RENDERER_LOG_DEBUG("Vulkan - Transfer family index: %d", s_transferQueueFamily.familyIndex);
 }
 
-void Renderer::CreateDevice()
+void Renderer::CreateDevice(const Array<const char*>& extensions, const Array<const char*>& layers)
 {
 	Set<u32> uniqueQueueFamilies;
 	uniqueQueueFamilies.emplace(s_renderQueueFamily.familyIndex);
@@ -203,10 +233,10 @@ void Renderer::CreateDevice()
 
 	VkDeviceCreateInfo deviceInfo	   = {};
 	deviceInfo.sType				   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-	deviceInfo.enabledExtensionCount   = 0;
-	deviceInfo.ppEnabledExtensionNames = nullptr;
-	deviceInfo.enabledLayerCount	   = 0;
-	deviceInfo.ppEnabledLayerNames	   = nullptr;
+	deviceInfo.enabledExtensionCount   = u32(extensions.size());
+	deviceInfo.ppEnabledExtensionNames = extensions.data();
+	deviceInfo.enabledLayerCount	   = u32(layers.size());
+	deviceInfo.ppEnabledLayerNames	   = layers.data();
 	deviceInfo.queueCreateInfoCount	   = u32(queueInfos.size());
 	deviceInfo.pQueueCreateInfos	   = queueInfos.data();
 
@@ -218,13 +248,35 @@ void Renderer::CreateDevice()
 	});
 }
 
+void Renderer::CheckingTheSurfaceSupport()
+{
+	NTT_ASSERT(s_pSurface != nullptr);
+	NTT_ASSERT(s_pSurface->GetVkSurface() != VK_NULL_HANDLE);
+	NTT_ASSERT(s_renderQueueFamily.exist);
+
+	u32 support = VK_FALSE;
+
+#if 0
+	VkSurfaceCapabilitiesKHR capabilities;
+	VK_ASSERT(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(s_vkPhysicalDevice, s_pSurface->GetVkSurface(), &capabilities));
+#endif
+
+	VK_ASSERT(vkGetPhysicalDeviceSurfaceSupportKHR(
+		s_vkPhysicalDevice, s_renderQueueFamily.familyIndex, s_pSurface->GetVkSurface(), &support));
+
+	NTT_ASSERT(support == VK_TRUE);
+	NTT_RENDERER_LOG_DEBUG("The surface validated.");
+}
+
 void Renderer::AttachSurface(Reference<Surface> pSurface)
 {
 	s_pSurface = pSurface;
+	s_pSurface->CreateVkSurface();
 
 	if (!s_device.IsInitialized())
 	{
-		CreateDevice();
+		CreateDevice({}, {});
+		CheckingTheSurfaceSupport();
 	}
 }
 

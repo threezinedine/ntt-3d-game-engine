@@ -8,7 +8,11 @@
 	do                                                                                                                 \
 	{                                                                                                                  \
 		VkResult result = exp;                                                                                         \
-		NTT_ASSERT(result == VK_SUCCESS);                                                                              \
+		if (result != VK_SUCCESS)                                                                                      \
+		{                                                                                                              \
+			NTT_SYSTEM_LOG_FATAL("Vulkan call failed with error code: %u", result);                                    \
+			NTT_UNREACHABLE();                                                                                         \
+		}                                                                                                              \
 	} while (0)
 
 namespace ntt {

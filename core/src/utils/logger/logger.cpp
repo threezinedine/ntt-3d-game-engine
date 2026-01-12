@@ -42,7 +42,7 @@ void Logger::Setup(LogLevel level, const char* format, LogHandlerTypes types, u3
 
 static void truncateString(const String& input, char* output, size_t maxLength);
 
-void Logger::Log(LogLevel level, LogTagMaskBit tag, const char* message, const char* file, u8 line)
+void Logger::Log(LogLevel level, LogTagMaskBit tag, const char* message, const char* file, u32 line)
 {
 	if (level < m_logLevel)
 	{

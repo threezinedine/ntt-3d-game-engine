@@ -32,7 +32,7 @@ public:
 	 * @param file The source file where the log message originated.
 	 * @param line The line number in the source file where the log message originated.
 	 */
-	void Log(LogLevel level, LogTagMaskBit tag, const char* message, const char* file, u8 line) NTT_BINDING;
+	void Log(LogLevel level, LogTagMaskBit tag, const char* message, const char* file, u32 line) NTT_BINDING;
 
 	/**
 	 * The interface whereas the editor can be notified of log messages from the engine.

@@ -9,20 +9,20 @@ namespace ntt {
 class Surface
 {
 public:
-	Surface(GLFWwindow* window);
+	Surface(GLFWwindow* pWindow);
 	NTT_DELETE_COPY(Surface)
 	NTT_DELETE_MOVE(Surface)
 	~Surface();
 
 	inline GLFWwindow* GetGLFWWindow() const
 	{
-		return m_window;
+		return m_pWindow;
 	}
 
 	void Bind();
 
 private:
-	GLFWwindow* m_window;
+	GLFWwindow* m_pWindow;
 };
 
 } // namespace ntt

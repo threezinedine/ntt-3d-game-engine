@@ -40,7 +40,7 @@ struct NTT_BINDING LogRecord
 	LogLevel	  level;
 	String		  message;
 	String		  file;
-	int			  line;
+	u32			  line;
 	LogTagMaskBit tag;
 	String		  fullFilePath;
 	String		  finalMessage;

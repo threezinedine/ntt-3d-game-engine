@@ -1,14 +1,11 @@
 #if NTT_USE_GRAPHICS_OPENGL
 // clang-format off
-#if 0
-#include <glad/glad.h>
-#else 
 #include <GL/glew.h>
-#endif
 #include <GLFW/glfw3.h>
 // clang-format on
 
 #include "graphics/renderer.h"
+#include "graphics/surface.h"
 
 namespace ntt {
 b8				   Renderer::m_isInitialized = NTT_FALSE;
@@ -17,12 +14,6 @@ Reference<Surface> Renderer::s_pSurface		 = nullptr;
 void Renderer::Initialize()
 {
 	NTT_ASSERT(!m_isInitialized);
-
-#if !NTT_ENGINE_EDITOR_BINDING
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-#endif
 
 	NTT_RENDERER_LOG_INFO("OpenGL Renderer initialized.");
 	m_isInitialized = NTT_TRUE;
