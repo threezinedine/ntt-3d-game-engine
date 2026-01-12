@@ -15,7 +15,7 @@ ReleaseStack::~ReleaseStack()
 	}
 }
 
-void ReleaseStack::PushReleaseFunction(void* pUserData, Function<void(void*)> releaseFunction)
+void ReleaseStack::PushReleaseFunction(void* pUserData, std::function<void(void*)> releaseFunction)
 {
 	ReleaseEntry entry;
 	entry.p_userData	  = pUserData;

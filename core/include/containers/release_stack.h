@@ -17,7 +17,7 @@ public:
 	 * @param pUserData Pointer to user data to be passed to the release function.
 	 * @param releaseFunction Function to be called for releasing resources.
 	 */
-	void PushReleaseFunction(void* pUserData, Function<void(void*)> releaseFunction);
+	void PushReleaseFunction(void* pUserData, std::function<void(void*)> releaseFunction);
 
 	/**
 	 * Destroy all resources by calling all release functions in LIFO order.
@@ -27,8 +27,8 @@ public:
 private:
 	struct ReleaseEntry
 	{
-		void*				  p_userData;
-		Function<void(void*)> releaseFunction;
+		void*					   p_userData;
+		std::function<void(void*)> releaseFunction;
 	};
 
 	Stack<ReleaseEntry> m_releaseEntries;

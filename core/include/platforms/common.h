@@ -85,10 +85,6 @@ template <typename T>
 class Stack;
 #endif
 
-// template <typename T, typename... Args>
-// using Function = std::function<T(Args...)>;
-#define Function std::function
-
 using Thread = std::thread;
 using Mutex	 = std::mutex;
 
