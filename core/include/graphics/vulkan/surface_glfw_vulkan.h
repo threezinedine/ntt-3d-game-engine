@@ -1,8 +1,10 @@
-#if NTT_USE_GLFW
+#if NTT_USE_GRAPHICS_VULKAN && NTT_USE_GLFW
 
 #pragma once
 #include "platforms/common.h"
+#include "vulkan_common.h"
 #include <GLFW/glfw3.h>
+#include <vulkan/vulkan.h>
 
 namespace ntt {
 
@@ -19,12 +21,18 @@ public:
 		return m_window;
 	}
 
+	inline VkSurfaceKHR GetVkSurface() const
+	{
+		return m_vkSurface;
+	}
+
 	void Bind();
 
 private:
-	GLFWwindow* m_window;
+	GLFWwindow*	 m_window;
+	VkSurfaceKHR m_vkSurface;
 };
 
 } // namespace ntt
 
-#endif // NTT_USE_GLFW
+#endif // NTT_USE_GRAPHICS_VULKAN && NTT_USE_GLFW

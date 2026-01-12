@@ -16,6 +16,14 @@
 			"preLaunchTask": "Build Debug Linux",
 			"args": [],
 			"cwd": "${workspaceFolder}/core/build/debug_linux_unix/"
+		},
+		{
+			"name": "Runtime (Debug, Linux)",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceRoot}/runtime/build/debug_linux_unix/EngineRuntime",
+			"args": [],
+			"cwd": "${workspaceRoot}/runtime/build/debug_linux_unix"
 		}
 	]
 }

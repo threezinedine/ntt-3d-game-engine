@@ -1,5 +1,6 @@
 #if NTT_USE_GLFW
 
+#include "graphics/surface.h"
 #include "input/input.h"
 #include "platforms/graphics/window.h"
 #include "utils/utils.h"

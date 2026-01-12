@@ -1,8 +1,9 @@
 #pragma once
 #include "platforms/common.h"
-#include "surface.h"
 
 namespace ntt {
+
+class Surface;
 
 class Window
 {

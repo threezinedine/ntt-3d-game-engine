@@ -10,5 +10,5 @@
 #define NTT_RENDERER_LOG_ERROR(message, ...) NTT_LOG_ERROR(LogTagMaskBit::LOG_TAG_MASK_RENDERER, message, ##__VA_ARGS__)
 #define NTT_RENDERER_LOG_FATAL(message, ...) NTT_LOG_FATAL(LogTagMaskBit::LOG_TAG_MASK_RENDERER, message, ##__VA_ARGS__)
 
-#include "opengl/opengl_renderer.h"
-#include "vulkan/vulkan_renderer.h"
+#include "opengl/renderer_opengl.h"
+#include "vulkan/renderer_vulkan.h"

@@ -1,6 +1,6 @@
-#if NTT_USE_GLFW
+#if NTT_USE_GRAPHICS_VULKAN & NTT_USE_GLFW
 
-#include "platforms/graphics/surface/surface_glfw.h"
+#include "graphics/vulkan/surface_glfw_vulkan.h"
 #include <GLFW/glfw3.h>
 
 namespace ntt {
@@ -21,4 +21,4 @@ void Surface::Bind()
 
 } // namespace ntt
 
-#endif // NTT_USE_GRAPHICS_OPENGL
+#endif // NTT_USE_GRAPHICS_VULKAN & NTT_USE_GLFW
