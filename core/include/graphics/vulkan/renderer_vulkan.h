@@ -27,10 +27,16 @@ public:
 		return s_vkInstance;
 	}
 
+	static inline Device& GetDevice()
+	{
+		return s_device;
+	}
+
 private:
 	static void CreateInstance();
 	static void ChoosePhysicalDevice();
 	static void ChooseQueueFamilies();
+	static void CreateDevice();
 
 private:
 	static b8				  m_isInitialized;

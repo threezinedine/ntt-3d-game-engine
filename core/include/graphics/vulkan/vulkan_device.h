@@ -16,12 +16,17 @@ public:
 	~Device();
 
 public:
+	inline b8 IsInitialized()
+	{
+		return m_vkDevice != VK_NULL_HANDLE;
+	}
+
 	inline VkPhysicalDevice GetVkPhysicalDevice() const
 	{
 		return m_vkPhysicalDevice;
 	}
 
-	inline VkDevice GetVkDevice() const
+	inline VkDevice& GetVkDevice()
 	{
 		return m_vkDevice;
 	}

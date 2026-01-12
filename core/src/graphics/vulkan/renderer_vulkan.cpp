@@ -1,14 +1,18 @@
 #if NTT_USE_GRAPHICS_VULKAN
 #include "graphics/renderer.h"
+#include "graphics/vulkan/vulkan_device.h"
 
 namespace ntt {
 
-VkInstance		 Renderer::s_vkInstance		  = VK_NULL_HANDLE;
-VkPhysicalDevice Renderer::s_vkPhysicalDevice = VK_NULL_HANDLE;
-ReleaseStack	 Renderer::s_releaseStack;
-QueueFamily		 Renderer::s_renderQueueFamily	 = {};
-QueueFamily		 Renderer::s_computeQueueFamily	 = {};
-QueueFamily		 Renderer::s_transferQueueFamily = {};
+VkInstance		   Renderer::s_vkInstance		   = VK_NULL_HANDLE;
+VkPhysicalDevice   Renderer::s_vkPhysicalDevice	   = VK_NULL_HANDLE;
+Reference<Surface> Renderer::s_pSurface			   = nullptr;
+QueueFamily		   Renderer::s_renderQueueFamily   = {};
+QueueFamily		   Renderer::s_computeQueueFamily  = {};
+QueueFamily		   Renderer::s_transferQueueFamily = {};
+
+Device		 Renderer::s_device;
+ReleaseStack Renderer::s_releaseStack;
 
 void Renderer::Initialize()
 {
@@ -41,9 +45,9 @@ void Renderer::CreateInstance()
 	VK_ASSERT(vkCreateInstance(&createInfo, NTT_NULLPTR, &s_vkInstance));
 	s_releaseStack.PushReleaseFunction(NTT_NULLPTR, [](void*) {
 		vkDestroyInstance(Renderer::GetVkInstance(), NTT_NULLPTR);
-		NTT_RENDERER_LOG_INFO("Vulkan instance destroyed.");
+		NTT_RENDERER_LOG_DEBUG("Vulkan instance destroyed.");
 	});
-	NTT_RENDERER_LOG_INFO("Vulkan instance created.");
+	NTT_RENDERER_LOG_DEBUG("Vulkan instance created.");
 }
 
 static u32 getPhysicalDeviceScore(VkPhysicalDevice physicalDevice);
@@ -170,8 +174,58 @@ void Renderer::ChooseQueueFamilies()
 	NTT_RENDERER_LOG_DEBUG("Vulkan - Transfer family index: %d", s_transferQueueFamily.familyIndex);
 }
 
+void Renderer::CreateDevice()
+{
+	Set<u32> uniqueQueueFamilies;
+	uniqueQueueFamilies.emplace(s_renderQueueFamily.familyIndex);
+	if (s_computeQueueFamily.exist)
+	{
+		uniqueQueueFamilies.emplace(s_computeQueueFamily.familyIndex);
+	}
+	uniqueQueueFamilies.emplace(s_transferQueueFamily.familyIndex);
+
+	Array<VkDeviceQueueCreateInfo> queueInfos;
+	queueInfos.reserve(uniqueQueueFamilies.size());
+	float renderQueuePriority = 1.0f;
+	float otherPriority		  = 0.0f;
+
+	for (const auto& familyIndex : uniqueQueueFamilies)
+	{
+		VkDeviceQueueCreateInfo queueInfo = {};
+		queueInfo.sType					  = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		queueInfo.pQueuePriorities =
+			familyIndex == s_renderQueueFamily.familyIndex ? &renderQueuePriority : &otherPriority;
+		queueInfo.queueCount	   = 1;
+		queueInfo.queueFamilyIndex = familyIndex;
+
+		queueInfos.push_back(queueInfo);
+	}
+
+	VkDeviceCreateInfo deviceInfo	   = {};
+	deviceInfo.sType				   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+	deviceInfo.enabledExtensionCount   = 0;
+	deviceInfo.ppEnabledExtensionNames = nullptr;
+	deviceInfo.enabledLayerCount	   = 0;
+	deviceInfo.ppEnabledLayerNames	   = nullptr;
+	deviceInfo.queueCreateInfoCount	   = u32(queueInfos.size());
+	deviceInfo.pQueueCreateInfos	   = queueInfos.data();
+
+	VK_ASSERT(vkCreateDevice(s_vkPhysicalDevice, &deviceInfo, nullptr, &s_device.GetVkDevice()));
+	NTT_RENDERER_LOG_DEBUG("Logical device created.");
+	s_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) {
+		vkDestroyDevice(s_device.GetVkDevice(), nullptr);
+		NTT_RENDERER_LOG_DEBUG("Logical device is destroyed.");
+	});
+}
+
 void Renderer::AttachSurface(Reference<Surface> pSurface)
 {
+	s_pSurface = pSurface;
+
+	if (!s_device.IsInitialized())
+	{
+		CreateDevice();
+	}
 }
 
 void Renderer::BeginFrame()
