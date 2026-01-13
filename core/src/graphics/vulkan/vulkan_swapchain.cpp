@@ -3,10 +3,11 @@
 #include "graphics/image.h"
 #include "graphics/surface.h"
 #include "graphics/vulkan/vulkan_device.h"
+#include "graphics/vulkan/vulkan_semaphore.h"
 
 namespace ntt {
 
-Swapchain::Swapchain(Device* pDevice, Reference<Surface> pSurface)
+Swapchain::Swapchain(Reference<Device> pDevice, Reference<Surface> pSurface)
 	: m_pDevice(pDevice)
 	, m_pSurface(pSurface)
 {
@@ -58,6 +59,18 @@ Swapchain::Swapchain(Device* pDevice, Reference<Surface> pSurface)
 
 Swapchain::~Swapchain()
 {
+}
+
+u32 Swapchain::AcquireNextImage(Semaphore& signalSemaphore)
+{
+	VK_ASSERT(vkAcquireNextImageKHR(m_pDevice->GetVkDevice(),
+									m_vkSwapchain,
+									UINT64_MAX,
+									signalSemaphore.GetVkSemaphore(),
+									VK_NULL_HANDLE,
+									&m_currentImageIndex));
+
+	return m_currentImageIndex;
 }
 
 } // namespace ntt

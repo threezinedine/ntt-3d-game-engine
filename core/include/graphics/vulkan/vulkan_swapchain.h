@@ -9,11 +9,12 @@ namespace ntt {
 
 class Device;
 class Image;
+class Semaphore;
 
 class Swapchain
 {
 public:
-	Swapchain(Device* pDevice, Reference<Surface> pSurface);
+	Swapchain(Reference<Device> pDevice, Reference<Surface> pSurface);
 	NTT_DELETE_COPY(Swapchain)
 	NTT_DELETE_MOVE(Swapchain)
 	~Swapchain();
@@ -29,18 +30,26 @@ public:
 		return m_imagesCount;
 	}
 
+	inline u32 GetCurrentImageIndex() const
+	{
+		return m_currentImageIndex;
+	}
+
 public:
-	void AcquireNextImage();
+	u32 AcquireNextImage(Semaphore& signalSemaphore);
 
 private:
 	VkSwapchainKHR	   m_vkSwapchain;
-	Device*			   m_pDevice;
+	Reference<Device>  m_pDevice;
 	Reference<Surface> m_pSurface;
 	ReleaseStack	   m_releaseStack;
 
 private:
 	u32			 m_imagesCount;
 	Array<Image> m_images;
+
+private:
+	u32 m_currentImageIndex;
 };
 
 } // namespace ntt

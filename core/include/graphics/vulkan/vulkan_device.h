@@ -7,10 +7,12 @@
 
 namespace ntt {
 
+class GraphicQueue;
+
 class Device
 {
 public:
-	Device();
+	Device(VkPhysicalDevice vkPhysicalDevice, const Array<const char*>& extensions, const Array<const char*>& layers);
 	NTT_DELETE_COPY(Device)
 	NTT_DELETE_MOVE(Device)
 	~Device();
@@ -31,13 +33,12 @@ public:
 		return m_vkDevice;
 	}
 
-	void Create(VkPhysicalDevice physicalDevice);
-
-	void Destroy();
-
 private:
-	VkPhysicalDevice m_vkPhysicalDevice;
-	VkDevice		 m_vkDevice;
+	VkPhysicalDevice	m_vkPhysicalDevice;
+	VkDevice			m_vkDevice;
+	Scope<GraphicQueue> m_renderQueue;
+	Scope<GraphicQueue> m_transferQueue;
+	Scope<GraphicQueue> m_computeQueue;
 
 private:
 	ReleaseStack m_releaseStack;

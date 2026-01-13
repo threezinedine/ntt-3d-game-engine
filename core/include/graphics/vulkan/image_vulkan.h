@@ -10,10 +10,10 @@ class Device;
 class Image
 {
 public:
-	Image(Device*	pDevice,
-		  VkImage	image  = VK_NULL_HANDLE,
-		  Format	format = Format::FORMAT_COUNT,
-		  ImageType type   = ImageType::IMAGE_TYPE_2D);
+	Image(Reference<Device> pDevice,
+		  VkImage			image  = VK_NULL_HANDLE,
+		  Format			format = Format::FORMAT_COUNT,
+		  ImageType			type   = ImageType::IMAGE_TYPE_2D);
 	Image(const Image& other);
 	Image(Image&& other);
 	~Image();
@@ -22,11 +22,11 @@ private:
 	void CreateVkImageView();
 
 private:
-	VkImage		m_vkImage;
-	VkImageView m_vkImageView;
-	Device*		m_pDevice;
-	Format		m_format;
-	ImageType	m_imageType;
+	VkImage			  m_vkImage;
+	VkImageView		  m_vkImageView;
+	Reference<Device> m_pDevice;
+	Format			  m_format;
+	ImageType		  m_imageType;
 
 private:
 	ReleaseStack m_releaseStack;

@@ -5,7 +5,7 @@
 
 namespace ntt {
 
-Image::Image(Device* pDevice, VkImage image, Format format, ImageType type)
+Image::Image(Reference<Device> pDevice, VkImage image, Format format, ImageType type)
 	: m_vkImage(image)
 	, m_vkImageView(VK_NULL_HANDLE)
 	, m_pDevice(pDevice)

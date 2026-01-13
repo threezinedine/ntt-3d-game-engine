@@ -9,6 +9,8 @@ namespace ntt {
 class Device;
 class Swapchain;
 struct QueueFamily;
+class Semaphore;
+class Fence;
 
 class Renderer
 {
@@ -33,18 +35,19 @@ public:
 		return s_vkPhysicalDevice;
 	}
 
-	static inline Device& GetDevice()
+	static inline Reference<Device> GetDevice()
 	{
-		return s_device;
+		return s_pDevice;
 	}
 
-	static u32 GetRenderQueueFamilyIndex();
+	static i32 GetRenderQueueFamilyIndex();
+	static i32 GetComputeQueueFamilyIndex();
+	static i32 GetTransferQueueFamilyIndex();
 
 private:
 	static void CreateInstance(const Array<const char*>& extensions, const Array<const char*>& layers);
 	static void ChoosePhysicalDevice();
 	static void ChooseQueueFamilies();
-	static void CreateDevice(const Array<const char*>& extensions, const Array<const char*>& layers);
 	static void CheckingTheSurfaceSupport();
 	static void CreateSyncObjects();
 
@@ -58,19 +61,22 @@ private:
 	static Reference<Surface> s_pSurface;
 
 private:
-	static VkInstance		s_vkInstance;
-	static VkPhysicalDevice s_vkPhysicalDevice;
-	static Device			s_device;
-	static Scope<Swapchain> s_pSwapchain;
+	static VkInstance		 s_vkInstance;
+	static VkPhysicalDevice	 s_vkPhysicalDevice;
+	static Reference<Device> s_pDevice;
+	static Scope<Swapchain>	 s_pSwapchain;
 
 	static QueueFamily s_renderQueueFamily;
 	static QueueFamily s_computeQueueFamily;
 	static QueueFamily s_transferQueueFamily;
 
 private:
-	static Array<VkFence>	  s_fences;
-	static Array<VkSemaphore> s_imageReadySemaphores;
-	static Array<VkSemaphore> s_renderFinisedSemaphores;
+	static Array<Fence>		s_fences;
+	static Array<Semaphore> s_imageReadySemaphores;
+	static Array<Semaphore> s_renderFinisedSemaphores;
+
+private:
+	static u32 s_currentFlight;
 
 private:
 #if NTT_DEBUG

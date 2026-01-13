@@ -2,6 +2,8 @@
 #include "graphics/renderer.h"
 #include "graphics/surface.h"
 #include "graphics/vulkan/vulkan_device.h"
+#include "graphics/vulkan/vulkan_fence.h"
+#include "graphics/vulkan/vulkan_semaphore.h"
 #include "graphics/vulkan/vulkan_swapchain.h"
 
 #if NTT_USE_GLFW
@@ -17,15 +19,18 @@ Scope<Swapchain>   Renderer::s_pSwapchain		   = nullptr;
 QueueFamily		   Renderer::s_renderQueueFamily   = {};
 QueueFamily		   Renderer::s_computeQueueFamily  = {};
 QueueFamily		   Renderer::s_transferQueueFamily = {};
-Array<VkFence>	   Renderer::s_fences;
-Array<VkSemaphore> Renderer::s_imageReadySemaphores;
-Array<VkSemaphore> Renderer::s_renderFinisedSemaphores;
+Array<Fence>	   Renderer::s_fences;
+Array<Semaphore>   Renderer::s_imageReadySemaphores;
+Array<Semaphore>   Renderer::s_renderFinisedSemaphores;
+
+u32 Renderer::s_currentFlight = 0;
 
 #if NTT_DEBUG
 VkDebugUtilsMessengerEXT Renderer::s_vkDebugMessenger = VK_NULL_HANDLE;
 #endif // NTT_DEBUG
 
-Device		 Renderer::s_device;
+Reference<Device> Renderer::s_pDevice = nullptr;
+
 ReleaseStack Renderer::s_releaseStack;
 
 void Renderer::Initialize()
@@ -276,55 +281,6 @@ void Renderer::ChooseQueueFamilies()
 	NTT_RENDERER_LOG_DEBUG("Vulkan - Transfer family index: %d", s_transferQueueFamily.familyIndex);
 }
 
-void Renderer::CreateDevice(const Array<const char*>& extensions, const Array<const char*>& layers)
-{
-	Set<u32> uniqueQueueFamilies;
-	uniqueQueueFamilies.emplace(s_renderQueueFamily.familyIndex);
-	if (s_computeQueueFamily.exist)
-	{
-		uniqueQueueFamilies.emplace(s_computeQueueFamily.familyIndex);
-	}
-	uniqueQueueFamilies.emplace(s_transferQueueFamily.familyIndex);
-
-	Array<VkDeviceQueueCreateInfo> queueInfos;
-	queueInfos.reserve(uniqueQueueFamilies.size());
-	float renderQueuePriority = 1.0f;
-	float otherPriority		  = 0.0f;
-
-	for (const auto& familyIndex : uniqueQueueFamilies)
-	{
-		VkDeviceQueueCreateInfo queueInfo = {};
-		queueInfo.sType					  = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-#if 0
-		queueInfo.pQueuePriorities =
-			familyIndex == s_renderQueueFamily.familyIndex ? &renderQueuePriority : &otherPriority;
-#else
-		NTT_UNUSED(otherPriority);
-		queueInfo.pQueuePriorities = &renderQueuePriority;
-#endif
-		queueInfo.queueCount	   = 1;
-		queueInfo.queueFamilyIndex = familyIndex;
-
-		queueInfos.push_back(queueInfo);
-	}
-
-	VkDeviceCreateInfo deviceInfo	   = {};
-	deviceInfo.sType				   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-	deviceInfo.enabledExtensionCount   = u32(extensions.size());
-	deviceInfo.ppEnabledExtensionNames = extensions.data();
-	deviceInfo.enabledLayerCount	   = u32(layers.size());
-	deviceInfo.ppEnabledLayerNames	   = layers.data();
-	deviceInfo.queueCreateInfoCount	   = u32(queueInfos.size());
-	deviceInfo.pQueueCreateInfos	   = queueInfos.data();
-
-	VK_ASSERT(vkCreateDevice(s_vkPhysicalDevice, &deviceInfo, nullptr, &s_device.GetVkDevice()));
-	NTT_RENDERER_LOG_DEBUG("Logical device created.");
-	s_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) {
-		vkDestroyDevice(s_device.GetVkDevice(), nullptr);
-		NTT_RENDERER_LOG_DEBUG("Logical device is destroyed.");
-	}); // TODO: Refactor later
-}
-
 void Renderer::CheckingTheSurfaceSupport()
 {
 	NTT_ASSERT(s_pSurface != nullptr);
@@ -351,13 +307,19 @@ void Renderer::AttachSurface(Reference<Surface> pSurface)
 	s_pSurface->CreateVkSurface();
 	s_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) { s_pSurface->DestroyVkSurface(); });
 
-	if (!s_device.IsInitialized())
+	if (s_pDevice == nullptr)
 	{
-		CreateDevice({"VK_KHR_swapchain"}, {});
+		Array<const char*> extensions = {"VK_KHR_swapchain"};
+		Array<const char*> layers	  = {};
+		s_pDevice					  = CreateRef<Device>(s_vkPhysicalDevice, extensions, layers);
 		CheckingTheSurfaceSupport();
+		s_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) {
+			s_pDevice.reset();
+			NTT_RENDERER_LOG_DEBUG("Logical device destroyed.");
+		});
 	}
 
-	s_pSwapchain = CreateScope<Swapchain>(&s_device, s_pSurface);
+	s_pSwapchain = CreateScope<Swapchain>(s_pDevice, s_pSurface);
 	s_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) {
 		s_pSwapchain.reset();
 		NTT_RENDERER_LOG_DEBUG("Swapchain destroyed.");
@@ -366,7 +328,7 @@ void Renderer::AttachSurface(Reference<Surface> pSurface)
 	CreateSyncObjects();
 
 	s_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) {
-		vkDeviceWaitIdle(s_device.GetVkDevice());
+		vkDeviceWaitIdle(s_pDevice->GetVkDevice());
 		NTT_RENDERER_LOG_DEBUG("Surface detached.");
 	});
 }
@@ -375,48 +337,47 @@ void Renderer::CreateSyncObjects()
 {
 	u32 swapchainImagesCount = s_pSwapchain->GetImageCounts();
 
-	s_fences.resize(swapchainImagesCount);
-	s_imageReadySemaphores.resize(swapchainImagesCount);
-	s_renderFinisedSemaphores.resize(swapchainImagesCount);
+	s_fences.reserve(swapchainImagesCount);
+	s_imageReadySemaphores.reserve(swapchainImagesCount);
+	s_renderFinisedSemaphores.reserve(swapchainImagesCount);
 
 	for (u32 imageIndex = 0u; imageIndex < swapchainImagesCount; ++imageIndex)
 	{
-		VkFenceCreateInfo fenceInfo = {};
-		fenceInfo.sType				= VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-		fenceInfo.flags				= VK_FENCE_CREATE_SIGNALED_BIT;
-		VK_ASSERT(vkCreateFence(s_device.GetVkDevice(), &fenceInfo, nullptr, &s_fences[imageIndex]));
-
-		s_releaseStack.PushReleaseFunction(&s_fences[imageIndex], [&](void* pUserData) {
-			vkDestroyFence(s_device.GetVkDevice(), *(VkFence*)pUserData, nullptr);
-		});
-
-		VkSemaphoreCreateInfo imageReadyInfo = {};
-		imageReadyInfo.sType				 = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-		VK_ASSERT(
-			vkCreateSemaphore(s_device.GetVkDevice(), &imageReadyInfo, nullptr, &s_imageReadySemaphores[imageIndex]));
-
-		s_releaseStack.PushReleaseFunction(&s_imageReadySemaphores[imageIndex], [&](void* pUserData) {
-			vkDestroySemaphore(s_device.GetVkDevice(), *(VkSemaphore*)pUserData, nullptr);
-		});
-
-		VkSemaphoreCreateInfo renderFinishedInfo = {};
-		renderFinishedInfo.sType				 = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-		VK_ASSERT(vkCreateSemaphore(
-			s_device.GetVkDevice(), &renderFinishedInfo, nullptr, &s_renderFinisedSemaphores[imageIndex]));
-
-		s_releaseStack.PushReleaseFunction(&s_renderFinisedSemaphores[imageIndex], [&](void* pUserData) {
-			vkDestroySemaphore(s_device.GetVkDevice(), *(VkSemaphore*)pUserData, nullptr);
-		});
+		s_fences.emplace_back(s_pDevice);
+		s_imageReadySemaphores.emplace_back(s_pDevice);
+		s_renderFinisedSemaphores.emplace_back(s_pDevice);
 	}
+
+	s_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) {
+		s_fences.clear();
+		s_imageReadySemaphores.clear();
+		s_renderFinisedSemaphores.clear();
+	});
 }
 
-u32 Renderer::GetRenderQueueFamilyIndex()
+i32 Renderer::GetRenderQueueFamilyIndex()
 {
-	return s_renderQueueFamily.familyIndex;
+	return s_renderQueueFamily.exist ? s_renderQueueFamily.familyIndex : -1;
+}
+
+i32 Renderer::GetComputeQueueFamilyIndex()
+{
+	return s_computeQueueFamily.exist ? s_computeQueueFamily.familyIndex : -1;
+}
+
+i32 Renderer::GetTransferQueueFamilyIndex()
+{
+	return s_transferQueueFamily.exist ? s_transferQueueFamily.familyIndex : -1;
 }
 
 void Renderer::BeginFrame()
 {
+	// Fence& fence = s_fences[s_currentFlight];
+	// fence.Wait();
+	// fence.Reset();
+
+	// u32 imageIndex = s_pSwapchain->AcquireNextImage(s_imageReadySemaphores[s_currentFlight]);
+	// NTT_UNUSED(imageIndex);
 }
 
 void Renderer::EndFrame()
