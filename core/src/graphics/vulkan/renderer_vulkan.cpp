@@ -17,6 +17,9 @@ Scope<Swapchain>   Renderer::s_pSwapchain		   = nullptr;
 QueueFamily		   Renderer::s_renderQueueFamily   = {};
 QueueFamily		   Renderer::s_computeQueueFamily  = {};
 QueueFamily		   Renderer::s_transferQueueFamily = {};
+Array<VkFence>	   Renderer::s_fences;
+Array<VkSemaphore> Renderer::s_imageReadySemaphores;
+Array<VkSemaphore> Renderer::s_renderFinisedSemaphores;
 
 #if NTT_DEBUG
 VkDebugUtilsMessengerEXT Renderer::s_vkDebugMessenger = VK_NULL_HANDLE;
@@ -360,10 +363,51 @@ void Renderer::AttachSurface(Reference<Surface> pSurface)
 		NTT_RENDERER_LOG_DEBUG("Swapchain destroyed.");
 	});
 
+	CreateSyncObjects();
+
 	s_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) {
 		vkDeviceWaitIdle(s_device.GetVkDevice());
 		NTT_RENDERER_LOG_DEBUG("Surface detached.");
 	});
+}
+
+void Renderer::CreateSyncObjects()
+{
+	u32 swapchainImagesCount = s_pSwapchain->GetImageCounts();
+
+	s_fences.resize(swapchainImagesCount);
+	s_imageReadySemaphores.resize(swapchainImagesCount);
+	s_renderFinisedSemaphores.resize(swapchainImagesCount);
+
+	for (u32 imageIndex = 0u; imageIndex < swapchainImagesCount; ++imageIndex)
+	{
+		VkFenceCreateInfo fenceInfo = {};
+		fenceInfo.sType				= VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+		fenceInfo.flags				= VK_FENCE_CREATE_SIGNALED_BIT;
+		VK_ASSERT(vkCreateFence(s_device.GetVkDevice(), &fenceInfo, nullptr, &s_fences[imageIndex]));
+
+		s_releaseStack.PushReleaseFunction(&s_fences[imageIndex], [&](void* pUserData) {
+			vkDestroyFence(s_device.GetVkDevice(), *(VkFence*)pUserData, nullptr);
+		});
+
+		VkSemaphoreCreateInfo imageReadyInfo = {};
+		imageReadyInfo.sType				 = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+		VK_ASSERT(
+			vkCreateSemaphore(s_device.GetVkDevice(), &imageReadyInfo, nullptr, &s_imageReadySemaphores[imageIndex]));
+
+		s_releaseStack.PushReleaseFunction(&s_imageReadySemaphores[imageIndex], [&](void* pUserData) {
+			vkDestroySemaphore(s_device.GetVkDevice(), *(VkSemaphore*)pUserData, nullptr);
+		});
+
+		VkSemaphoreCreateInfo renderFinishedInfo = {};
+		renderFinishedInfo.sType				 = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+		VK_ASSERT(vkCreateSemaphore(
+			s_device.GetVkDevice(), &renderFinishedInfo, nullptr, &s_renderFinisedSemaphores[imageIndex]));
+
+		s_releaseStack.PushReleaseFunction(&s_renderFinisedSemaphores[imageIndex], [&](void* pUserData) {
+			vkDestroySemaphore(s_device.GetVkDevice(), *(VkSemaphore*)pUserData, nullptr);
+		});
+	}
 }
 
 u32 Renderer::GetRenderQueueFamilyIndex()

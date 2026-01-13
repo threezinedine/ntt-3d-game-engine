@@ -24,6 +24,14 @@ public:
 		return m_vkSwapchain;
 	}
 
+	inline u32 GetImageCounts() const
+	{
+		return m_imagesCount;
+	}
+
+public:
+	void AcquireNextImage();
+
 private:
 	VkSwapchainKHR	   m_vkSwapchain;
 	Device*			   m_pDevice;
@@ -31,11 +39,8 @@ private:
 	ReleaseStack	   m_releaseStack;
 
 private:
-	u32				   m_imagesCount;
-	Array<Image>	   m_images;
-	Array<VkFence>	   m_fences;
-	Array<VkSemaphore> m_imageReadySemaphores;
-	Array<VkSemaphore> m_renderFinisedSemaphores;
+	u32			 m_imagesCount;
+	Array<Image> m_images;
 };
 
 } // namespace ntt

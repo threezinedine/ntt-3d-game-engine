@@ -46,6 +46,7 @@ private:
 	static void ChooseQueueFamilies();
 	static void CreateDevice(const Array<const char*>& extensions, const Array<const char*>& layers);
 	static void CheckingTheSurfaceSupport();
+	static void CreateSyncObjects();
 
 private:
 #if NTT_DEBUG
@@ -65,6 +66,11 @@ private:
 	static QueueFamily s_renderQueueFamily;
 	static QueueFamily s_computeQueueFamily;
 	static QueueFamily s_transferQueueFamily;
+
+private:
+	static Array<VkFence>	  s_fences;
+	static Array<VkSemaphore> s_imageReadySemaphores;
+	static Array<VkSemaphore> s_renderFinisedSemaphores;
 
 private:
 #if NTT_DEBUG
