@@ -6,11 +6,13 @@
 #include <vulkan/vulkan.h>
 
 namespace ntt {
+
+struct QueueFamily;
 class Device;
 class Swapchain;
-struct QueueFamily;
 class Semaphore;
 class Fence;
+class CommandBuffer;
 
 class Renderer
 {
@@ -71,9 +73,11 @@ private:
 	static QueueFamily s_transferQueueFamily;
 
 private:
-	static Array<Fence>		s_fences;
-	static Array<Semaphore> s_imageReadySemaphores;
-	static Array<Semaphore> s_renderFinisedSemaphores;
+	static Array<Fence>			s_fences;
+	static Array<Semaphore>		s_imageReadySemaphores;
+	static Array<Semaphore>		s_renderFinisedSemaphores;
+	static Array<CommandBuffer> s_renderCommandBuffers;
+	static Array<CommandBuffer> s_presentCommandBuffers;
 
 private:
 	static u32 s_currentFlight;

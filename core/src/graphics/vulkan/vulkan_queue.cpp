@@ -5,7 +5,7 @@
 
 namespace ntt {
 
-GraphicQueue::GraphicQueue(Reference<Device> pDevice, VkQueue vkQueue)
+GraphicQueue::GraphicQueue(Device* pDevice, VkQueue vkQueue)
 	: m_pDevice(pDevice)
 	, m_vkQueue(vkQueue)
 {

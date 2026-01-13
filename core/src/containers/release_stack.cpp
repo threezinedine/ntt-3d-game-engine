@@ -7,6 +7,11 @@ ReleaseStack::ReleaseStack()
 {
 }
 
+ReleaseStack::ReleaseStack(ReleaseStack&& other) noexcept
+{
+	m_releaseEntries.swap(other.m_releaseEntries);
+}
+
 ReleaseStack::~ReleaseStack()
 {
 	if (!m_releaseEntries.empty())

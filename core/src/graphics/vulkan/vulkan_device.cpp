@@ -1,16 +1,24 @@
 #if NTT_USE_GRAPHICS_VULKAN
 #include "graphics/vulkan/vulkan_device.h"
+#include "graphics/vulkan/vulkan_command_pool.h"
 #include "graphics/vulkan/vulkan_queue.h"
 
 namespace ntt {
 
 Device::Device(VkPhysicalDevice			 vkPhysicalDevice,
+			   Reference<Surface>		 pSurface,
 			   const Array<const char*>& extensions,
 			   const Array<const char*>& layers)
 	: m_vkPhysicalDevice(vkPhysicalDevice)
-	, m_renderQueue(nullptr)
-	, m_transferQueue(nullptr)
-	, m_computeQueue(nullptr)
+	, m_pSurface(pSurface)
+	, m_pRenderQueue(nullptr)
+	, m_pPresentQueue(nullptr)
+	, m_pComputeQueue(nullptr)
+	, m_pTransferQueue(nullptr)
+	, m_pRenderCommandPool(nullptr)
+	, m_pPresentCommandPool(nullptr)
+	, m_pComputeCommandPool(nullptr)
+	, m_pTransferCommandPool(nullptr)
 	, m_releaseStack()
 {
 	Set<u32> uniqueQueueFamilies;
@@ -68,7 +76,57 @@ Device::Device(VkPhysicalDevice			 vkPhysicalDevice,
 	m_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) {
 		vkDestroyDevice(m_vkDevice, nullptr);
 		NTT_RENDERER_LOG_DEBUG("Logical device is destroyed.");
-	}); // TODO: Refactor later
+	});
+
+	// Acquire queues
+	for (const auto& familyIndex : uniqueQueueFamilies)
+	{
+		VkQueue queue;
+		vkGetDeviceQueue(m_vkDevice, familyIndex, 0, &queue);
+
+		if (i32(familyIndex) == renderQueueFamilyIndex)
+		{
+			m_pRenderQueue	= CreateScope<GraphicQueue>(this, queue);
+			m_pPresentQueue = CreateScope<GraphicQueue>(this, queue);
+		}
+		m_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) { m_pRenderQueue.reset(); });
+
+		if (i32(familyIndex) == computeQueueFamilyIndex)
+		{
+			m_pComputeQueue = CreateScope<GraphicQueue>(this, queue);
+		}
+		m_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) { m_pComputeQueue.reset(); });
+
+		if (i32(familyIndex) == transferQueueFamilyIndex)
+		{
+			m_pTransferQueue = CreateScope<GraphicQueue>(this, queue);
+		}
+		m_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) { m_pTransferQueue.reset(); });
+	}
+
+	if (m_pRenderQueue != NTT_NULLPTR)
+	{
+		m_pRenderCommandPool  = CreateScope<CommandPool>(this, renderQueueFamilyIndex);
+		m_pPresentCommandPool = CreateScope<CommandPool>(this, renderQueueFamilyIndex);
+
+		m_releaseStack.PushReleaseFunction(nullptr, [&](void*) {
+			m_pRenderCommandPool.reset();
+			NTT_RENDERER_LOG_DEBUG("Release render command pool.");
+		});
+		m_releaseStack.PushReleaseFunction(nullptr, [&](void*) { m_pPresentCommandPool.reset(); });
+	}
+
+	if (m_pComputeQueue != NTT_NULLPTR)
+	{
+		m_pComputeCommandPool = CreateScope<CommandPool>(this, computeQueueFamilyIndex);
+		m_releaseStack.PushReleaseFunction(nullptr, [&](void*) { m_pComputeCommandPool.reset(); });
+	}
+
+	if (m_pTransferQueue != NTT_NULLPTR)
+	{
+		m_pTransferCommandPool = CreateScope<CommandPool>(this, transferQueueFamilyIndex);
+		m_releaseStack.PushReleaseFunction(nullptr, [&](void*) { m_pTransferCommandPool.reset(); });
+	}
 }
 
 Device::~Device()

@@ -7,9 +7,9 @@ class ReleaseStack
 {
 public:
 	ReleaseStack();
+	NTT_DELETE_COPY(ReleaseStack);
+	ReleaseStack(ReleaseStack&& other) noexcept;
 	~ReleaseStack();
-	NTT_DELETE_COPY(ReleaseStack)
-	NTT_DELETE_MOVE(ReleaseStack)
 
 public:
 	/**

@@ -1,6 +1,8 @@
 #if NTT_USE_GRAPHICS_VULKAN
 #include "graphics/renderer.h"
 #include "graphics/surface.h"
+#include "graphics/vulkan/vulkan_command_buffer.h"
+#include "graphics/vulkan/vulkan_command_pool.h"
 #include "graphics/vulkan/vulkan_device.h"
 #include "graphics/vulkan/vulkan_fence.h"
 #include "graphics/vulkan/vulkan_semaphore.h"
@@ -12,16 +14,18 @@
 
 namespace ntt {
 
-VkInstance		   Renderer::s_vkInstance		   = VK_NULL_HANDLE;
-VkPhysicalDevice   Renderer::s_vkPhysicalDevice	   = VK_NULL_HANDLE;
-Reference<Surface> Renderer::s_pSurface			   = nullptr;
-Scope<Swapchain>   Renderer::s_pSwapchain		   = nullptr;
-QueueFamily		   Renderer::s_renderQueueFamily   = {};
-QueueFamily		   Renderer::s_computeQueueFamily  = {};
-QueueFamily		   Renderer::s_transferQueueFamily = {};
-Array<Fence>	   Renderer::s_fences;
-Array<Semaphore>   Renderer::s_imageReadySemaphores;
-Array<Semaphore>   Renderer::s_renderFinisedSemaphores;
+VkInstance			 Renderer::s_vkInstance			 = VK_NULL_HANDLE;
+VkPhysicalDevice	 Renderer::s_vkPhysicalDevice	 = VK_NULL_HANDLE;
+Reference<Surface>	 Renderer::s_pSurface			 = nullptr;
+Scope<Swapchain>	 Renderer::s_pSwapchain			 = nullptr;
+QueueFamily			 Renderer::s_renderQueueFamily	 = {};
+QueueFamily			 Renderer::s_computeQueueFamily	 = {};
+QueueFamily			 Renderer::s_transferQueueFamily = {};
+Array<Fence>		 Renderer::s_fences;
+Array<Semaphore>	 Renderer::s_imageReadySemaphores;
+Array<Semaphore>	 Renderer::s_renderFinisedSemaphores;
+Array<CommandBuffer> Renderer::s_renderCommandBuffers;
+Array<CommandBuffer> Renderer::s_presentCommandBuffers;
 
 u32 Renderer::s_currentFlight = 0;
 
@@ -311,7 +315,7 @@ void Renderer::AttachSurface(Reference<Surface> pSurface)
 	{
 		Array<const char*> extensions = {"VK_KHR_swapchain"};
 		Array<const char*> layers	  = {};
-		s_pDevice					  = CreateRef<Device>(s_vkPhysicalDevice, extensions, layers);
+		s_pDevice					  = CreateRef<Device>(s_vkPhysicalDevice, pSurface, extensions, layers);
 		CheckingTheSurfaceSupport();
 		s_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) {
 			s_pDevice.reset();
@@ -326,6 +330,21 @@ void Renderer::AttachSurface(Reference<Surface> pSurface)
 	});
 
 	CreateSyncObjects();
+
+	s_renderCommandBuffers = s_pDevice->GetRenderCommandPool()->AllocateCommandBuffers(s_pSwapchain->GetImageCounts());
+
+	s_releaseStack.PushReleaseFunction(nullptr, [&](void*) {
+		s_pDevice->GetRenderCommandPool()->FreeCommandBuffers(s_pSwapchain->GetImageCounts(),
+															  s_renderCommandBuffers.data());
+	});
+
+	s_presentCommandBuffers =
+		s_pDevice->GetPresentCommandPool()->AllocateCommandBuffers(s_pSwapchain->GetImageCounts());
+
+	s_releaseStack.PushReleaseFunction(nullptr, [&](void*) {
+		s_pDevice->GetPresentCommandPool()->FreeCommandBuffers(s_pSwapchain->GetImageCounts(),
+															   s_presentCommandBuffers.data());
+	});
 
 	s_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) {
 		vkDeviceWaitIdle(s_pDevice->GetVkDevice());

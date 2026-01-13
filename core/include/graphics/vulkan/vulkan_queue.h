@@ -10,14 +10,14 @@ class Device;
 class GraphicQueue
 {
 public:
-	GraphicQueue(Reference<Device> pDevice, VkQueue vkQueue);
+	GraphicQueue(Device* pDevice, VkQueue vkQueue);
 	GraphicQueue(const GraphicQueue& other);
 	GraphicQueue(GraphicQueue&& other) noexcept;
 	~GraphicQueue();
 
 private:
-	Reference<Device> m_pDevice;
-	VkQueue			  m_vkQueue;
+	Device* m_pDevice;
+	VkQueue m_vkQueue;
 };
 
 } // namespace ntt
