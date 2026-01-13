@@ -46,18 +46,48 @@ Swapchain::Swapchain(Device* pDevice, Reference<Surface> pSurface)
 	vkGetSwapchainImagesKHR(pDevice->GetVkDevice(), m_vkSwapchain, &m_imagesCount, images.data());
 
 	m_images.reserve(m_imagesCount);
+	m_fences.resize(m_imagesCount);
+	m_imageReadySemaphores.resize(m_imagesCount);
+	m_renderFinisedSemaphores.resize(m_imagesCount);
 	for (u32 imageIndex = 0u; imageIndex < m_imagesCount; ++imageIndex)
 	{
 		m_images.emplace_back(pDevice,
 							  images[imageIndex],
 							  getFormatFromVkFormat(pSurface->GetSurfaceFormat().format),
 							  ImageType::IMAGE_TYPE_2D);
+
+		VkFenceCreateInfo fenceInfo = {};
+		fenceInfo.sType				= VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+		fenceInfo.flags				= VK_FENCE_CREATE_SIGNALED_BIT;
+		VK_ASSERT(vkCreateFence(pDevice->GetVkDevice(), &fenceInfo, nullptr, &m_fences[imageIndex]));
+
+		m_releaseStack.PushReleaseFunction(&m_fences[imageIndex], [&](void* pUserData) {
+			vkDestroyFence(m_pDevice->GetVkDevice(), *(VkFence*)pUserData, nullptr);
+		});
+
+		VkSemaphoreCreateInfo imageReadyInfo = {};
+		imageReadyInfo.sType				 = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+		VK_ASSERT(
+			vkCreateSemaphore(pDevice->GetVkDevice(), &imageReadyInfo, nullptr, &m_imageReadySemaphores[imageIndex]));
+
+		m_releaseStack.PushReleaseFunction(&m_imageReadySemaphores[imageIndex], [&](void* pUserData) {
+			vkDestroySemaphore(m_pDevice->GetVkDevice(), *(VkSemaphore*)pUserData, nullptr);
+		});
+
+		VkSemaphoreCreateInfo renderFinishedInfo = {};
+		renderFinishedInfo.sType				 = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+		VK_ASSERT(vkCreateSemaphore(
+			pDevice->GetVkDevice(), &renderFinishedInfo, nullptr, &m_renderFinisedSemaphores[imageIndex]));
+
+		m_releaseStack.PushReleaseFunction(&m_renderFinisedSemaphores[imageIndex], [&](void* pUserData) {
+			vkDestroySemaphore(m_pDevice->GetVkDevice(), *(VkSemaphore*)pUserData, nullptr);
+		});
 	}
 }
 
 Swapchain::~Swapchain()
 {
-	NTT_RENDERER_LOG_DEBUG("Release stack size: %ld", m_releaseStack.Size());
+	m_releaseStack.ReleaseAll();
 }
 
 } // namespace ntt

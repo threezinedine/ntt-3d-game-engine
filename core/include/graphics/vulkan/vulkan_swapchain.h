@@ -31,8 +31,11 @@ private:
 	ReleaseStack	   m_releaseStack;
 
 private:
-	u32			 m_imagesCount;
-	Array<Image> m_images;
+	u32				   m_imagesCount;
+	Array<Image>	   m_images;
+	Array<VkFence>	   m_fences;
+	Array<VkSemaphore> m_imageReadySemaphores;
+	Array<VkSemaphore> m_renderFinisedSemaphores;
 };
 
 } // namespace ntt
