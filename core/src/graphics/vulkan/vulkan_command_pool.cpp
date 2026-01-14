@@ -13,6 +13,7 @@ CommandPool::CommandPool(Device* pDevice, u32 familyIndex)
 {
 	VkCommandPoolCreateInfo poolInfo = {};
 	poolInfo.sType					 = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+	poolInfo.flags					 = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 	poolInfo.queueFamilyIndex		 = familyIndex;
 
 	VK_ASSERT(vkCreateCommandPool(pDevice->GetVkDevice(), &poolInfo, nullptr, &m_vkPool));

@@ -27,7 +27,7 @@ Swapchain::Swapchain(Reference<Device> pDevice, Reference<Surface> pSurface)
 	swapchainInfo.compositeAlpha		   = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR; // swapchain no need alpha
 	swapchainInfo.clipped				   = VK_TRUE;
 	swapchainInfo.imageSharingMode		   = VK_SHARING_MODE_EXCLUSIVE;
-	swapchainInfo.imageUsage			   = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+	swapchainInfo.imageUsage			   = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 	swapchainInfo.queueFamilyIndexCount	   = 1;
 	swapchainInfo.pQueueFamilyIndices	   = &renderQueueFamily;
 	swapchainInfo.imageExtent			   = extent;

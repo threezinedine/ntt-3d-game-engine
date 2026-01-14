@@ -78,12 +78,13 @@ void Image::TransitLayout(CommandBuffer&	   buffer,
 	range.levelCount			  = 1;
 
 	VkImageMemoryBarrier barrier = {};
+	barrier.sType				 = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 	barrier.srcAccessMask		 = srcAccessMask;
 	barrier.dstAccessMask		 = dstAccessMask;
 	barrier.oldLayout			 = oldLayout;
 	barrier.newLayout			 = newLayout;
-	barrier.srcQueueFamilyIndex	 = 0;
-	barrier.dstQueueFamilyIndex	 = 0;
+	barrier.srcQueueFamilyIndex	 = VK_QUEUE_FAMILY_IGNORED;
+	barrier.dstQueueFamilyIndex	 = VK_QUEUE_FAMILY_IGNORED;
 	barrier.image				 = m_vkImage;
 	barrier.subresourceRange	 = range;
 
@@ -114,7 +115,8 @@ void Image::ClearImage(CommandBuffer& buffer, Vec4 clearColor)
 	value.float32[2]		= clearColor.z;
 	value.float32[3]		= clearColor.w;
 
-	vkCmdClearColorImage(buffer.GetVkCommandBuffer(), m_vkImage, VK_IMAGE_LAYOUT_GENERAL, &value, 1, &range);
+	vkCmdClearColorImage(
+		buffer.GetVkCommandBuffer(), m_vkImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, &value, 1, &range);
 }
 
 Image::~Image()
