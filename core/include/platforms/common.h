@@ -117,6 +117,9 @@ typedef nlohmann::json Json;
 #define NTT_ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0])) /// Get the number of elements in a static array
 #define NTT_UNUSED(x)		(void)(x)						 /// To suppress unused variable warnings
 
+#define _STRINGIFY(x) #x
+#define STRINGIFY(x)  _STRINGIFY(x)
+
 #if NTT_DEBUG
 #define NTT_ASSERT(cond)                                                                                               \
 	do                                                                                                                 \

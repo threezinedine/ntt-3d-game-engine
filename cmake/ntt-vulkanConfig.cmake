@@ -5,6 +5,7 @@ if (TARGET ${LIB_NAME})
 endif()
 
 if (NOT TARGET Vulkan)
+    find_package(glslang CONFIG REQUIRED)
     find_package(Vulkan REQUIRED)
 endif()
 
@@ -17,4 +18,7 @@ target_link_libraries(
     ${LIB_NAME}
     INTERFACE
     Vulkan::Vulkan
+    glslang::glslang
+    glslang::SPIRV
+    glslang::glslang-default-resource-limits
 )

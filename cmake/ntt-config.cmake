@@ -14,6 +14,8 @@ endmacro()
 macro(ntt_configure)
     if (IS_TOP_LEVEL_PROJECT)
         set(BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/..")
+        cmake_path(SET NTT_ENGINE_DIRECTORY NORMALIZE "${BASE_DIRECTORY}")
+        ntt_log_var("NTT_ENGINE_DIRECTORY")
     endif()
 
     if (NTT_ENGINE_EDITOR_BINDING)
@@ -24,7 +26,7 @@ macro(ntt_configure)
 
     option(CMAKE_BUILD_TYPE "Build type" "Debug") 
     set(TARGET_COMPILE_OPTIONS)
-    set(TARGET_DEFINITIONS)
+    set(TARGET_DEFINITIONS "NTT_ENGINE_DIRECTORY=${NTT_ENGINE_DIRECTORY}")
 
     if (CMAKE_BUILD_TYPE STREQUAL "Release")
         list(APPEND TARGET_COMPILE_OPTIONS "-DDEBUG=0" "-O3" "-DNDEBUG")

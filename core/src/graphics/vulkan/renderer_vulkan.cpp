@@ -12,6 +12,10 @@
 #include "graphics/vulkan/vulkan_semaphore.h"
 #include "graphics/vulkan/vulkan_swapchain.h"
 
+// TODO: delete later
+#include "graphics/vulkan/shader_vulkan.h"
+//
+
 #if NTT_USE_GLFW
 #include <GLFW/glfw3.h>
 #endif
@@ -311,6 +315,14 @@ void Renderer::CheckingTheSurfaceSupport()
 	NTT_RENDERER_LOG_DEBUG("The surface validated.");
 }
 
+void Renderer::LoadingDefaultShader()
+{
+	Scope<Shader> shader =
+		CreateScope<Shader>(s_pDevice.get(), STRINGIFY(NTT_ENGINE_DIRECTORY) "core/assets/shaders/vulkan/default.vert");
+
+	shader->Compile();
+}
+
 void Renderer::AttachSurface(Reference<Surface> pSurface)
 {
 	s_pSurface = pSurface;
@@ -327,6 +339,8 @@ void Renderer::AttachSurface(Reference<Surface> pSurface)
 			s_pDevice.reset();
 			NTT_RENDERER_LOG_DEBUG("Logical device destroyed.");
 		});
+
+		LoadingDefaultShader();
 	}
 
 	s_pSwapchain = CreateScope<Swapchain>(s_pDevice, s_pSurface);

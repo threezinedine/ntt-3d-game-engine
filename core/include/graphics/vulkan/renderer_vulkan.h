@@ -53,6 +53,7 @@ private:
 	static void ChoosePhysicalDevice();
 	static void ChooseQueueFamilies();
 	static void CheckingTheSurfaceSupport();
+	static void LoadingDefaultShader();
 	static void CreateSyncObjects();
 	static void CreateFrameBuffers();
 
