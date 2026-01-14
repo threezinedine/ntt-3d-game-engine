@@ -12,17 +12,18 @@ class CommandPool;
 class CommandBuffer
 {
 public:
-	CommandBuffer(Device* pDevice, CommandPool* pPool, VkCommandBuffer defaultBuffer = VK_NULL_HANDLE);
+	CommandBuffer(Device* pDevice, CommandPool* pPool, VkCommandBuffer buffer);
 	CommandBuffer(const CommandBuffer& other);
 	CommandBuffer(CommandBuffer&& other) noexcept;
 	~CommandBuffer();
 
-	inline VkCommandBuffer GetVkCommandBuffer()
+	inline VkCommandBuffer& GetVkCommandBuffer()
 	{
 		return m_vkCommandBuffer;
 	}
 
 public:
+	void Reset();
 	void StartRecord();
 
 	void EndRecord();

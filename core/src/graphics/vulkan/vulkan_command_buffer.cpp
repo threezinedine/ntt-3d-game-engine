@@ -6,24 +6,11 @@
 
 namespace ntt {
 
-CommandBuffer::CommandBuffer(Device* pDevice, CommandPool* pPool, VkCommandBuffer defaultBuffer)
+CommandBuffer::CommandBuffer(Device* pDevice, CommandPool* pPool, VkCommandBuffer buffer)
 	: m_pDevice(pDevice)
 	, m_pPool(pPool)
+	, m_vkCommandBuffer(buffer)
 {
-	if (defaultBuffer != VK_NULL_HANDLE)
-	{
-		m_vkCommandBuffer = defaultBuffer;
-	}
-	else
-	{
-		VkCommandBufferAllocateInfo bufferInfo = {};
-		bufferInfo.sType					   = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-		bufferInfo.commandPool				   = pPool->GetVkCommandPool();
-		bufferInfo.commandBufferCount		   = 1;
-		bufferInfo.level					   = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-
-		VK_ASSERT(vkAllocateCommandBuffers(pDevice->GetVkDevice(), &bufferInfo, &m_vkCommandBuffer));
-	}
 }
 
 CommandBuffer::CommandBuffer(const CommandBuffer& other)
@@ -45,6 +32,11 @@ CommandBuffer::CommandBuffer(CommandBuffer&& other) noexcept
 
 CommandBuffer::~CommandBuffer()
 {
+}
+
+void CommandBuffer::Reset()
+{
+	vkResetCommandBuffer(m_vkCommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
 }
 
 void CommandBuffer::StartRecord()

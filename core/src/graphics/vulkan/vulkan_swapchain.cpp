@@ -73,6 +73,11 @@ u32 Swapchain::AcquireNextImage(Semaphore& signalSemaphore)
 	return m_currentImageIndex;
 }
 
+Image& Swapchain::GetCurrentImage()
+{
+	return m_images[m_currentImageIndex];
+}
+
 } // namespace ntt
 
 #endif // NTT_USE_GRAPHICS_VULKAN

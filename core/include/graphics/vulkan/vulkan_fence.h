@@ -14,7 +14,7 @@ public:
 	~Fence();
 
 public:
-	inline VkFence GetVkFence()
+	inline VkFence& GetVkFence()
 	{
 		return m_vkFence;
 	}

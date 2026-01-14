@@ -1,10 +1,12 @@
 #if NTT_USE_GRAPHICS_VULKAN
 #include "graphics/renderer.h"
 #include "graphics/surface.h"
+#include "graphics/vulkan/image_vulkan.h"
 #include "graphics/vulkan/vulkan_command_buffer.h"
 #include "graphics/vulkan/vulkan_command_pool.h"
 #include "graphics/vulkan/vulkan_device.h"
 #include "graphics/vulkan/vulkan_fence.h"
+#include "graphics/vulkan/vulkan_queue.h"
 #include "graphics/vulkan/vulkan_semaphore.h"
 #include "graphics/vulkan/vulkan_swapchain.h"
 
@@ -391,20 +393,39 @@ i32 Renderer::GetTransferQueueFamilyIndex()
 
 void Renderer::BeginFrame()
 {
-	// Fence& fence = s_fences[s_currentFlight];
-	// fence.Wait();
-	// fence.Reset();
+	Fence& fence = s_fences[s_currentFlight];
+	fence.Wait();
+	fence.Reset();
 
-	// u32 imageIndex = s_pSwapchain->AcquireNextImage(s_imageReadySemaphores[s_currentFlight]);
-	// NTT_UNUSED(imageIndex);
+	s_pSwapchain->AcquireNextImage(s_imageReadySemaphores[s_currentFlight]);
+
+	CommandBuffer& buffer = s_renderCommandBuffers[s_currentFlight];
+	buffer.StartRecord();
+
+	Image& currentImage = s_pSwapchain->GetCurrentImage();
+	currentImage.ClearImage(buffer, {0.1f, 0.0f, 0.0f, 1.0f});
+	// currentImage.TransitLayout(buffer, VK_PIPELINE_STAGE_TRANSFER_BIT,
+	// 					VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+	// 					0,
+	// 					VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+	// 					VK_ACCESS_TRANSFER_READ_BIT
 }
 
 void Renderer::EndFrame()
 {
+	CommandBuffer& buffer = s_renderCommandBuffers[s_currentFlight];
+
+	buffer.EndRecord();
+	s_pDevice->GetRenderQueue()->SubmitRender(buffer,
+											  s_imageReadySemaphores[s_currentFlight],
+											  s_renderFinisedSemaphores[s_currentFlight],
+											  s_fences[s_currentFlight]);
 }
 
 void Renderer::PresentFrame()
 {
+	s_pDevice->GetPresentQueue()->SubmitPresent(s_renderFinisedSemaphores[s_currentFlight], s_pSwapchain);
+	s_currentFlight = (s_currentFlight + 1) % s_pSwapchain->GetImageCounts();
 }
 
 } // namespace ntt

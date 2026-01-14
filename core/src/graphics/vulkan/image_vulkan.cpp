@@ -1,6 +1,7 @@
 #if NTT_USE_GRAPHICS_VULKAN
 
 #include "graphics/image.h"
+#include "graphics/vulkan/vulkan_command_buffer.h"
 #include "graphics/vulkan/vulkan_device.h"
 
 namespace ntt {
@@ -59,6 +60,61 @@ void Image::CreateVkImageView()
 	VK_ASSERT(vkCreateImageView(m_pDevice->GetVkDevice(), &viewInfo, nullptr, &m_vkImageView));
 	m_releaseStack.PushReleaseFunction(
 		NTT_NULLPTR, [&](void* pUserData) { vkDestroyImageView(m_pDevice->GetVkDevice(), m_vkImageView, nullptr); });
+}
+
+void Image::TransitLayout(CommandBuffer&	   buffer,
+						  VkPipelineStageFlags srcStageMask,
+						  VkPipelineStageFlags dstStageMask,
+						  VkAccessFlags		   srcAccessMask,
+						  VkAccessFlags		   dstAccessMask,
+						  VkImageLayout		   oldLayout,
+						  VkImageLayout		   newLayout)
+{
+	VkImageSubresourceRange range = {};
+	range.aspectMask			  = VK_IMAGE_ASPECT_COLOR_BIT;
+	range.baseArrayLayer		  = 0;
+	range.layerCount			  = 1;
+	range.baseMipLevel			  = 0;
+	range.levelCount			  = 1;
+
+	VkImageMemoryBarrier barrier = {};
+	barrier.srcAccessMask		 = srcAccessMask;
+	barrier.dstAccessMask		 = dstAccessMask;
+	barrier.oldLayout			 = oldLayout;
+	barrier.newLayout			 = newLayout;
+	barrier.srcQueueFamilyIndex	 = 0;
+	barrier.dstQueueFamilyIndex	 = 0;
+	barrier.image				 = m_vkImage;
+	barrier.subresourceRange	 = range;
+
+	vkCmdPipelineBarrier(buffer.GetVkCommandBuffer(),
+						 srcStageMask,
+						 dstStageMask,
+						 VK_DEPENDENCY_BY_REGION_BIT,
+						 0,
+						 nullptr,
+						 0,
+						 nullptr,
+						 1,
+						 &barrier);
+}
+
+void Image::ClearImage(CommandBuffer& buffer, Vec4 clearColor)
+{
+	VkImageSubresourceRange range = {};
+	range.aspectMask			  = VK_IMAGE_ASPECT_COLOR_BIT;
+	range.baseArrayLayer		  = 0;
+	range.layerCount			  = 1;
+	range.baseMipLevel			  = 0;
+	range.levelCount			  = 1;
+
+	VkClearColorValue value = {};
+	value.float32[0]		= clearColor.x;
+	value.float32[1]		= clearColor.y;
+	value.float32[2]		= clearColor.z;
+	value.float32[3]		= clearColor.w;
+
+	vkCmdClearColorImage(buffer.GetVkCommandBuffer(), m_vkImage, VK_IMAGE_LAYOUT_GENERAL, &value, 1, &range);
 }
 
 Image::~Image()

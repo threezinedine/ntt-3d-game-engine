@@ -6,6 +6,7 @@
 
 namespace ntt {
 class Device;
+class CommandBuffer;
 
 class Image
 {
@@ -17,6 +18,17 @@ public:
 	Image(const Image& other);
 	Image(Image&& other);
 	~Image();
+
+public:
+	void ClearImage(CommandBuffer& buffer, Vec4 clearColor);
+
+	void TransitLayout(CommandBuffer&		buffer,
+					   VkPipelineStageFlags srcStageMask,
+					   VkPipelineStageFlags dstStageMask,
+					   VkAccessFlags		srcAccessMask,
+					   VkAccessFlags		dstAccessMask,
+					   VkImageLayout		oldLayout,
+					   VkImageLayout		newLayout);
 
 private:
 	void CreateVkImageView();

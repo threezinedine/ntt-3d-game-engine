@@ -9,7 +9,7 @@ Fence::Fence(Reference<Device> pDevice)
 {
 	VkFenceCreateInfo fenceInfo = {};
 	fenceInfo.sType				= VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-	fenceInfo.flags				= 0;
+	fenceInfo.flags				= VK_FENCE_CREATE_SIGNALED_BIT;
 
 	VK_ASSERT(vkCreateFence(m_pDevice->GetVkDevice(), &fenceInfo, nullptr, &m_vkFence));
 }
