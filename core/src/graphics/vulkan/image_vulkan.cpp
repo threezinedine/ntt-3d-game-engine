@@ -17,15 +17,6 @@ Image::Image(Reference<Device> pDevice, VkImage image, Format format, ImageType 
 	CreateVkImageView();
 }
 
-Image::Image(const Image& other)
-	: m_vkImage(other.m_vkImage)
-	, m_vkImageView(other.m_vkImageView)
-	, m_pDevice(other.m_pDevice)
-	, m_format(other.m_format)
-	, m_imageType(other.m_imageType)
-{
-}
-
 Image::Image(Image&& other)
 	: m_vkImage(other.m_vkImage)
 	, m_vkImageView(other.m_vkImageView)

@@ -36,6 +36,7 @@ public:
 	}
 
 	Image& GetCurrentImage();
+	Image& GetImageByIndex(u32 index);
 
 public:
 	u32 AcquireNextImage(Semaphore& signalSemaphore);

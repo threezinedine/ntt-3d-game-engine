@@ -6,7 +6,9 @@
 #include "graphics/vulkan/vulkan_command_pool.h"
 #include "graphics/vulkan/vulkan_device.h"
 #include "graphics/vulkan/vulkan_fence.h"
+#include "graphics/vulkan/vulkan_framebuffer.h"
 #include "graphics/vulkan/vulkan_queue.h"
+#include "graphics/vulkan/vulkan_renderpass.h"
 #include "graphics/vulkan/vulkan_semaphore.h"
 #include "graphics/vulkan/vulkan_swapchain.h"
 
@@ -23,11 +25,13 @@ Scope<Swapchain>	 Renderer::s_pSwapchain			 = nullptr;
 QueueFamily			 Renderer::s_renderQueueFamily	 = {};
 QueueFamily			 Renderer::s_computeQueueFamily	 = {};
 QueueFamily			 Renderer::s_transferQueueFamily = {};
+Scope<RenderPass>	 Renderer::s_pRenderPass		 = nullptr;
 Array<Fence>		 Renderer::s_fences;
 Array<Semaphore>	 Renderer::s_imageReadySemaphores;
 Array<Semaphore>	 Renderer::s_renderFinisedSemaphores;
 Array<CommandBuffer> Renderer::s_renderCommandBuffers;
 Array<CommandBuffer> Renderer::s_presentCommandBuffers;
+Array<Framebuffer>	 Renderer::s_framebuffers;
 
 u32 Renderer::s_currentFlight = 0;
 
@@ -348,6 +352,11 @@ void Renderer::AttachSurface(Reference<Surface> pSurface)
 															   s_presentCommandBuffers.data());
 	});
 
+	s_pRenderPass = CreateScope<RenderPass>(s_pDevice, s_pSurface);
+	s_releaseStack.PushReleaseFunction(nullptr, [&](void*) { s_pRenderPass.reset(); });
+
+	CreateFrameBuffers();
+
 	s_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) {
 		vkDeviceWaitIdle(s_pDevice->GetVkDevice());
 		NTT_RENDERER_LOG_DEBUG("Surface detached.");
@@ -376,6 +385,19 @@ void Renderer::CreateSyncObjects()
 	});
 }
 
+void Renderer::CreateFrameBuffers()
+{
+	s_framebuffers.reserve(s_pSwapchain->GetImageCounts());
+
+	for (u32 imageIndex = 0u; imageIndex < s_pSwapchain->GetImageCounts(); ++imageIndex)
+	{
+		s_framebuffers.emplace_back(
+			s_pDevice, s_pRenderPass.get(), s_pSurface.get(), &s_pSwapchain->GetImageByIndex(imageIndex));
+	}
+
+	s_releaseStack.PushReleaseFunction(nullptr, [&](void*) { s_framebuffers.clear(); });
+}
+
 i32 Renderer::GetRenderQueueFamilyIndex()
 {
 	return s_renderQueueFamily.exist ? s_renderQueueFamily.familyIndex : -1;
@@ -402,30 +424,14 @@ void Renderer::BeginFrame()
 	CommandBuffer& buffer = s_renderCommandBuffers[s_currentFlight];
 	buffer.StartRecord();
 
-	Image& currentImage = s_pSwapchain->GetCurrentImage();
-	currentImage.TransitLayout(buffer,
-							   VK_PIPELINE_STAGE_TRANSFER_BIT,
-							   VK_PIPELINE_STAGE_TRANSFER_BIT,
-							   VK_ACCESS_MEMORY_READ_BIT,
-							   VK_ACCESS_MEMORY_WRITE_BIT,
-							   VK_IMAGE_LAYOUT_UNDEFINED,
-							   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-
-	currentImage.ClearImage(buffer, {0.1f, 0.0f, 0.0f, 1.0f});
-
-	currentImage.TransitLayout(buffer,
-							   VK_PIPELINE_STAGE_TRANSFER_BIT,
-							   VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
-							   VK_ACCESS_TRANSFER_WRITE_BIT,
-							   VK_ACCESS_MEMORY_READ_BIT,
-							   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-							   VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+	s_pRenderPass->Begin(buffer, s_framebuffers[s_pSwapchain->GetCurrentImageIndex()], {.1f, 0.1f, 0.0f, 1.0f});
 }
 
 void Renderer::EndFrame()
 {
 	CommandBuffer& buffer = s_renderCommandBuffers[s_currentFlight];
 
+	s_pRenderPass->End(buffer);
 	buffer.EndRecord();
 	s_pDevice->GetRenderQueue()->SubmitRender(buffer,
 											  s_imageReadySemaphores[s_currentFlight],

@@ -13,6 +13,8 @@ class Swapchain;
 class Semaphore;
 class Fence;
 class CommandBuffer;
+class RenderPass;
+class Framebuffer;
 
 class Renderer
 {
@@ -52,6 +54,7 @@ private:
 	static void ChooseQueueFamilies();
 	static void CheckingTheSurfaceSupport();
 	static void CreateSyncObjects();
+	static void CreateFrameBuffers();
 
 private:
 #if NTT_DEBUG
@@ -73,11 +76,15 @@ private:
 	static QueueFamily s_transferQueueFamily;
 
 private:
+	static Scope<RenderPass> s_pRenderPass;
+
+private:
 	static Array<Fence>			s_fences;
 	static Array<Semaphore>		s_imageReadySemaphores;
 	static Array<Semaphore>		s_renderFinisedSemaphores;
 	static Array<CommandBuffer> s_renderCommandBuffers;
 	static Array<CommandBuffer> s_presentCommandBuffers;
+	static Array<Framebuffer>	s_framebuffers;
 
 private:
 	static u32 s_currentFlight;

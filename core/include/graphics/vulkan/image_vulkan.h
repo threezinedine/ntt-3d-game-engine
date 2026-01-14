@@ -15,9 +15,15 @@ public:
 		  VkImage			image  = VK_NULL_HANDLE,
 		  Format			format = Format::FORMAT_COUNT,
 		  ImageType			type   = ImageType::IMAGE_TYPE_2D);
-	Image(const Image& other);
+	NTT_DELETE_COPY(Image)
 	Image(Image&& other);
 	~Image();
+
+public:
+	inline VkImageView& GetVkImageView()
+	{
+		return m_vkImageView;
+	}
 
 public:
 	void ClearImage(CommandBuffer& buffer, Vec4 clearColor);

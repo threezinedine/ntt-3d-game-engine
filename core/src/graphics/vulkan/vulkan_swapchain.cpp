@@ -78,6 +78,11 @@ Image& Swapchain::GetCurrentImage()
 	return m_images[m_currentImageIndex];
 }
 
+Image& Swapchain::GetImageByIndex(u32 index)
+{
+	return m_images[index];
+}
+
 } // namespace ntt
 
 #endif // NTT_USE_GRAPHICS_VULKAN
