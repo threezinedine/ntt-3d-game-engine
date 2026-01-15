@@ -1,4 +1,5 @@
 #if NTT_USE_GRAPHICS_VULKAN
+#include "graphics/program.h"
 #include "graphics/renderer.h"
 #include "graphics/surface.h"
 #include "graphics/vulkan/image_vulkan.h"
@@ -317,10 +318,16 @@ void Renderer::CheckingTheSurfaceSupport()
 
 void Renderer::LoadingDefaultShader()
 {
-	Scope<Shader> shader =
-		CreateScope<Shader>(s_pDevice.get(), STRINGIFY(NTT_ENGINE_DIRECTORY) "core/assets/shaders/vulkan/default.vert");
+	Shader shader(s_pDevice.get(), STRINGIFY(NTT_ENGINE_DIRECTORY) "core/assets/shaders/vulkan/default.vert");
+	shader.Compile();
 
-	shader->Compile();
+	Shader fragmentShader(s_pDevice.get(), STRINGIFY(NTT_ENGINE_DIRECTORY) "core/assets/shaders/vulkan/default.frag");
+	fragmentShader.Compile();
+
+	Scope<Program> pProgram = CreateScope<Program>(s_pDevice.get(), s_pSurface.get(), s_pRenderPass.get());
+	pProgram->AttachShader(std::move(shader));
+	pProgram->AttachShader(std::move(fragmentShader));
+	pProgram->Link();
 }
 
 void Renderer::AttachSurface(Reference<Surface> pSurface)
@@ -339,8 +346,6 @@ void Renderer::AttachSurface(Reference<Surface> pSurface)
 			s_pDevice.reset();
 			NTT_RENDERER_LOG_DEBUG("Logical device destroyed.");
 		});
-
-		LoadingDefaultShader();
 	}
 
 	s_pSwapchain = CreateScope<Swapchain>(s_pDevice, s_pSurface);
@@ -370,6 +375,7 @@ void Renderer::AttachSurface(Reference<Surface> pSurface)
 	s_releaseStack.PushReleaseFunction(nullptr, [&](void*) { s_pRenderPass.reset(); });
 
 	CreateFrameBuffers();
+	LoadingDefaultShader();
 
 	s_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) {
 		vkDeviceWaitIdle(s_pDevice->GetVkDevice());

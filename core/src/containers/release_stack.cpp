@@ -10,6 +10,9 @@ ReleaseStack::ReleaseStack()
 ReleaseStack::ReleaseStack(ReleaseStack&& other) noexcept
 {
 	m_releaseEntries.swap(other.m_releaseEntries);
+	// m_releaseEntries	   = std::move(other.m_releaseEntries);
+	// other.m_releaseEntries = Stack<ReleaseEntry>();
+	NTT_ASSERT(other.m_releaseEntries.empty());
 }
 
 ReleaseStack::~ReleaseStack()

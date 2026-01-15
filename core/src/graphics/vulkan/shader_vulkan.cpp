@@ -53,6 +53,7 @@ Shader::Shader(Shader&& other)
 	, m_stage(other.m_stage)
 	, m_vkShaderModule(other.m_vkShaderModule)
 	, m_isValid(other.m_isValid)
+	, m_releaseStack(std::move(other.m_releaseStack))
 {
 	other.m_stage		   = ShaderStage::SHADER_STAGE_COUNT;
 	other.m_vkShaderModule = VK_NULL_HANDLE;
@@ -62,6 +63,11 @@ Shader::Shader(Shader&& other)
 
 Shader::~Shader()
 {
+	if (m_vkShaderModule != VK_NULL_HANDLE)
+	{
+		vkDestroyShaderModule(m_pDevice->GetVkDevice(), m_vkShaderModule, nullptr);
+		NTT_VULKAN_LOG_DEBUG("Shader \"%s\" is destroyed", m_filename);
+	}
 }
 
 void Shader::Compile()
@@ -154,11 +160,6 @@ void Shader::Compile()
 
 	NTT_VULKAN_LOG_DEBUG("Shader %s is compiled", m_filename);
 
-	m_releaseStack.PushReleaseFunction(nullptr, [&](void*) {
-		vkDestroyShaderModule(m_pDevice->GetVkDevice(), m_vkShaderModule, nullptr);
-		NTT_VULKAN_LOG_DEBUG("Shader %s is destroyed", m_filename);
-	});
-
 	m_isValid = true;
 
 	return;
@@ -171,9 +172,9 @@ static ShaderStage getShaderStageFromGLSLangStage(glslang_stage_t stage)
 	case GLSLANG_STAGE_VERTEX:
 		return ShaderStage::SHADER_STAGE_VERTEX;
 	case GLSLANG_STAGE_TESSCONTROL:
-		return ShaderStage::SHADER_STAGE_TESSELATION_CONTROL;
+		return ShaderStage::SHADER_STAGE_TESSELLATION_CONTROL;
 	case GLSLANG_STAGE_TESSEVALUATION:
-		return ShaderStage::SHADER_STAGE_TESSELATION_EVALUATION;
+		return ShaderStage::SHADER_STAGE_TESSELLATION_EVALUATION;
 	case GLSLANG_STAGE_GEOMETRY:
 		return ShaderStage::SHADER_STAGE_GEOMETRY;
 	case GLSLANG_STAGE_FRAGMENT:
@@ -189,9 +190,9 @@ static glslang_stage_t getGLSLangStageFromShaderStage(ShaderStage stage)
 	{
 	case ShaderStage::SHADER_STAGE_VERTEX:
 		return GLSLANG_STAGE_VERTEX;
-	case ShaderStage::SHADER_STAGE_TESSELATION_CONTROL:
+	case ShaderStage::SHADER_STAGE_TESSELLATION_CONTROL:
 		return GLSLANG_STAGE_TESSCONTROL;
-	case ShaderStage::SHADER_STAGE_TESSELATION_EVALUATION:
+	case ShaderStage::SHADER_STAGE_TESSELLATION_EVALUATION:
 		return GLSLANG_STAGE_TESSEVALUATION;
 	case ShaderStage::SHADER_STAGE_GEOMETRY:
 		return GLSLANG_STAGE_GEOMETRY;
