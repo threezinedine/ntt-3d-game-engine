@@ -1,8 +1,8 @@
 #if NTT_USE_GRAPHICS_OPENGL && NTT_USE_GLFW
 
 #pragma once
+#include "opengl_common.h"
 #include "platforms/common.h"
-#include <GLFW/glfw3.h>
 
 namespace ntt {
 

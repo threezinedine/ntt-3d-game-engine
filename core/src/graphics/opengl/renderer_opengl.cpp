@@ -5,6 +5,7 @@
 // clang-format on
 
 #include "graphics/renderer.h"
+#include "graphics/shader.h"
 #include "graphics/surface.h"
 
 namespace ntt {
@@ -35,6 +36,11 @@ void Renderer::AttachSurface(Reference<Surface> pSurface)
 
 	auto version = glGetString(GL_VERSION);
 	NTT_RENDERER_LOG_INFO("OpenGL Version: %s", version);
+
+	Scope<Shader> shader =
+		CreateScope<Shader>(STRINGIFY(NTT_ENGINE_DIRECTORY) "core/assets/shaders/opengl/default.vert");
+
+	shader->Compile();
 }
 
 void Renderer::BeginFrame()

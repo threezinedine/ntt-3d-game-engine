@@ -28,6 +28,7 @@ enum NTT_BINDING LogTagMaskBit : u32
 	LOG_TAG_MASK_APPLICATION = NTT_BIT(2), /// Application level messages
 	LOG_TAG_MASK_RENDERER	 = NTT_BIT(3), /// Renderer related messages
 	LOG_TAG_MASK_VULKAN		 = NTT_BIT(4),
+	LOG_TAG_MASK_OPENGL		 = NTT_BIT(5),
 	// Add more tags here
 	// Add more tags here
 	LOG_TAG_MASK_ALL		 = ~0u

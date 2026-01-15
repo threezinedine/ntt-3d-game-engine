@@ -1,6 +1,6 @@
 #if NTT_USE_GRAPHICS_OPENGL
 #pragma once
-#include "platforms/common.h"
+#include "opengl_common.h"
 #include "platforms/platforms.h"
 
 namespace ntt {

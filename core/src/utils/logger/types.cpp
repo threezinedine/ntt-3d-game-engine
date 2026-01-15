@@ -40,6 +40,8 @@ const char* convertLoggerTagToString(LogTagMaskBit tag)
 		return "RENDER";
 	case LOG_TAG_MASK_VULKAN:
 		return "VULKAN";
+	case LOG_TAG_MASK_OPENGL:
+		return "OPENGL";
 		// Add more tags here
 		// Add more tags here
 

@@ -27,4 +27,6 @@ enum ShaderStage
 	SHADER_STAGE_COUNT
 };
 
+ShaderStage getShaderStageFromFileName(const char* filename);
+
 } // namespace ntt

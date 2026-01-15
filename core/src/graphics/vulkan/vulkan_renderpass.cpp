@@ -1,3 +1,4 @@
+#if NTT_USE_GRAPHICS_VULKAN
 #include "graphics/vulkan/vulkan_renderpass.h"
 #include "graphics/vulkan/renderer_vulkan.h"
 #include "graphics/vulkan/surface_vulkan.h"
@@ -90,3 +91,5 @@ RenderPass::~RenderPass()
 }
 
 } // namespace ntt
+
+#endif // NTT_USE_GRAPHICS_VULKAN
