@@ -45,13 +45,17 @@ set(TARGET_PRECOMPILED_HEADER
 
 ntt_find_package(ntt-glm "Dependencies")
 ntt_find_package(ntt-json "Dependencies")
-ntt_configure_imgui()
 
 set(TARGET_LINK_LIBRARIES
     ntt-glm
     ntt-json
-    ntt-imgui
 )
+
+if (NTT_USE_IMGUI)
+ntt_configure_imgui()
+list(APPEND TARGET_LINK_LIBRARIES ntt-imgui)
+endif()
+
 
 if (NTT_USE_GLFW)
     ntt_find_package(ntt-glfw "Dependencies")

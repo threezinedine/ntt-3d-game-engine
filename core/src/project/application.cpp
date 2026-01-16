@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <fstream>
 
+#if NTT_USE_IMGUI
 #include "imgui.h"
 
 #if NTT_USE_GLFW
@@ -19,6 +20,7 @@
 #if NTT_USE_GRAPHICS_VULKAN
 #include "imgui_impl_vulkan.h"
 #endif // NTT_USE_GRAPHICS_VULKAN
+#endif // NTT_USE_IMGUI
 
 namespace ntt {
 
@@ -93,6 +95,7 @@ void Application::Start()
 
 	Renderer::AttachSurface(m_pWindow->GetSurface());
 
+#if NTT_USE_IMGUI
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
@@ -119,6 +122,7 @@ void Application::Start()
 #else
 #error "No graphics API defined for ImGui initialization."
 #endif // NTT_USE_GRAPHICS_OPENGL
+#endif // NTT_USE_IMGUI
 
 	startBeginImpl();
 	Input::Initialize();
@@ -137,6 +141,7 @@ void Application::Update(f32 deltaTime)
 
 	updateBeginImpl(deltaTime);
 
+#if NTT_USE_IMGUI
 #if NTT_USE_GRAPHICS_OPENGL
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
@@ -145,6 +150,7 @@ void Application::Update(f32 deltaTime)
 #else
 #error "No graphics API defined for ImGui new frame."
 #endif // NTT_USE_GRAPHICS_OPENGL
+#endif // NTT_USE_IMGUI
 
 	Renderer::BeginFrame();
 
@@ -154,6 +160,7 @@ void Application::Update(f32 deltaTime)
 
 	updateEndImpl(deltaTime);
 
+#if NTT_USE_IMGUI
 	ImGui::Render();
 
 	IVec2 windowSize = m_pWindow->Size();
@@ -176,6 +183,7 @@ void Application::Update(f32 deltaTime)
 		ImGui::RenderPlatformWindowsDefault();
 		m_pWindow->GetSurface()->Bind();
 	}
+#endif // NTT_USE_IMGUI
 
 	Renderer::PresentFrame();
 }
@@ -191,6 +199,7 @@ void Application::Shutdown()
 	Input::Shutdown();
 	shutdownEndImpl();
 
+#if NTT_USE_IMGUI
 #if NTT_USE_GRAPHICS_OPENGL
 	ImGui_ImplOpenGL3_Shutdown();
 
@@ -204,6 +213,7 @@ void Application::Shutdown()
 #endif // NTT_USE_GRAPHICS_OPENGL
 
 	ImGui::DestroyContext();
+#endif // NTT_USE_IMGUI
 
 	m_pWindow->Shutdown();
 	Renderer::Shutdown();

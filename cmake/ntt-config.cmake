@@ -45,6 +45,7 @@ macro(ntt_configure)
     ntt_option("NTT_ENGINE_EDITOR_BINDING" "OFF")
     ntt_option("NTT_BOOTAPP_COPY" "ON")
     ntt_option("NTT_IDE_APPLICATION" "OFF")
+    ntt_option("NTT_USE_IMGUI" "OFF")
 
     ntt_detect_graphics_api()
 

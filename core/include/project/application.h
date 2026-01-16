@@ -1,9 +1,12 @@
 #pragma once
-#include "imgui.h"
 #include "project_impl.h"
 #include "types.h"
 #include "utils/logger/logger.h"
 #include <platforms/common.h>
+
+#if NTT_USE_IMGUI
+#include "imgui.h"
+#endif // NTT_USE_IMGUI
 
 #define NTT_APPLICATION_LOG_TRACE(message, ...)                                                                        \
 	NTT_LOG_TRACE(LogTagMaskBit::LOG_TAG_MASK_APPLICATION, message, ##__VA_ARGS__)
