@@ -45,10 +45,12 @@ set(TARGET_PRECOMPILED_HEADER
 
 ntt_find_package(ntt-glm "Dependencies")
 ntt_find_package(ntt-json "Dependencies")
+ntt_configure_imgui()
 
 set(TARGET_LINK_LIBRARIES
     ntt-glm
     ntt-json
+    ntt-imgui
 )
 
 if (NTT_USE_GLFW)
@@ -56,8 +58,6 @@ if (NTT_USE_GLFW)
     list(APPEND TARGET_LINK_LIBRARIES ntt-glfw)
 
     if (NTT_USE_GRAPHICS_OPENGL)
-        # ntt_find_package(ntt-glad "Dependencies")
-        # list(APPEND TARGET_LINK_LIBRARIES ntt-glad)
         ntt_find_package(ntt-glew "Dependencies")
         list(APPEND TARGET_LINK_LIBRARIES ntt-glew)
     endif()
