@@ -1,4 +1,5 @@
 #pragma once
+#include "imgui.h"
 #include "project_impl.h"
 #include "types.h"
 #include "utils/logger/logger.h"
@@ -20,6 +21,8 @@
 	NTT_LOG_ERROR(LogTagMaskBit::LOG_TAG_MASK_APPLICATION, message, ##__VA_ARGS__)
 
 namespace ntt {
+
+class Window;
 
 /**
  * The global access point for the whole runtime application.
@@ -51,6 +54,11 @@ public:
 	void LoadProject(const String& projectFilePath) NTT_BINDING;
 
 	/**
+	 * Close the application window.
+	 */
+	void Close();
+
+	/**
 	 * Be called at the starting of the runtime.
 	 */
 	void Start() NTT_BINDING;
@@ -70,7 +78,7 @@ public:
 	 * Get whether the application window is open.
 	 * @return True if the window is open, false otherwise.
 	 */
-	virtual b8 IsOpen() const = 0;
+	virtual b8 IsOpen() const;
 
 protected:
 	/**
@@ -93,6 +101,12 @@ protected:
 	 * Default empty user-defined update implementation.
 	 * @param deltaTime The time elapsed since the last frame.
 	 */
+	virtual void updateImpl(f32 deltaTime) {};
+
+	/**
+	 * Default empty user-defined update implementation.
+	 * @param deltaTime The time elapsed since the last frame.
+	 */
 	virtual void updateEndImpl(f32 deltaTime) {};
 
 	/**
@@ -104,6 +118,7 @@ protected:
 
 private:
 	Scope<Project> m_pProject;
+	Scope<Window>  m_pWindow;
 	b8			   m_isInitialized;
 };
 
