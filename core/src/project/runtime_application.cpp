@@ -1,4 +1,4 @@
-#if !NTT_ENGINE_EDITOR_BINDING
+#if !NTT_ENGINE_EDITOR_BINDING && NTT_NO_ANALYZE && !NTT_IDE_APPLICATION
 
 #include "project/runtime_application.h"
 #include "graphics/graphics.h"
@@ -23,8 +23,6 @@ void RuntimeApplication::startBeginImpl()
 	m_pWindow = CreateRef<Window>("NTT Engine Window", 1280, 720);
 
 	m_pWindow->Initialize();
-	Renderer::Initialize();
-	Renderer::AttachSurface(m_pWindow->GetSurface());
 }
 
 b8 RuntimeApplication::IsOpen() const
@@ -34,6 +32,7 @@ b8 RuntimeApplication::IsOpen() const
 
 void RuntimeApplication::startEndImpl()
 {
+	Renderer::AttachSurface(m_pWindow->GetSurface());
 }
 
 void RuntimeApplication::updateBeginImpl(f32 deltaTime)
@@ -57,7 +56,6 @@ void RuntimeApplication::shutdownBeginImpl()
 
 void RuntimeApplication::shutdownEndImpl()
 {
-	Renderer::Shutdown();
 	m_pWindow->Shutdown();
 
 	ShutdownWindowingSystem();
@@ -65,4 +63,4 @@ void RuntimeApplication::shutdownEndImpl()
 
 } // namespace ntt
 
-#endif // NTT_ENGINE_EDITOR_BINDING
+#endif // !NTT_ENGINE_EDITOR_BINDING && NTT_NO_ANALYZE && !NTT_IDE_APPLICATION

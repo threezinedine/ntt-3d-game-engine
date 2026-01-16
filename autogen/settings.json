@@ -7,6 +7,10 @@
 		{
 			"file": "runtime/.vscode/c_cpp_properties.json.in",
 			"output": "runtime/.vscode/c_cpp_properties.json"
+		},
+		{
+			"file": "ide/.vscode/c_cpp_properties.json.in",
+			"output": "ide/.vscode/c_cpp_properties.json"
 		}
 	],
 	"commands": [

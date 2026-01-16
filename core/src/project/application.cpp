@@ -56,6 +56,7 @@ void Application::Start()
 	NTT_APPLICATION_LOG_INFO("Starting application ...");
 
 	startBeginImpl();
+	Renderer::Initialize();
 	Input::Initialize();
 
 	startEndImpl();
@@ -88,6 +89,7 @@ void Application::Shutdown()
 	shutdownBeginImpl();
 
 	Input::Shutdown();
+	Renderer::Shutdown();
 	shutdownEndImpl();
 
 	NTT_APPLICATION_LOG_INFO("Application shut down.");

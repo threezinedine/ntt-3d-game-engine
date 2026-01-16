@@ -6,7 +6,7 @@
 				{% if PLATFORM_IS_LINUX-%}
 				"{{ PYTHON_INCLUDE_DIR }}",
 				{% endif-%}
-				"${workspaceFolder}/../runtime/**",
+				"${workspaceFolder}/../core/**",
 				"${workspaceFolder}/**"
 			],
 			"defines": [

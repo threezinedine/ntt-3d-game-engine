@@ -21,6 +21,10 @@
 			"path": "cmake"
 		},
 		{
+			"name": "ide",
+			"path": "ide"
+		},
+		{
 			"name": "editor",
 			"path": "editor"
 		},
