@@ -42,6 +42,11 @@ public:
 		return m_pSurface;
 	}
 
+	inline IVec2 Size() const
+	{
+		return IVec2(static_cast<i32>(m_width), static_cast<i32>(m_height));
+	}
+
 	/**
 	 * Close the window programmatically.
 	 */

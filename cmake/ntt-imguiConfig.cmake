@@ -10,7 +10,7 @@ if (NOT TARGET imgui)
     FetchContent_Declare(
         imgui
         GIT_REPOSITORY https://github.com/threezinedine/imgui.git
-        GIT_TAG 402784182f8c7633d366793c509d6a6a1dbb8b6c
+        GIT_TAG 6886265fbd939539fcef5c15092f587ddb9ac6b5
     )
 
     FetchContent_MakeAvailable(imgui)

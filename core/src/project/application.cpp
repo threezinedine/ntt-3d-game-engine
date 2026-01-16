@@ -75,9 +75,10 @@ void Application::Update(f32 deltaTime)
 	Renderer::BeginFrame();
 
 	Renderer::EndFrame();
-	Renderer::PresentFrame();
 
 	updateEndImpl(deltaTime);
+
+	Renderer::PresentFrame();
 }
 
 void Application::Shutdown()

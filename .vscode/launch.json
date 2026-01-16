@@ -42,6 +42,14 @@
 			"cwd": "${workspaceRoot}/ide/build/debug_linux_unix"
 		},
 		{
+			"name": "IDE (Debug, Linux, OpenGL)",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceRoot}/ide/build/debug_linux_unix_opengl/EngineIDE",
+			"args": [],
+			"cwd": "${workspaceRoot}/ide/build/debug_linux_unix_opengl"
+		},
+		{
 			"name": "Runtime (Debug, Linux, Opengl)",
 			"type": "cppdbg",
 			"request": "launch",
