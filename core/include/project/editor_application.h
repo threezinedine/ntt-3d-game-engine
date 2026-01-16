@@ -5,6 +5,8 @@
 
 namespace ntt {
 
+class Shader;
+
 class NTT_BINDING EditorApplication : public Application
 {
 public:
@@ -23,6 +25,9 @@ protected:
 	virtual void updateEndImpl(f32 deltaTime) override;
 	virtual void shutdownBeginImpl() override;
 	virtual void shutdownEndImpl() override;
+
+private:
+	Scope<Shader> m_pShader;
 };
 
 } // namespace ntt

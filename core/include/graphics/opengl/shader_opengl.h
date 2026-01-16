@@ -16,6 +16,22 @@ public:
 	~Shader();
 
 public:
+	inline GLuint GetGLShaderID() const
+	{
+		return m_glShaderID;
+	}
+
+	inline ShaderStage GetShaderStage() const
+	{
+		return m_stage;
+	}
+
+	inline b8 IsValid() const
+	{
+		return m_isValid;
+	}
+
+public:
 	void Compile();
 
 private:

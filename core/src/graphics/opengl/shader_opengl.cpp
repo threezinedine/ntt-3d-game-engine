@@ -2,6 +2,7 @@
 
 #include "graphics/opengl/shader_opengl.h"
 #include "containers/release_stack.h"
+#include <GL/glew.h>
 #include <fstream>
 
 namespace ntt {
@@ -48,13 +49,14 @@ Shader::Shader(Shader&& other)
 
 void Shader::Compile()
 {
+	NTT_OPENGL_LOG_INFO("Shader stage determined: %d", m_stage);
 	switch (m_stage)
 	{
 	case ShaderStage::SHADER_STAGE_VERTEX:
-		m_glShaderID = glCreateShader(GL_VERTEX_SHADER);
+		GL_ASSERT(m_glShaderID = glCreateShader(GL_VERTEX_SHADER));
 		break;
 	case ShaderStage::SHADER_STAGE_FRAGMENT:
-		m_glShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+		GL_ASSERT(m_glShaderID = glCreateShader(GL_FRAGMENT_SHADER));
 		break;
 	default:
 		NTT_UNREACHABLE();

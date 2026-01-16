@@ -32,22 +32,27 @@ void Renderer::AttachSurface(Reference<Surface> pSurface)
 	NTT_RENDERER_LOG_DEBUG("Surface attached to OpenGL Renderer.");
 #endif
 
+	glewExperimental = GL_TRUE;
 	NTT_ASSERT(glewInit() == GLEW_OK);
 
 	auto version = glGetString(GL_VERSION);
 	NTT_RENDERER_LOG_INFO("OpenGL Version: %s", version);
 
-	Scope<Shader> shader =
-		CreateScope<Shader>(STRINGIFY(NTT_ENGINE_DIRECTORY) "core/assets/shaders/opengl/default.vert");
-
-	shader->Compile();
+	try
+	{
+		glCreateShader(GL_VERTEX_SHADER);
+	} catch (...)
+	{
+		NTT_RENDERER_LOG_FATAL("Failed to create OpenGL shader. GLEW might not be initialized correctly.");
+		NTT_UNREACHABLE();
+	}
 }
 
 void Renderer::BeginFrame()
 {
 	NTT_ASSERT(m_isInitialized);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClearColor(0.1f, 0.0f, 0.1f, 1.0f);
 }
 
 void Renderer::EndFrame()

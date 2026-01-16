@@ -1,6 +1,8 @@
 import common_models  # type: ignore
 from PySide6.QtWidgets import QApplication
+from PySide6.QtGui import QSurfaceFormat
 
+from os import getpid
 from Engine import *
 from utils import *
 from windows.main_window.main_window_view import EditorMainWindow
@@ -30,6 +32,21 @@ def main():
         int(LOG_HANDLER_TYPE_EDITOR) | int(LOG_HANDLER_TYPE_CONSOLE),
         LOG_TAG_MASK_ALL,
     )
+
+    Logger.Log(
+        LOG_LEVEL_INFO,
+        LOG_TAG_MASK_SYSTEM,
+        f"Editor started with PID {getpid()}",
+        __file__,
+        42,
+    )
+
+    fmt = QSurfaceFormat()
+    fmt.setVersion(4, 6)
+    fmt.setProfile(QSurfaceFormat.OpenGLContextProfile.CoreProfile)
+    fmt.setRenderableType(QSurfaceFormat.RenderableType.OpenGL)
+    fmt.setOption(QSurfaceFormat.FormatOption.DebugContext, True)
+    QSurfaceFormat.setDefaultFormat(fmt)
 
     app = QApplication([])
     window = di_get(EditorMainWindow)

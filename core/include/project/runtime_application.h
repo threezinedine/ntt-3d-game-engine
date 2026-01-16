@@ -6,6 +6,7 @@
 namespace ntt {
 
 class Window;
+class Program;
 
 class RuntimeApplication : public Application
 {
@@ -26,6 +27,7 @@ protected:
 	virtual void shutdownEndImpl() override;
 
 private:
+	Scope<Program>	  m_pProgram;
 	Reference<Window> m_pWindow;
 };
 

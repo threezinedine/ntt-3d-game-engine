@@ -10,13 +10,13 @@
 				"${workspaceFolder}/**"
 			],
 			"defines": [
-				"NTT_PLATFORM_LINUX",
-				"NTT_DEBUG",
+				"NTT_PLATFORM_LINUX=1",
+				"NTT_DEBUG=1",
 				"NTT_USE_GRAPHICS_VULKAN=1",
 				"NTT_USE_GRAPHICS_OPENGL=0",
 				"NTT_USE_GLFW=1",
-				"NTT_NO_ANALYZE",
-				"NTT_ENGINE_EDITOR_BINDING",
+				"NTT_NO_ANALYZE=1",
+				"NTT_ENGINE_EDITOR_BINDING=0",
 				"NTT_ENGINE_DIRECTORY=\"{{ BASE_DIR }}\""
 			],
 			"compilerPath": "/usr/bin/clang",

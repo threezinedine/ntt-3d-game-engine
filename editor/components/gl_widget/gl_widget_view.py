@@ -26,6 +26,7 @@ class GLWidget(QOpenGLWidget):
             self.viewModel.setSharedContext(self.context())
 
     def initializeGL(self) -> None:
+        self.makeCurrent()
         editor_logger.debug("GLWidget: OpenGL initialized.")
         assert self.shared.application is not None
         if not self.shared.application.IsInitialized():

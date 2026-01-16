@@ -34,6 +34,7 @@ void EditorApplication::updateEndImpl(f32 deltaTime)
 
 void EditorApplication::shutdownBeginImpl()
 {
+	m_pShader.reset();
 }
 
 void EditorApplication::shutdownEndImpl()
