@@ -47,6 +47,7 @@ void IDEApplication::startEndImpl()
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;	  // Enable Docking
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;	  // Enable Multi-Viewport / Platform Windows
 
 	ImGui::StyleColorsDark();
 
@@ -109,14 +110,19 @@ void IDEApplication::updateEndImpl(f32 deltaTime)
 	glViewport(0, 0, windowSize.x, windowSize.y);
 #endif // NTT_USE_GLFW
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.1f, 0.0f, 0.1f, 1.0f);
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 #elif NTT_USE_GRAPHICS_VULKAN
 #error "Vulkan ImGui new frame not implemented yet."
 #else
 #error "No graphics API defined for ImGui new frame."
 #endif // NTT_USE_GRAPHICS_OPENGL
+
+	if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+		m_pWindow->GetSurface()->Bind();
+	}
 }
 
 void IDEApplication::shutdownBeginImpl()
