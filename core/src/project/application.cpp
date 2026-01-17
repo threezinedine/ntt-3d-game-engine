@@ -153,8 +153,8 @@ void Application::Update(f32 deltaTime)
 #else
 #error "No graphics API defined for ImGui new frame."
 #endif // NTT_USE_GRAPHICS_OPENGL
-#endif // NTT_USE_IMGUI
 	ImGui::NewFrame();
+#endif // NTT_USE_IMGUI
 
 	Renderer::BeginFrame();
 

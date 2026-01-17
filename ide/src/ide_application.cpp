@@ -31,7 +31,6 @@ void IDEApplication::updateBeginImpl(f32 deltaTime)
 void IDEApplication::updateImpl(f32 deltaTime)
 {
 #if NTT_USE_IMGUI
-	ImGui::NewFrame();
 	ImGui::DockSpaceOverViewport();
 
 	ImGui::Begin("Hello, IDE!");
