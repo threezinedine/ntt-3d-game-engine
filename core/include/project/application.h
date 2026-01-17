@@ -26,6 +26,7 @@
 namespace ntt {
 
 class Window;
+class Layer;
 
 /**
  * The global access point for the whole runtime application.
@@ -38,6 +39,8 @@ public:
 	 * Constructor and Destructor
 	 */
 	Application();
+	NTT_DELETE_COPY(Application)
+	NTT_DELETE_MOVE(Application)
 	virtual ~Application();
 
 public:
@@ -118,6 +121,30 @@ protected:
 	virtual void shutdownBeginImpl() {};
 
 	virtual void shutdownEndImpl() {};
+
+protected:
+	/**
+	 * Enable a layer by its index in the layer stack.
+	 * @param layerIndex The index of the layer to enable. If
+	 * 		the index is out of bounds or the layer is already enabled,
+	 * 		a warning will be logged and no action will be taken.
+	 *
+	 */
+	void enableLayer(u32 layerIndex);
+
+	/**
+	 * Disable a layer by its index in the layer stack.
+	 * @param layerIndex The index of the layer to disable. If
+	 * 		the index is out of bounds or the layer is already disabled,
+	 * 		a warning will be logged and no action will be taken.
+	 */
+	void disableLayer(u32 layerIndex);
+
+protected:
+	Array<Scope<Layer>> m_pLayers;
+
+private:
+	Set<u32> m_enabledLayerIndices; /// These layers will be disabled when the application is shutting down.
 
 private:
 	Scope<Project> m_pProject;

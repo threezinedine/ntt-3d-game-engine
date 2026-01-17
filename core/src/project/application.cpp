@@ -2,6 +2,7 @@
 #include "graphics/graphics.h"
 #include "input/input.h"
 #include "platforms/platforms.h"
+#include "project/layer.h"
 #include <filesystem>
 #include <fstream>
 
@@ -100,8 +101,10 @@ void Application::Start()
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;	  // Enable Docking
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;	  // Enable Multi-Viewport / Platform Windows
+#if NTT_IDE_APPLICATION
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;	// Enable Docking
+#endif													// NTT_IDE_APPLICATION
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; // Enable Multi-Viewport / Platform Windows
 
 	ImGui::StyleColorsDark();
 
@@ -151,10 +154,15 @@ void Application::Update(f32 deltaTime)
 #error "No graphics API defined for ImGui new frame."
 #endif // NTT_USE_GRAPHICS_OPENGL
 #endif // NTT_USE_IMGUI
+	ImGui::NewFrame();
 
 	Renderer::BeginFrame();
 
 	updateImpl(deltaTime);
+	for (u32 layerIndex : m_enabledLayerIndices)
+	{
+		m_pLayers[layerIndex]->OnUpdate(deltaTime);
+	}
 
 	Renderer::EndFrame();
 
@@ -194,6 +202,12 @@ void Application::Shutdown()
 
 	NTT_APPLICATION_LOG_INFO("Shutting down application ...");
 
+	for (u32 layerIndex : m_enabledLayerIndices)
+	{
+		m_pLayers[layerIndex]->OnDetach();
+	}
+	m_enabledLayerIndices.clear();
+
 	shutdownBeginImpl();
 
 	Input::Shutdown();
@@ -219,7 +233,45 @@ void Application::Shutdown()
 	Renderer::Shutdown();
 	ShutdownWindowingSystem();
 
+	m_pLayers.clear();
+
 	NTT_APPLICATION_LOG_INFO("Application shut down.");
+}
+
+void Application::enableLayer(u32 layerIndex)
+{
+	if (layerIndex >= m_pLayers.size())
+	{
+		NTT_APPLICATION_LOG_WARN("Layer index %u is out of bounds. Cannot enable layer.", layerIndex);
+		return;
+	}
+
+	if (m_enabledLayerIndices.find(layerIndex) != m_enabledLayerIndices.end())
+	{
+		NTT_APPLICATION_LOG_WARN("Layer index %u is already enabled. Cannot enable layer again.", layerIndex);
+		return;
+	}
+
+	m_pLayers[layerIndex]->OnAttach(this);
+	m_enabledLayerIndices.insert(layerIndex);
+}
+
+void Application::disableLayer(u32 layerIndex)
+{
+	if (layerIndex >= m_pLayers.size())
+	{
+		NTT_APPLICATION_LOG_WARN("Layer index %u is out of bounds. Cannot disable layer.", layerIndex);
+		return;
+	}
+
+	if (m_enabledLayerIndices.find(layerIndex) == m_enabledLayerIndices.end())
+	{
+		NTT_APPLICATION_LOG_WARN("Layer index %u is not enabled. Cannot disable layer.", layerIndex);
+		return;
+	}
+
+	m_pLayers[layerIndex]->OnDetach();
+	m_enabledLayerIndices.erase(layerIndex);
 }
 
 } // namespace ntt

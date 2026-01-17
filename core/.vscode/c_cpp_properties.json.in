@@ -6,7 +6,7 @@
 				{% if PLATFORM_IS_LINUX-%}
 				"{{ PYTHON_INCLUDE_DIR }}",
 				{% endif-%}
-				"${workspaceFolder}/../runtime/**",
+				"${workspaceFolder}/../externals/**",
 				"${workspaceFolder}/**"
 			],
 			"defines": [
@@ -15,6 +15,7 @@
 				"NTT_USE_GRAPHICS_VULKAN=1",
 				"NTT_USE_GRAPHICS_OPENGL=0",
 				"NTT_USE_GLFW=1",
+				"NTT_USE_IMGUI=1",
 				"NTT_NO_ANALYZE=1",
 				"NTT_IDE_APPLICATION=1",
 				"NTT_ENGINE_EDITOR_BINDING=0",

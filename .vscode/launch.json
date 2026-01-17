@@ -9,14 +9,6 @@
 			"cwd": "${workspaceFolder}"
 		},
 		{
-			"name": "Editor",
-			"type": "debugpy",
-			"request": "launch",
-			"program": "${workspaceFolder}/editor/main.py",
-			"cwd": "${workspaceFolder}",
-			"python": "${workspaceFolder}/editor/.venv/bin/python"
-		},
-		{
 			"name": "Core Test (Linux)",
 			"type": "cppdbg",
 			"request": "launch",
@@ -34,6 +26,14 @@
 			"cwd": "${workspaceRoot}/runtime/build/debug_linux_unix"
 		},
 		{
+			"name": "Runtime (Debug, Linux, Opengl)",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceRoot}/runtime/build/debug_linux_unix_opengl/EngineRuntime",
+			"args": [],
+			"cwd": "${workspaceRoot}/runtime/build/debug_linux_unix_opengl"
+		},
+		{
 			"name": "IDE (Debug, Linux)",
 			"type": "cppdbg",
 			"request": "launch",
@@ -48,21 +48,6 @@
 			"program": "${workspaceRoot}/ide/build/debug_linux_unix_opengl/EngineIDE",
 			"args": [],
 			"cwd": "${workspaceRoot}/ide/build/debug_linux_unix_opengl"
-		},
-		{
-			"name": "Runtime (Debug, Linux, Opengl)",
-			"type": "cppdbg",
-			"request": "launch",
-			"program": "${workspaceRoot}/runtime/build/debug_linux_unix_opengl/EngineRuntime",
-			"args": [],
-			"cwd": "${workspaceRoot}/runtime/build/debug_linux_unix_opengl"
-		},
-		{
-			"name": "Editor Attach",
-			"type": "cppdbg",
-			"request": "attach",
-			"processId": "145433",
-			"program": "${workspaceRoot}/editor/main.py"
 		}
 	]
 }
