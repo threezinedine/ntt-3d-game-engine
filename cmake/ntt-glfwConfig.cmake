@@ -11,6 +11,7 @@ if (NOT TARGET glfw)
         glfw
         GIT_REPOSITORY https://github.com/glfw/glfw.git
         GIT_TAG        3.4
+        SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/glfw
     )
 
     FetchContent_MakeAvailable(glfw)

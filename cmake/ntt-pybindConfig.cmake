@@ -11,6 +11,7 @@ if (NOT TARGET pybind11)
         pybind11
         GIT_REPOSITORY https://github.com/pybind/pybind11.git
         GIT_TAG v2.11
+        SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/pybind11
     )
 
     FetchContent_MakeAvailable(pybind11)

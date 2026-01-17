@@ -51,6 +51,8 @@ void Renderer::AttachSurface(Reference<Surface> pSurface)
 void Renderer::BeginFrame()
 {
 	NTT_ASSERT(m_isInitialized);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Renderer::EndFrame()

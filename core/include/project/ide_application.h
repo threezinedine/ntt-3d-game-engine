@@ -1,5 +1,5 @@
 #if NTT_IDE_APPLICATION
-
+#pragma once
 #include "application.h"
 #include "platforms/common.h"
 

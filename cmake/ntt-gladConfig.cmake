@@ -10,6 +10,7 @@ if (NOT TARGET glad)
     FetchContent_Declare(
         GLAD
         GIT_REPOSITORY https://github.com/threezinedine/glad.git
+        SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/glad
     )
 
     FetchContent_MakeAvailable(glad)

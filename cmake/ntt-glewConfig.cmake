@@ -14,6 +14,7 @@ if (NOT TARGET glew)
     FetchContent_Declare(
         glew
         GIT_REPOSITORY https://github.com/Perlmint/glew-cmake.git
+        SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/glew
     )
 
     FetchContent_MakeAvailable(glew)

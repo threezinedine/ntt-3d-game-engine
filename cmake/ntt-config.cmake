@@ -14,8 +14,9 @@ macro(ntt_configure)
     if (IS_TOP_LEVEL_PROJECT)
         set(BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/..")
         cmake_path(SET NTT_ENGINE_DIRECTORY NORMALIZE "${BASE_DIRECTORY}")
-        ntt_log_var("NTT_ENGINE_DIRECTORY")
     endif()
+
+    set(NTT_EXTERNALS_DIRECTORY "${NTT_ENGINE_DIRECTORY}/externals")
 
     if (NTT_ENGINE_EDITOR_BINDING)
         set(CMAKE_POSITION_INDEPENDENT_CODE ON)

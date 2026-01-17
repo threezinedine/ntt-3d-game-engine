@@ -14,8 +14,6 @@ public:
 	RuntimeApplication();
 	virtual ~RuntimeApplication();
 
-	virtual b8 IsOpen() const override;
-
 protected:
 	virtual void startBeginImpl() override;
 	virtual void startEndImpl() override;
@@ -27,8 +25,7 @@ protected:
 	virtual void shutdownEndImpl() override;
 
 private:
-	Scope<Program>	  m_pProgram;
-	Reference<Window> m_pWindow;
+	Scope<Program> m_pProgram;
 };
 
 } // namespace ntt

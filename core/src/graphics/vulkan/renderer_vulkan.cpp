@@ -444,7 +444,7 @@ void Renderer::BeginFrame()
 	CommandBuffer& buffer = s_renderCommandBuffers[s_currentFlight];
 	buffer.StartRecord();
 
-	s_pRenderPass->Begin(buffer, s_framebuffers[s_pSwapchain->GetCurrentImageIndex()], {.1f, 0.1f, 0.0f, 1.0f});
+	s_pRenderPass->Begin(buffer, s_framebuffers[s_pSwapchain->GetCurrentImageIndex()], {0.1f, 0.1f, 0.1f, 1.0f});
 }
 
 void Renderer::EndFrame()

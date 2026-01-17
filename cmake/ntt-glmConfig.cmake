@@ -7,6 +7,8 @@ endif()
 if (NOT TARGET glm)
     include(FetchContent)
 
+    set(FETCHCONTENT_BASE_DIR ${NTT_EXTERNALS_DIRECTORY})
+
     FetchContent_Declare(
         glm
         GIT_REPOSITORY https://github.com/g-truc/glm.git

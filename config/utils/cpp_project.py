@@ -109,7 +109,9 @@ def build_cpp_project(
     """
     target_folder, _ = _get_target_folder(type, platform, generator, sections)
 
-    final_command = f"cmake --build {target_folder} --config {type.capitalize()}"
+    final_command = (
+        f"cmake --build {target_folder} --config {type.capitalize()} --parallel 5"
+    )
 
     run_command(final_command, directory=project)
 

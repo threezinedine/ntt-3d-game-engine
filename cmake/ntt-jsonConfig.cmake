@@ -10,6 +10,7 @@ if (NOT TARGET nlohmann)
     FetchContent_Declare(
         nlohmann
         GIT_REPOSITORY https://github.com/nlohmann/json.git
+        SOURCE_DIR ${FETCHCONTENT_BASE_DIR}/nlohmann
     )
 
     FetchContent_MakeAvailable(nlohmann)
