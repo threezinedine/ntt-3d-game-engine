@@ -26,6 +26,7 @@ Program::~Program()
 	if (m_glProgramID != 0)
 	{
 		glDeleteProgram(m_glProgramID);
+		NTT_OPENGL_LOG_DEBUG("OpenGL Program ID %u deleted.", m_glProgramID);
 	}
 	m_shaders.clear();
 }
@@ -64,6 +65,11 @@ void Program::Link()
 	}
 
 	NTT_OPENGL_LOG_DEBUG("OpenGL Program linked successfully. Program ID: %u", m_glProgramID);
+}
+
+void Program::Bind()
+{
+	GL_ASSERT(glUseProgram(m_glProgramID));
 }
 
 } // namespace ntt

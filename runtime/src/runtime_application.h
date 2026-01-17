@@ -17,6 +17,7 @@ protected:
 	virtual void startEndImpl() override;
 
 	virtual void updateBeginImpl(f32 deltaTime) override;
+	virtual void updateImpl(f32 deltaTime) override;
 	virtual void updateEndImpl(f32 deltaTime) override;
 
 	virtual void shutdownBeginImpl() override;

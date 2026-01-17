@@ -81,19 +81,16 @@ void Shader::Compile()
 	}
 
 	NTT_OPENGL_LOG_DEBUG("Shader %s is compiled with ID %u", m_filename, m_glShaderID);
+	m_isValid = true;
 }
 
 Shader::~Shader()
 {
-	NTT_OPENGL_LOG_DEBUG("Shader %s is being destroyed", m_filename);
-
 	if (m_glShaderID != 0)
 	{
 		GL_ASSERT(glDeleteShader(m_glShaderID));
 		NTT_OPENGL_LOG_DEBUG("Shader %s with ID %u is deleted", m_filename, m_glShaderID);
 	}
-
-	NTT_OPENGL_LOG_DEBUG("Shader %s is destroyed", m_filename);
 }
 
 } // namespace ntt

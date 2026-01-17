@@ -3,6 +3,7 @@
 #include "input/input.h"
 #include "platforms/platforms.h"
 #include "project/layer.h"
+#include "project/project_impl.h"
 #include <filesystem>
 #include <fstream>
 
@@ -27,6 +28,7 @@ namespace ntt {
 
 Application::Application()
 	: m_pProject(nullptr)
+	, m_pWindow(nullptr)
 	, m_isInitialized(NTT_FALSE)
 {
 }

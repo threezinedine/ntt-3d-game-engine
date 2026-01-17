@@ -19,6 +19,8 @@ public:
 	void AttachShader(Shader&& shader);
 	void Link();
 
+	void Bind();
+
 private:
 	Surface*	  m_pSurface;
 	GLuint		  m_glProgramID;

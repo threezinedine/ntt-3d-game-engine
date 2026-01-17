@@ -1,5 +1,4 @@
 #pragma once
-#include "project_impl.h"
 #include "types.h"
 #include "utils/logger/logger.h"
 #include <platforms/common.h>
@@ -27,6 +26,8 @@ namespace ntt {
 
 class Window;
 class Layer;
+class Project;
+class Program;
 
 /**
  * The global access point for the whole runtime application.
@@ -85,6 +86,12 @@ public:
 	 * @return True if the window is open, false otherwise.
 	 */
 	virtual b8 IsOpen() const;
+
+public:
+	inline Scope<Window>& GetWindow()
+	{
+		return m_pWindow;
+	}
 
 protected:
 	/**
