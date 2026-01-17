@@ -1,9 +1,4 @@
-#if NTT_IDE_APPLICATION
-
-#include "project/ide_application.h"
-#include "graphics/graphics.h"
-#include "input/input.h"
-#include "platforms/graphics/graphics.h"
+#include "ide_application.h"
 
 namespace ntt {
 
@@ -60,5 +55,3 @@ void IDEApplication::shutdownEndImpl()
 }
 
 } // namespace ntt
-
-#endif // NTT_IDE_APPLICATION

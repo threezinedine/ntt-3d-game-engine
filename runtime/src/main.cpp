@@ -1,3 +1,4 @@
+#include "runtime_application.h"
 #include <engine/engine.h>
 
 using namespace ntt;

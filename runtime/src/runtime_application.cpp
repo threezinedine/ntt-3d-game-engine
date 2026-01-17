@@ -1,9 +1,4 @@
-#if !NTT_ENGINE_EDITOR_BINDING && NTT_NO_ANALYZE && !NTT_IDE_APPLICATION
-
-#include "project/runtime_application.h"
-#include "graphics/graphics.h"
-#include "input/input.h"
-#include "platforms/graphics/graphics.h"
+#include "runtime_application.h"
 
 namespace ntt {
 
@@ -46,5 +41,3 @@ void RuntimeApplication::shutdownEndImpl()
 }
 
 } // namespace ntt
-
-#endif // !NTT_ENGINE_EDITOR_BINDING && NTT_NO_ANALYZE && !NTT_IDE_APPLICATION

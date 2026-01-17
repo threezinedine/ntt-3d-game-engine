@@ -1,3 +1,4 @@
+#include "ide_application.h"
 #include <engine/engine.h>
 using namespace ntt;
 

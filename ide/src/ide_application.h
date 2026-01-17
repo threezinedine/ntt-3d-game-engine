@@ -1,7 +1,5 @@
-#if NTT_IDE_APPLICATION
 #pragma once
-#include "application.h"
-#include "platforms/common.h"
+#include <engine/engine.h>
 
 namespace ntt {
 
@@ -22,5 +20,3 @@ protected:
 };
 
 } // namespace ntt
-
-#endif // NTT_IDE_APPLICATION

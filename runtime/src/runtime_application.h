@@ -1,7 +1,5 @@
-#if !NTT_ENGINE_EDITOR_BINDING && NTT_NO_ANALYZE && !NTT_IDE_APPLICATION
 #pragma once
-#include "application.h"
-#include "platforms/common.h"
+#include <engine/engine.h>
 
 namespace ntt {
 
@@ -29,5 +27,3 @@ private:
 };
 
 } // namespace ntt
-
-#endif // NTT_ENGINE_EDITOR_BINDING && NTT_NO_ANALYZE && !NTT_IDE_APPLICATION
