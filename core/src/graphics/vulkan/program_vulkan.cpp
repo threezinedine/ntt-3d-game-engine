@@ -53,7 +53,7 @@ void Program::Link()
 {
 	VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo = {};
 	inputAssemblyInfo.sType	   = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-	inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
+	inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 	vertexInputInfo.sType								 = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -61,10 +61,11 @@ void Program::Link()
 	vertexInputInfo.vertexAttributeDescriptionCount		 = 0;
 
 	VkPipelineRasterizationStateCreateInfo rasterizationInfo = {};
-	rasterizationInfo.sType		= VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-	rasterizationInfo.cullMode	= VK_CULL_MODE_FRONT_BIT;
-	rasterizationInfo.frontFace = VK_FRONT_FACE_CLOCKWISE;
-	rasterizationInfo.lineWidth = 1.0f;
+	rasterizationInfo.sType		  = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+	rasterizationInfo.cullMode	  = VK_CULL_MODE_NONE;
+	rasterizationInfo.frontFace	  = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+	rasterizationInfo.polygonMode = VK_POLYGON_MODE_FILL;
+	rasterizationInfo.lineWidth	  = 1.0f;
 
 	VkPipelineTessellationStateCreateInfo tessellationInfo = {};
 	tessellationInfo.sType								   = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
@@ -102,6 +103,8 @@ void Program::Link()
 	attachment.alphaBlendOp						   = VK_BLEND_OP_ADD;
 	attachment.blendEnable						   = VK_FALSE;
 	attachment.colorBlendOp						   = VK_BLEND_OP_ADD;
+	attachment.colorWriteMask =
+		VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
 	VkPipelineColorBlendStateCreateInfo colorBlendStateInfo = {};
 	colorBlendStateInfo.sType								= VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
@@ -111,7 +114,9 @@ void Program::Link()
 	// colorBlendStateInfo.logicOp = ;
 
 	VkPipelineDepthStencilStateCreateInfo depthStencilStateInfo = {};
-	depthStencilStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+	depthStencilStateInfo.sType			   = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+	depthStencilStateInfo.depthTestEnable  = VK_FALSE;
+	depthStencilStateInfo.depthWriteEnable = VK_FALSE;
 
 	Vec2	 size		   = m_pSurface->GetSize();
 	VkRect2D scissors	   = {};
@@ -168,6 +173,26 @@ void Program::Link()
 void Program::Bind(CommandBuffer& commandBuffer)
 {
 	vkCmdBindPipeline(commandBuffer.GetVkCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_vkPipeline);
+
+	IVec2 size = m_pSurface->GetSize();
+
+	VkViewport viewport = {};
+	viewport.x			= 0;
+	viewport.y			= 0;
+	viewport.width		= size.x;
+	viewport.height		= size.y;
+	viewport.minDepth	= 0.0f;
+	viewport.maxDepth	= 1.0f;
+
+	vkCmdSetViewport(commandBuffer.GetVkCommandBuffer(), 0, 1, &viewport);
+
+	VkRect2D scissors	   = {};
+	scissors.offset.x	   = 0;
+	scissors.offset.y	   = 0;
+	scissors.extent.width  = size.x;
+	scissors.extent.height = size.y;
+
+	vkCmdSetScissor(commandBuffer.GetVkCommandBuffer(), 0, 1, &scissors);
 }
 
 static VkShaderStageFlagBits getShaderStageBitFromStageType(ShaderStage type)

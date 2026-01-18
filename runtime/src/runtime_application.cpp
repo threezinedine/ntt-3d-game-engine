@@ -92,6 +92,7 @@ void RuntimeApplication::updateImpl(f32 deltaTime)
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 #elif NTT_USE_GRAPHICS_VULKAN
 	m_pProgram->Bind(Renderer::GetCurrentRenderCommandBuffer()); // TODO: Pass the command buffer here
+	Renderer::Draw(Renderer::GetCurrentRenderCommandBuffer(), 3, 1, 0, 0);
 #endif // NTT_USE_GRAPHICS_OPENGL
 }
 

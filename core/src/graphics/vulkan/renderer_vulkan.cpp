@@ -438,6 +438,12 @@ i32 Renderer::GetTransferQueueFamilyIndex()
 	return s_transferQueueFamily.exist ? s_transferQueueFamily.familyIndex : -1;
 }
 
+void Renderer::Draw(
+	CommandBuffer& commandBuffer, u32 vertexCount, u32 instanceCount, u32 firstVertex, u32 firstInstance)
+{
+	vkCmdDraw(commandBuffer.GetVkCommandBuffer(), vertexCount, instanceCount, firstVertex, firstInstance);
+}
+
 void Renderer::BeginFrame()
 {
 	Fence& fence = s_fences[s_currentFlight];

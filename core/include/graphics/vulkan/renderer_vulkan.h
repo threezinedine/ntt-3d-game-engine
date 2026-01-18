@@ -65,6 +65,9 @@ public:
 	static i32 GetComputeQueueFamilyIndex();
 	static i32 GetTransferQueueFamilyIndex();
 
+	static void
+	Draw(CommandBuffer& commandBuffer, u32 vertexCount, u32 instanceCount, u32 firstVertex, u32 firstInstance);
+
 private:
 	static void CreateInstance(const Array<const char*>& extensions, const Array<const char*>& layers);
 	static void ChoosePhysicalDevice();
