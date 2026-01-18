@@ -59,7 +59,13 @@ public:
 		return s_pRenderPass;
 	}
 
+	static inline u32 GetCurrentFlight()
+	{
+		return s_currentFlight;
+	}
+
 	static CommandBuffer& GetCurrentRenderCommandBuffer();
+	static CommandBuffer& GetTransferCommandBuffer();
 
 	static i32 GetRenderQueueFamilyIndex();
 	static i32 GetComputeQueueFamilyIndex();
@@ -73,7 +79,6 @@ private:
 	static void ChoosePhysicalDevice();
 	static void ChooseQueueFamilies();
 	static void CheckingTheSurfaceSupport();
-	static void LoadingDefaultShader();
 	static void CreateSyncObjects();
 	static void CreateFrameBuffers();
 
@@ -98,6 +103,9 @@ private:
 
 private:
 	static Scope<RenderPass> s_pRenderPass;
+
+private:
+	static Array<CommandBuffer> s_transferCommandBuffers;
 
 private:
 	static Array<Fence>			s_fences;

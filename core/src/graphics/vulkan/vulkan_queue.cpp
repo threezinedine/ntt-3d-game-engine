@@ -33,6 +33,16 @@ GraphicQueue::~GraphicQueue()
 {
 }
 
+void GraphicQueue::SubmitSync(CommandBuffer& buffer)
+{
+	VkSubmitInfo submitInfo		  = {};
+	submitInfo.sType			  = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers	  = &buffer.GetVkCommandBuffer();
+
+	vkQueueSubmit(m_vkQueue, 1, &submitInfo, VK_NULL_HANDLE);
+}
+
 void GraphicQueue::SubmitRender(CommandBuffer& buffer,
 								Semaphore&	   waitSemaphore,
 								Semaphore&	   signalSemaphore,
@@ -66,6 +76,11 @@ void GraphicQueue::SubmitPresent(Semaphore& waitSemaphore, Scope<Swapchain>& pSw
 	presentInfo.pWaitSemaphores	   = &waitSemaphore.GetVkSemaphore();
 
 	VK_ASSERT(vkQueuePresentKHR(m_vkQueue, &presentInfo));
+}
+
+void GraphicQueue::Wait()
+{
+	vkQueueWaitIdle(m_vkQueue);
 }
 
 } // namespace ntt

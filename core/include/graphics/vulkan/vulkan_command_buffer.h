@@ -24,7 +24,7 @@ public:
 
 public:
 	void Reset();
-	void StartRecord();
+	void StartRecord(b8 isOneTimeSubmit = false);
 
 	void EndRecord();
 

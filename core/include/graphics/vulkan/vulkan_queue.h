@@ -20,8 +20,10 @@ public:
 	~GraphicQueue();
 
 public:
+	void SubmitSync(CommandBuffer& buffer);
 	void SubmitRender(CommandBuffer& buffer, Semaphore& waitSemaphore, Semaphore& signalSemaphore, Fence& fence);
 	void SubmitPresent(Semaphore& waitSemaphore, Scope<Swapchain>& pSwapchain);
+	void Wait();
 
 private:
 	Device* m_pDevice;

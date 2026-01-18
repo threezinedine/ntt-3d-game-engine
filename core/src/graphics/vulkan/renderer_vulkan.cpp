@@ -31,6 +31,7 @@ QueueFamily			 Renderer::s_renderQueueFamily	 = {};
 QueueFamily			 Renderer::s_computeQueueFamily	 = {};
 QueueFamily			 Renderer::s_transferQueueFamily = {};
 Scope<RenderPass>	 Renderer::s_pRenderPass		 = nullptr;
+Array<CommandBuffer> Renderer::s_transferCommandBuffers;
 Array<Fence>		 Renderer::s_fences;
 Array<Semaphore>	 Renderer::s_imageReadySemaphores;
 Array<Semaphore>	 Renderer::s_renderFinisedSemaphores;
@@ -273,7 +274,11 @@ void Renderer::ChooseQueueFamilies()
 
 		if (familyProperties.queueFlags & VK_QUEUE_TRANSFER_BIT)
 		{
+#if 0
 			if (!s_transferQueueFamily.exist || queueFamilyIndex != s_renderQueueFamily.familyIndex)
+#else
+			if (!s_transferQueueFamily.exist)
+#endif
 			{
 				s_transferQueueFamily.familyIndex = queueFamilyIndex;
 				s_transferQueueFamily.exist		  = NTT_TRUE;
@@ -316,20 +321,6 @@ void Renderer::CheckingTheSurfaceSupport()
 	NTT_RENDERER_LOG_DEBUG("The surface validated.");
 }
 
-void Renderer::LoadingDefaultShader()
-{
-	Shader shader(s_pDevice.get(), STRINGIFY(NTT_ENGINE_DIRECTORY) "core/assets/shaders/vulkan/default.vert");
-	shader.Compile();
-
-	Shader fragmentShader(s_pDevice.get(), STRINGIFY(NTT_ENGINE_DIRECTORY) "core/assets/shaders/vulkan/default.frag");
-	fragmentShader.Compile();
-
-	Scope<Program> pProgram = CreateScope<Program>(s_pDevice.get(), s_pSurface.get(), s_pRenderPass.get());
-	pProgram->AttachShader(std::move(shader));
-	pProgram->AttachShader(std::move(fragmentShader));
-	pProgram->Link();
-}
-
 void Renderer::AttachSurface(Reference<Surface> pSurface)
 {
 	s_pSurface = pSurface;
@@ -354,6 +345,12 @@ void Renderer::AttachSurface(Reference<Surface> pSurface)
 		NTT_RENDERER_LOG_DEBUG("Swapchain destroyed.");
 	});
 
+	s_transferCommandBuffers = s_pDevice->GetTransferCommandPool()->AllocateCommandBuffers(1);
+	s_releaseStack.PushReleaseFunction(nullptr, [&](void*) {
+		s_pDevice->GetTransferCommandPool()->FreeCommandBuffers(s_transferCommandBuffers.size(),
+																s_transferCommandBuffers.data());
+	});
+
 	CreateSyncObjects();
 
 	s_renderCommandBuffers = s_pDevice->GetRenderCommandPool()->AllocateCommandBuffers(s_pSwapchain->GetImageCounts());
@@ -375,7 +372,6 @@ void Renderer::AttachSurface(Reference<Surface> pSurface)
 	s_releaseStack.PushReleaseFunction(nullptr, [&](void*) { s_pRenderPass.reset(); });
 
 	CreateFrameBuffers();
-	LoadingDefaultShader();
 
 	s_releaseStack.PushReleaseFunction(NTT_NULLPTR, [&](void*) {
 		vkDeviceWaitIdle(s_pDevice->GetVkDevice());
@@ -421,6 +417,11 @@ void Renderer::CreateFrameBuffers()
 CommandBuffer& Renderer::GetCurrentRenderCommandBuffer()
 {
 	return s_renderCommandBuffers[s_currentFlight];
+}
+
+CommandBuffer& Renderer::GetTransferCommandBuffer()
+{
+	return s_transferCommandBuffers[0];
 }
 
 i32 Renderer::GetRenderQueueFamilyIndex()

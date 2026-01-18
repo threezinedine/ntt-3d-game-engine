@@ -11,11 +11,12 @@ class Shader;
 class Surface;
 class RenderPass;
 class CommandBuffer;
+class VertexBuffer;
 
 class Program
 {
 public:
-	Program(Device* pDevice, Surface* pSurface, RenderPass* pRenderPass);
+	Program(Device* pDevice, Surface* pSurface, RenderPass* pRenderPass, u32 maxImages, VertexBuffer* pBuffer);
 	NTT_DELETE_COPY(Program);
 	Program(Program&& other) noexcept;
 	~Program();
@@ -34,12 +35,17 @@ public:
 	}
 
 private:
-	Device*			 m_pDevice;
-	Surface*		 m_pSurface;
-	RenderPass*		 m_pRenderPass;
-	VkPipelineLayout m_vkPipelineLayout;
-	VkPipeline		 m_vkPipeline;
-	Array<Shader>	 m_shaders;
+	Device*				   m_pDevice;
+	Surface*			   m_pSurface;
+	RenderPass*			   m_pRenderPass;
+	VkPipelineLayout	   m_vkPipelineLayout;
+	VkPipeline			   m_vkPipeline;
+	Array<Shader>		   m_shaders;
+	u32					   m_maxImages;
+	VertexBuffer*		   m_pVertexBuffer;
+	VkDescriptorPool	   m_vkDescriptorPool;
+	VkDescriptorSetLayout  m_vkDescriptorSetLayout;
+	Array<VkDescriptorSet> m_descriptorSets;
 
 private:
 	ReleaseStack m_releaseStack;

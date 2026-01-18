@@ -8,6 +8,19 @@
 
 namespace ntt {
 
+struct Vertex
+{
+	Vec2 position;
+};
+
+// clang-format off
+static Vertex vertices[] = {
+	{{ -0.5f,  0.5f }},
+	{{  0.5f, -0.5f }},
+	{{  0.5f,  0.3f }},
+};
+// clang-format on
+
 RuntimeApplication::RuntimeApplication()
 	: Application()
 {
@@ -27,6 +40,9 @@ static GLuint vao;
 
 void RuntimeApplication::startBeginImpl()
 {
+	m_pVertexBuffer = CreateScope<VertexBuffer>(Renderer::GetDevice().get(), sizeof(vertices));
+	m_pVertexBuffer->Write(Renderer::GetTransferCommandBuffer(), &vertices, sizeof(vertices));
+
 #if NTT_USE_GRAPHICS_OPENGL
 	Shader defaultVertexShader(STRINGIFY(NTT_ENGINE_DIRECTORY) "core/assets/shaders/opengl/default.vert");
 	Shader defaultFragmentShader(STRINGIFY(NTT_ENGINE_DIRECTORY) "core/assets/shaders/opengl/default.frag");
@@ -43,8 +59,11 @@ void RuntimeApplication::startBeginImpl()
 #if NTT_USE_GRAPHICS_OPENGL
 	m_pProgram = CreateScope<Program>(GetWindow()->GetSurface().get());
 #elif NTT_USE_GRAPHICS_VULKAN
-	m_pProgram = CreateScope<Program>(
-		Renderer::GetDevice().get(), GetWindow()->GetSurface().get(), Renderer::GetRenderPass().get());
+	m_pProgram = CreateScope<Program>(Renderer::GetDevice().get(),
+									  GetWindow()->GetSurface().get(),
+									  Renderer::GetRenderPass().get(),
+									  Renderer::GetSwapchain()->GetImageCounts(),
+									  m_pVertexBuffer.get());
 #endif // NTT_USE_GRAPHICS_OPENGL
 
 	m_pProgram->AttachShader(std::move(defaultFragmentShader));
@@ -106,6 +125,7 @@ void RuntimeApplication::shutdownBeginImpl()
 
 void RuntimeApplication::shutdownEndImpl()
 {
+	m_pVertexBuffer.reset();
 	m_pProgram.reset();
 }
 

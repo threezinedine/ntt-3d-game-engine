@@ -29,4 +29,11 @@ enum ShaderStage
 
 ShaderStage getShaderStageFromFileName(const char* filename);
 
+enum VertexBufferType
+{
+	VERTEX_BUFFER_TYPE_STATIC,
+	VERTEX_BUFFER_TYPE_DYNAMIC,
+	VERTEX_BUFFER_TYPE_COUNT,
+};
+
 } // namespace ntt

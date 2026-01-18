@@ -3,6 +3,7 @@
 #include "graphics/vulkan/program_vulkan.h"
 #include "containers/release_stack.h"
 #include "graphics/types.h"
+#include "graphics/vertex_buffer.h"
 #include "graphics/vulkan/shader_vulkan.h"
 #include "graphics/vulkan/surface_vulkan.h"
 #include "graphics/vulkan/vulkan_command_buffer.h"
@@ -13,13 +14,88 @@ namespace ntt {
 
 static VkShaderStageFlagBits getShaderStageBitFromStageType(ShaderStage type);
 
-Program::Program(Device* pDevice, Surface* pSurface, RenderPass* pRenderPass)
+Program::Program(Device* pDevice, Surface* pSurface, RenderPass* pRenderPass, u32 maxImages, VertexBuffer* pBuffer)
 	: m_pDevice(pDevice)
 	, m_pSurface(pSurface)
 	, m_pRenderPass(pRenderPass)
 	, m_vkPipelineLayout(VK_NULL_HANDLE)
 	, m_vkPipeline(VK_NULL_HANDLE)
+	, m_maxImages(maxImages)
+	, m_pVertexBuffer(nullptr)
+	, m_vkDescriptorPool(VK_NULL_HANDLE)
+	, m_vkDescriptorSetLayout(VK_NULL_HANDLE)
 {
+#if 1
+	VkDescriptorPoolSize poolSize = {};
+	poolSize.descriptorCount	  = maxImages;
+	poolSize.type				  = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+#endif
+
+	VkDescriptorPoolCreateInfo poolInfo = {};
+	poolInfo.sType						= VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+	poolInfo.flags						= VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+	poolInfo.maxSets					= maxImages;
+#if 1
+	poolInfo.poolSizeCount = 1;
+	poolInfo.pPoolSizes	   = &poolSize;
+#else
+	poolInfo.poolSizeCount = 0;
+	poolInfo.pPoolSizes	   = nullptr;
+#endif
+
+	VK_ASSERT(vkCreateDescriptorPool(m_pDevice->GetVkDevice(), &poolInfo, nullptr, &m_vkDescriptorPool));
+	m_releaseStack.PushReleaseFunction(
+		nullptr, [&](void*) { vkDestroyDescriptorPool(m_pDevice->GetVkDevice(), m_vkDescriptorPool, nullptr); });
+
+	VkDescriptorSetLayoutBinding binding = {};
+	binding.binding						 = 0;
+	binding.descriptorCount				 = 1;
+	binding.descriptorType				 = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+	binding.stageFlags					 = VK_SHADER_STAGE_VERTEX_BIT;
+
+	VkDescriptorSetLayoutCreateInfo setLayoutInfo = {};
+	setLayoutInfo.sType							  = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+	setLayoutInfo.bindingCount					  = 1;
+	setLayoutInfo.pBindings						  = &binding;
+
+	VK_ASSERT(vkCreateDescriptorSetLayout(m_pDevice->GetVkDevice(), &setLayoutInfo, nullptr, &m_vkDescriptorSetLayout));
+	m_releaseStack.PushReleaseFunction(nullptr, [&](void*) {
+		vkDestroyDescriptorSetLayout(m_pDevice->GetVkDevice(), m_vkDescriptorSetLayout, nullptr);
+	});
+
+	m_descriptorSets.resize(maxImages);
+	Array<VkDescriptorSetLayout> layouts(maxImages, m_vkDescriptorSetLayout);
+	VkDescriptorSetAllocateInfo	 allocateInfo = {};
+	allocateInfo.sType						  = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+	allocateInfo.descriptorPool				  = m_vkDescriptorPool;
+	allocateInfo.descriptorSetCount			  = maxImages;
+	allocateInfo.pSetLayouts				  = layouts.data();
+
+	VK_ASSERT(vkAllocateDescriptorSets(m_pDevice->GetVkDevice(), &allocateInfo, m_descriptorSets.data()));
+
+	// Allocate sets
+	for (u32 imageIndex = 0u; imageIndex < maxImages; ++imageIndex)
+	{
+		VkDescriptorBufferInfo bufferInfo = {};
+		bufferInfo.buffer				  = pBuffer->GetVkLocalBuffer();
+		bufferInfo.offset				  = 0;
+		bufferInfo.range				  = VK_WHOLE_SIZE;
+
+		VkWriteDescriptorSet write = {};
+		write.sType				   = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		write.descriptorCount	   = 1;
+		write.descriptorType	   = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		write.dstArrayElement	   = 0;
+		write.dstSet			   = m_descriptorSets[imageIndex];
+		write.dstBinding		   = 0;
+		write.pBufferInfo		   = &bufferInfo;
+
+		vkUpdateDescriptorSets(m_pDevice->GetVkDevice(), 1, &write, 0, nullptr);
+	}
+
+	m_releaseStack.PushReleaseFunction(nullptr, [&](void*) {
+		vkFreeDescriptorSets(m_pDevice->GetVkDevice(), m_vkDescriptorPool, m_maxImages, m_descriptorSets.data());
+	});
 }
 
 Program::Program(Program&& other) noexcept
@@ -29,12 +105,20 @@ Program::Program(Program&& other) noexcept
 	, m_vkPipelineLayout(other.m_vkPipelineLayout)
 	, m_vkPipeline(other.m_vkPipeline)
 	, m_shaders(std::move(other.m_shaders))
+	, m_maxImages(other.m_maxImages)
+	, m_pVertexBuffer(other.m_pVertexBuffer)
+	, m_vkDescriptorPool(other.m_vkDescriptorPool)
+	, m_vkDescriptorSetLayout(other.m_vkDescriptorSetLayout)
 {
-	other.m_pDevice			 = nullptr;
-	other.m_pSurface		 = nullptr;
-	other.m_pRenderPass		 = nullptr;
-	other.m_vkPipelineLayout = VK_NULL_HANDLE;
-	other.m_vkPipeline		 = VK_NULL_HANDLE;
+	other.m_pDevice				  = nullptr;
+	other.m_pSurface			  = nullptr;
+	other.m_pRenderPass			  = nullptr;
+	other.m_vkPipelineLayout	  = VK_NULL_HANDLE;
+	other.m_vkPipeline			  = VK_NULL_HANDLE;
+	other.m_maxImages			  = 0;
+	other.m_pVertexBuffer		  = nullptr;
+	other.m_vkDescriptorPool	  = VK_NULL_HANDLE;
+	other.m_vkDescriptorSetLayout = VK_NULL_HANDLE;
 }
 
 Program::~Program()
@@ -140,6 +224,8 @@ void Program::Link()
 
 	VkPipelineLayoutCreateInfo layoutInfo = {};
 	layoutInfo.sType					  = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	layoutInfo.setLayoutCount			  = 1;
+	layoutInfo.pSetLayouts				  = &m_vkDescriptorSetLayout;
 
 	vkCreatePipelineLayout(m_pDevice->GetVkDevice(), &layoutInfo, nullptr, &m_vkPipelineLayout);
 	m_releaseStack.PushReleaseFunction(
@@ -173,6 +259,15 @@ void Program::Link()
 void Program::Bind(CommandBuffer& commandBuffer)
 {
 	vkCmdBindPipeline(commandBuffer.GetVkCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_vkPipeline);
+
+	vkCmdBindDescriptorSets(commandBuffer.GetVkCommandBuffer(),
+							VK_PIPELINE_BIND_POINT_GRAPHICS,
+							m_vkPipelineLayout,
+							0,
+							1,
+							&m_descriptorSets[Renderer::GetCurrentFlight()],
+							0,
+							nullptr);
 
 	IVec2 size = m_pSurface->GetSize();
 

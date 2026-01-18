@@ -39,10 +39,12 @@ void CommandBuffer::Reset()
 	vkResetCommandBuffer(m_vkCommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
 }
 
-void CommandBuffer::StartRecord()
+void CommandBuffer::StartRecord(b8 isOneTimeSubmit)
 {
 	VkCommandBufferBeginInfo beginInfo = {};
 	beginInfo.sType					   = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	beginInfo.flags =
+		isOneTimeSubmit ? VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT : VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
 
 	vkBeginCommandBuffer(m_vkCommandBuffer, &beginInfo);
 }
