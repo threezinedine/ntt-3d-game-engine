@@ -44,6 +44,23 @@ public:
 		return s_pDevice;
 	}
 
+	static inline Scope<Swapchain>& GetSwapchain()
+	{
+		return s_pSwapchain;
+	}
+
+	static inline Array<CommandBuffer>& GetRenderCommandBuffers()
+	{
+		return s_renderCommandBuffers;
+	}
+
+	static inline Scope<RenderPass>& GetRenderPass()
+	{
+		return s_pRenderPass;
+	}
+
+	static CommandBuffer& GetCurrentRenderCommandBuffer();
+
 	static i32 GetRenderQueueFamilyIndex();
 	static i32 GetComputeQueueFamilyIndex();
 	static i32 GetTransferQueueFamilyIndex();

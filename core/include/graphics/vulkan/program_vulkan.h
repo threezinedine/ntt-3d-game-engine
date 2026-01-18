@@ -10,6 +10,7 @@ class ReleaseStack;
 class Shader;
 class Surface;
 class RenderPass;
+class CommandBuffer;
 
 class Program
 {
@@ -23,6 +24,8 @@ public:
 	void AttachShader(Shader&& other);
 
 	void Link();
+
+	void Bind(CommandBuffer& commandBuffer);
 
 public:
 	inline VkPipeline& GetVkPipeline()

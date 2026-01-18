@@ -418,6 +418,11 @@ void Renderer::CreateFrameBuffers()
 	s_releaseStack.PushReleaseFunction(nullptr, [&](void*) { s_framebuffers.clear(); });
 }
 
+CommandBuffer& Renderer::GetCurrentRenderCommandBuffer()
+{
+	return s_renderCommandBuffers[s_currentFlight];
+}
+
 i32 Renderer::GetRenderQueueFamilyIndex()
 {
 	return s_renderQueueFamily.exist ? s_renderQueueFamily.familyIndex : -1;

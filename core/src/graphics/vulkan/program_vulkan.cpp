@@ -5,6 +5,7 @@
 #include "graphics/types.h"
 #include "graphics/vulkan/shader_vulkan.h"
 #include "graphics/vulkan/surface_vulkan.h"
+#include "graphics/vulkan/vulkan_command_buffer.h"
 #include "graphics/vulkan/vulkan_device.h"
 #include "graphics/vulkan/vulkan_renderpass.h"
 
@@ -162,6 +163,11 @@ void Program::Link()
 
 	m_releaseStack.PushReleaseFunction(
 		nullptr, [&](void*) { vkDestroyPipeline(m_pDevice->GetVkDevice(), m_vkPipeline, nullptr); });
+}
+
+void Program::Bind(CommandBuffer& commandBuffer)
+{
+	vkCmdBindPipeline(commandBuffer.GetVkCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_vkPipeline);
 }
 
 static VkShaderStageFlagBits getShaderStageBitFromStageType(ShaderStage type)

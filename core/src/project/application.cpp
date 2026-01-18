@@ -7,6 +7,10 @@
 #include <filesystem>
 #include <fstream>
 
+#if NTT_USE_GRAPHICS_VULKAN
+#include "graphics/vulkan/vulkan_device.h"
+#endif // NTT_USE_GRAPHICS_VULKAN
+
 #if NTT_USE_IMGUI
 #include "imgui.h"
 
@@ -213,6 +217,11 @@ void Application::Shutdown()
 	shutdownBeginImpl();
 
 	Input::Shutdown();
+
+#if NTT_USE_GRAPHICS_VULKAN
+	vkDeviceWaitIdle(Renderer::GetDevice()->GetVkDevice());
+#endif // NTT_USE_GRAPHICS_VULKAN
+
 	shutdownEndImpl();
 
 #if NTT_USE_IMGUI

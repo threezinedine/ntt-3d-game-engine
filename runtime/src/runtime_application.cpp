@@ -1,6 +1,11 @@
 #include "runtime_application.h"
 #include "imgui_layer.h"
 
+#if NTT_USE_GRAPHICS_VULKAN
+#include "graphics/vulkan/vulkan_renderpass.h"
+#include "graphics/vulkan/vulkan_swapchain.h"
+#endif // NTT_USE_GRAPHICS_VULKAN
+
 namespace ntt {
 
 RuntimeApplication::RuntimeApplication()
@@ -16,16 +21,32 @@ RuntimeApplication::~RuntimeApplication()
 {
 }
 
+#if NTT_USE_GRAPHICS_OPENGL
 static GLuint vao;
+#endif // NTT_USE_GRAPHICS_OPENGL
 
 void RuntimeApplication::startBeginImpl()
 {
+#if NTT_USE_GRAPHICS_OPENGL
 	Shader defaultVertexShader(STRINGIFY(NTT_ENGINE_DIRECTORY) "core/assets/shaders/opengl/default.vert");
-	defaultVertexShader.Compile();
 	Shader defaultFragmentShader(STRINGIFY(NTT_ENGINE_DIRECTORY) "core/assets/shaders/opengl/default.frag");
+#elif NTT_USE_GRAPHICS_VULKAN
+	Shader defaultVertexShader(Renderer::GetDevice().get(),
+							   STRINGIFY(NTT_ENGINE_DIRECTORY) "core/assets/shaders/vulkan/default.vert");
+	Shader defaultFragmentShader(Renderer::GetDevice().get(),
+								 STRINGIFY(NTT_ENGINE_DIRECTORY) "core/assets/shaders/vulkan/default.frag");
+#endif // NTT_USE_GRAPHICS_OPENGL
+
+	defaultVertexShader.Compile();
 	defaultFragmentShader.Compile();
 
+#if NTT_USE_GRAPHICS_OPENGL
 	m_pProgram = CreateScope<Program>(GetWindow()->GetSurface().get());
+#elif NTT_USE_GRAPHICS_VULKAN
+	m_pProgram = CreateScope<Program>(
+		Renderer::GetDevice().get(), GetWindow()->GetSurface().get(), Renderer::GetRenderPass().get());
+#endif // NTT_USE_GRAPHICS_OPENGL
+
 	m_pProgram->AttachShader(std::move(defaultFragmentShader));
 	m_pProgram->AttachShader(std::move(defaultVertexShader));
 	m_pProgram->Link();
@@ -33,8 +54,10 @@ void RuntimeApplication::startBeginImpl()
 
 void RuntimeApplication::startEndImpl()
 {
+#if NTT_USE_GRAPHICS_OPENGL
 	GL_ASSERT(glGenVertexArrays(1, &vao));
 	GL_ASSERT(glBindVertexArray(vao));
+#endif // NTT_USE_GRAPHICS_OPENGL
 }
 
 void RuntimeApplication::updateBeginImpl(f32 deltaTime)
@@ -64,9 +87,12 @@ void RuntimeApplication::updateBeginImpl(f32 deltaTime)
 
 void RuntimeApplication::updateImpl(f32 deltaTime)
 {
+#if NTT_USE_GRAPHICS_OPENGL
 	m_pProgram->Bind();
-
 	glDrawArrays(GL_TRIANGLES, 0, 3);
+#elif NTT_USE_GRAPHICS_VULKAN
+	m_pProgram->Bind(Renderer::GetCurrentRenderCommandBuffer()); // TODO: Pass the command buffer here
+#endif // NTT_USE_GRAPHICS_OPENGL
 }
 
 void RuntimeApplication::updateEndImpl(f32 deltaTime)
