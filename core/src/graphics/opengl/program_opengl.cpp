@@ -3,12 +3,14 @@
 #include "graphics/opengl/program_opengl.h"
 #include "graphics/shader.h"
 #include "graphics/surface.h"
+#include "graphics/vertex_buffer.h"
 
 namespace ntt {
 
-Program::Program(Surface* pSurface)
+Program::Program(Surface* pSurface, u32 size, VertexBuffer* pBuffer)
 	: m_pSurface(pSurface)
 	, m_glProgramID(0)
+	, m_bufferId(pBuffer->GetBufferId())
 {
 }
 
@@ -16,9 +18,11 @@ Program::Program(Program&& other) noexcept
 	: m_pSurface(other.m_pSurface)
 	, m_glProgramID(other.m_glProgramID)
 	, m_shaders(std::move(other.m_shaders))
+	, m_bufferId(other.m_bufferId)
 {
 	other.m_pSurface	= nullptr;
 	other.m_glProgramID = 0;
+	other.m_bufferId	= 0;
 }
 
 Program::~Program()
@@ -70,6 +74,7 @@ void Program::Link()
 void Program::Bind()
 {
 	GL_ASSERT(glUseProgram(m_glProgramID));
+	GL_ASSERT(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_bufferId));
 }
 
 } // namespace ntt

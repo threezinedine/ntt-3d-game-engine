@@ -40,13 +40,16 @@ static GLuint vao;
 
 void RuntimeApplication::startBeginImpl()
 {
-	m_pVertexBuffer = CreateScope<VertexBuffer>(Renderer::GetDevice().get(), sizeof(vertices));
-	m_pVertexBuffer->Write(Renderer::GetTransferCommandBuffer(), &vertices, sizeof(vertices));
-
 #if NTT_USE_GRAPHICS_OPENGL
+	m_pVertexBuffer = CreateScope<VertexBuffer>();
+	m_pVertexBuffer->Write(&vertices, sizeof(vertices));
+
 	Shader defaultVertexShader(STRINGIFY(NTT_ENGINE_DIRECTORY) "core/assets/shaders/opengl/default.vert");
 	Shader defaultFragmentShader(STRINGIFY(NTT_ENGINE_DIRECTORY) "core/assets/shaders/opengl/default.frag");
 #elif NTT_USE_GRAPHICS_VULKAN
+	m_pVertexBuffer = CreateScope<VertexBuffer>(Renderer::GetDevice().get(), sizeof(vertices));
+	m_pVertexBuffer->Write(Renderer::GetTransferCommandBuffer(), &vertices, sizeof(vertices));
+
 	Shader defaultVertexShader(Renderer::GetDevice().get(),
 							   STRINGIFY(NTT_ENGINE_DIRECTORY) "core/assets/shaders/vulkan/default.vert");
 	Shader defaultFragmentShader(Renderer::GetDevice().get(),
@@ -57,7 +60,7 @@ void RuntimeApplication::startBeginImpl()
 	defaultFragmentShader.Compile();
 
 #if NTT_USE_GRAPHICS_OPENGL
-	m_pProgram = CreateScope<Program>(GetWindow()->GetSurface().get());
+	m_pProgram = CreateScope<Program>(GetWindow()->GetSurface().get(), sizeof(vertices), m_pVertexBuffer.get());
 #elif NTT_USE_GRAPHICS_VULKAN
 	m_pProgram = CreateScope<Program>(Renderer::GetDevice().get(),
 									  GetWindow()->GetSurface().get(),

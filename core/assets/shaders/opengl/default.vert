@@ -1,11 +1,14 @@
 #version 460 
 
-vec2 positions[3] = vec2[3](
-    vec2(-0.5, -0.5),
-    vec2( 0.5, -0.5),
-    vec2( 0.0,  0.5)
-);
+struct Vertex {
+    float x, y;
+};
+
+layout (binding = 0, std430) readonly buffer VertexBuffer {
+    Vertex vertices[];
+} vertices;
 
 void main() {
-    gl_Position = vec4(positions[gl_VertexID], 0.0, 1.0);
+    Vertex vertex = vertices.vertices[gl_VertexID];
+    gl_Position = vec4(vertex.x, vertex.y, 0.0, 1.0);
 }

@@ -6,11 +6,12 @@ namespace ntt {
 
 class Surface;
 class Shader;
+class VertexBuffer;
 
 class Program
 {
 public:
-	Program(Surface* pSurface);
+	Program(Surface* pSurface, u32 size, VertexBuffer* pBuffer);
 	NTT_DELETE_COPY(Program);
 	Program(Program&& other) noexcept;
 	~Program();
@@ -25,6 +26,7 @@ private:
 	Surface*	  m_pSurface;
 	GLuint		  m_glProgramID;
 	Array<Shader> m_shaders;
+	u32			  m_bufferId;
 };
 
 } // namespace ntt
