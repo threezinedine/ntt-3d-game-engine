@@ -12,11 +12,17 @@ class Surface;
 class RenderPass;
 class CommandBuffer;
 class VertexBuffer;
+class UniformBuffer;
 
 class Program
 {
 public:
-	Program(Device* pDevice, Surface* pSurface, RenderPass* pRenderPass, u32 maxImages, VertexBuffer* pBuffer);
+	Program(Device*		   pDevice,
+			Surface*	   pSurface,
+			RenderPass*	   pRenderPass,
+			u32			   maxImages,
+			VertexBuffer*  pVertexBuffer,
+			UniformBuffer* pUniformBuffer = nullptr);
 	NTT_DELETE_COPY(Program);
 	Program(Program&& other) noexcept;
 	~Program();

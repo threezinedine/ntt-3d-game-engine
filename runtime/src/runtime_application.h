@@ -24,8 +24,9 @@ protected:
 	virtual void shutdownEndImpl() override;
 
 private:
-	Scope<Program>		m_pProgram;
-	Scope<VertexBuffer> m_pVertexBuffer;
+	Scope<Program>		 m_pProgram;
+	Scope<VertexBuffer>	 m_pVertexBuffer;
+	Scope<UniformBuffer> m_pUniformBuffer;
 };
 
 } // namespace ntt

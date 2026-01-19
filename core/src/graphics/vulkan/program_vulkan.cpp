@@ -6,6 +6,7 @@
 #include "graphics/vertex_buffer.h"
 #include "graphics/vulkan/shader_vulkan.h"
 #include "graphics/vulkan/surface_vulkan.h"
+#include "graphics/vulkan/uniform_buffer_vulkan.h"
 #include "graphics/vulkan/vulkan_command_buffer.h"
 #include "graphics/vulkan/vulkan_device.h"
 #include "graphics/vulkan/vulkan_renderpass.h"
@@ -14,7 +15,12 @@ namespace ntt {
 
 static VkShaderStageFlagBits getShaderStageBitFromStageType(ShaderStage type);
 
-Program::Program(Device* pDevice, Surface* pSurface, RenderPass* pRenderPass, u32 maxImages, VertexBuffer* pBuffer)
+Program::Program(Device*		pDevice,
+				 Surface*		pSurface,
+				 RenderPass*	pRenderPass,
+				 u32			maxImages,
+				 VertexBuffer*	pVertexBuffer,
+				 UniformBuffer* pUniformBuffer)
 	: m_pDevice(pDevice)
 	, m_pSurface(pSurface)
 	, m_pRenderPass(pRenderPass)
@@ -25,27 +31,33 @@ Program::Program(Device* pDevice, Surface* pSurface, RenderPass* pRenderPass, u3
 	, m_vkDescriptorPool(VK_NULL_HANDLE)
 	, m_vkDescriptorSetLayout(VK_NULL_HANDLE)
 {
-#if 1
+	Array<VkDescriptorPoolSize> poolSizes;
+
 	VkDescriptorPoolSize poolSize = {};
 	poolSize.descriptorCount	  = maxImages;
 	poolSize.type				  = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-#endif
+	poolSizes.push_back(poolSize);
+
+	if (pUniformBuffer != nullptr)
+	{
+		VkDescriptorPoolSize uniformPoolSize = {};
+		uniformPoolSize.descriptorCount		 = maxImages;
+		uniformPoolSize.type				 = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		poolSizes.push_back(uniformPoolSize);
+	}
 
 	VkDescriptorPoolCreateInfo poolInfo = {};
 	poolInfo.sType						= VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	poolInfo.flags						= VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 	poolInfo.maxSets					= maxImages;
-#if 1
-	poolInfo.poolSizeCount = 1;
-	poolInfo.pPoolSizes	   = &poolSize;
-#else
-	poolInfo.poolSizeCount = 0;
-	poolInfo.pPoolSizes	   = nullptr;
-#endif
+	poolInfo.poolSizeCount				= u32(poolSizes.size());
+	poolInfo.pPoolSizes					= poolSizes.data();
 
 	VK_ASSERT(vkCreateDescriptorPool(m_pDevice->GetVkDevice(), &poolInfo, nullptr, &m_vkDescriptorPool));
 	m_releaseStack.PushReleaseFunction(
 		nullptr, [&](void*) { vkDestroyDescriptorPool(m_pDevice->GetVkDevice(), m_vkDescriptorPool, nullptr); });
+
+	Array<VkDescriptorSetLayoutBinding> bindings;
 
 	VkDescriptorSetLayoutBinding binding = {};
 	binding.binding						 = 0;
@@ -53,10 +65,22 @@ Program::Program(Device* pDevice, Surface* pSurface, RenderPass* pRenderPass, u3
 	binding.descriptorType				 = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 	binding.stageFlags					 = VK_SHADER_STAGE_VERTEX_BIT;
 
+	bindings.push_back(binding);
+
+	if (pUniformBuffer != nullptr)
+	{
+		VkDescriptorSetLayoutBinding uniformBinding = {};
+		uniformBinding.binding						= 1;
+		uniformBinding.descriptorCount				= 1;
+		uniformBinding.descriptorType				= VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		uniformBinding.stageFlags					= VK_SHADER_STAGE_FRAGMENT_BIT;
+		bindings.push_back(uniformBinding);
+	}
+
 	VkDescriptorSetLayoutCreateInfo setLayoutInfo = {};
 	setLayoutInfo.sType							  = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	setLayoutInfo.bindingCount					  = 1;
-	setLayoutInfo.pBindings						  = &binding;
+	setLayoutInfo.bindingCount					  = u32(bindings.size());
+	setLayoutInfo.pBindings						  = bindings.data();
 
 	VK_ASSERT(vkCreateDescriptorSetLayout(m_pDevice->GetVkDevice(), &setLayoutInfo, nullptr, &m_vkDescriptorSetLayout));
 	m_releaseStack.PushReleaseFunction(nullptr, [&](void*) {
@@ -72,12 +96,17 @@ Program::Program(Device* pDevice, Surface* pSurface, RenderPass* pRenderPass, u3
 	allocateInfo.pSetLayouts				  = layouts.data();
 
 	VK_ASSERT(vkAllocateDescriptorSets(m_pDevice->GetVkDevice(), &allocateInfo, m_descriptorSets.data()));
+	m_releaseStack.PushReleaseFunction(nullptr, [&](void*) {
+		vkFreeDescriptorSets(m_pDevice->GetVkDevice(), m_vkDescriptorPool, m_maxImages, m_descriptorSets.data());
+	});
+
+	Array<VkWriteDescriptorSet> writes;
 
 	// Allocate sets
 	for (u32 imageIndex = 0u; imageIndex < maxImages; ++imageIndex)
 	{
 		VkDescriptorBufferInfo bufferInfo = {};
-		bufferInfo.buffer				  = pBuffer->GetLocalBuffer()->GetVkBuffer();
+		bufferInfo.buffer				  = pVertexBuffer->GetLocalBuffer()->GetVkBuffer();
 		bufferInfo.offset				  = 0;
 		bufferInfo.range				  = VK_WHOLE_SIZE;
 
@@ -89,13 +118,28 @@ Program::Program(Device* pDevice, Surface* pSurface, RenderPass* pRenderPass, u3
 		write.dstSet			   = m_descriptorSets[imageIndex];
 		write.dstBinding		   = 0;
 		write.pBufferInfo		   = &bufferInfo;
+		writes.push_back(write);
 
-		vkUpdateDescriptorSets(m_pDevice->GetVkDevice(), 1, &write, 0, nullptr);
+		if (pUniformBuffer != nullptr)
+		{
+			VkDescriptorBufferInfo uniformInfo = {};
+			uniformInfo.offset				   = 0;
+			uniformInfo.range				   = VK_WHOLE_SIZE;
+			uniformInfo.buffer				   = pUniformBuffer->GetBuffer()->GetVkBuffer();
+
+			VkWriteDescriptorSet uniformWrite = {};
+			uniformWrite.sType				  = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			uniformWrite.descriptorCount	  = 1;
+			uniformWrite.descriptorType		  = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			uniformWrite.dstArrayElement	  = 0;
+			uniformWrite.dstSet				  = m_descriptorSets[imageIndex];
+			uniformWrite.dstBinding			  = 1;
+			uniformWrite.pBufferInfo		  = &uniformInfo;
+			writes.push_back(uniformWrite);
+		}
 	}
 
-	m_releaseStack.PushReleaseFunction(nullptr, [&](void*) {
-		vkFreeDescriptorSets(m_pDevice->GetVkDevice(), m_vkDescriptorPool, m_maxImages, m_descriptorSets.data());
-	});
+	vkUpdateDescriptorSets(m_pDevice->GetVkDevice(), u32(writes.size()), writes.data(), 0, nullptr);
 }
 
 Program::Program(Program&& other) noexcept

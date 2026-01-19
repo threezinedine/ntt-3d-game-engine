@@ -19,6 +19,8 @@ static Vertex vertices[] = {
 	{{  0.5f, -0.5f }},
 	{{  0.5f,  0.3f }},
 };
+
+static Vec4 color = {0.5f, 0.5f, 0.0f, 1.0f};
 // clang-format on
 
 RuntimeApplication::RuntimeApplication()
@@ -50,6 +52,9 @@ void RuntimeApplication::startBeginImpl()
 	m_pVertexBuffer = CreateScope<VertexBuffer>(Renderer::GetDevice().get(), sizeof(vertices));
 	m_pVertexBuffer->Write(Renderer::GetTransferCommandBuffer(), &vertices, sizeof(vertices));
 
+	m_pUniformBuffer = CreateScope<UniformBuffer>(Renderer::GetDevice().get(), sizeof(color));
+	m_pUniformBuffer->GetBuffer()->Write(&color, sizeof(color));
+
 	Shader defaultVertexShader(Renderer::GetDevice().get(),
 							   STRINGIFY(NTT_ENGINE_DIRECTORY) "core/assets/shaders/vulkan/default.vert");
 	Shader defaultFragmentShader(Renderer::GetDevice().get(),
@@ -66,7 +71,8 @@ void RuntimeApplication::startBeginImpl()
 									  GetWindow()->GetSurface().get(),
 									  Renderer::GetRenderPass().get(),
 									  Renderer::GetSwapchain()->GetImageCounts(),
-									  m_pVertexBuffer.get());
+									  m_pVertexBuffer.get(),
+									  m_pUniformBuffer.get());
 #endif // NTT_USE_GRAPHICS_OPENGL
 
 	m_pProgram->AttachShader(std::move(defaultFragmentShader));
@@ -129,6 +135,7 @@ void RuntimeApplication::shutdownBeginImpl()
 void RuntimeApplication::shutdownEndImpl()
 {
 	m_pVertexBuffer.reset();
+	m_pUniformBuffer.reset();
 	m_pProgram.reset();
 }
 

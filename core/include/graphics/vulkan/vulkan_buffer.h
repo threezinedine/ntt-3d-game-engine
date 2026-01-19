@@ -1,5 +1,7 @@
 #if NTT_USE_GRAPHICS_VULKAN
 
+#pragma once
+
 #include "graphics/vulkan/vulkan_common.h"
 #include "platforms/common.h"
 
