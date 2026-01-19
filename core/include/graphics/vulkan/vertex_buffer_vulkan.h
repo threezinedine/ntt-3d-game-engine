@@ -2,12 +2,14 @@
 #pragma once
 
 #include "platforms/common.h"
+#include "vulkan_buffer.h"
 #include "vulkan_common.h"
 
 namespace ntt {
 
 class Device;
 class CommandBuffer;
+class Buffer;
 
 class VertexBuffer
 {
@@ -20,31 +22,21 @@ public:
 public:
 	void Write(CommandBuffer& buffer, void* pData, u32 size);
 
-	inline VkBuffer& GetVkBuffer()
+	inline Scope<Buffer>& GetBuffer()
 	{
-		return m_vkBuffer;
+		return m_pBuffer;
 	}
 
-	inline VkBuffer& GetVkLocalBuffer()
+	inline Scope<Buffer>& GetLocalBuffer()
 	{
-		return m_vkLocalBuffer;
+		return m_pLocalBuffer;
 	}
-
-private:
-	void CreateBuffer(
-		VkBuffer* pBuffer, u32 size, VkDeviceMemory* pMemory, VkBufferUsageFlags usage, VkMemoryPropertyFlags flags);
-	i32 GetMemoryTypeIndex(u32 typeBits, VkMemoryPropertyFlags flags);
 
 private:
 	Device*			 m_pDevice;
 	VertexBufferType m_type;
-	VkBuffer		 m_vkBuffer;
-	VkDeviceMemory	 m_vkMemory;
-	u32				 m_actualSize;
-
-private:
-	VkBuffer	   m_vkLocalBuffer; // only be used for static buffer
-	VkDeviceMemory m_vkLocalMemory;
+	Scope<Buffer>	 m_pBuffer;
+	Scope<Buffer>	 m_pLocalBuffer;
 };
 
 } // namespace ntt

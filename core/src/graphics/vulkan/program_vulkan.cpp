@@ -77,7 +77,7 @@ Program::Program(Device* pDevice, Surface* pSurface, RenderPass* pRenderPass, u3
 	for (u32 imageIndex = 0u; imageIndex < maxImages; ++imageIndex)
 	{
 		VkDescriptorBufferInfo bufferInfo = {};
-		bufferInfo.buffer				  = pBuffer->GetVkLocalBuffer();
+		bufferInfo.buffer				  = pBuffer->GetLocalBuffer()->GetVkBuffer();
 		bufferInfo.offset				  = 0;
 		bufferInfo.range				  = VK_WHOLE_SIZE;
 
