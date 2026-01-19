@@ -111,6 +111,12 @@ void RuntimeApplication::updateBeginImpl(f32 deltaTime)
 	}
 
 #endif // NTT_USE_IMGUI
+
+	if (Input::IsKeyPressed(KEY_CODE_3))
+	{
+		color = {0.3f, 0.0f, 0.3f, 1.0f};
+		m_pUniformBuffer->GetBuffer()->Write(&color, sizeof(color));
+	}
 }
 
 void RuntimeApplication::updateImpl(f32 deltaTime)
