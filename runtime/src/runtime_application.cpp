@@ -46,6 +46,9 @@ void RuntimeApplication::startBeginImpl()
 	m_pVertexBuffer = CreateScope<VertexBuffer>();
 	m_pVertexBuffer->Write(&vertices, sizeof(vertices));
 
+	m_pUniformBuffer = CreateScope<UniformBuffer>(sizeof(color));
+	m_pUniformBuffer->Write(&color, sizeof(color));
+
 	Shader defaultVertexShader(STRINGIFY(NTT_ENGINE_DIRECTORY) "core/assets/shaders/opengl/default.vert");
 	Shader defaultFragmentShader(STRINGIFY(NTT_ENGINE_DIRECTORY) "core/assets/shaders/opengl/default.frag");
 #elif NTT_USE_GRAPHICS_VULKAN
@@ -65,7 +68,8 @@ void RuntimeApplication::startBeginImpl()
 	defaultFragmentShader.Compile();
 
 #if NTT_USE_GRAPHICS_OPENGL
-	m_pProgram = CreateScope<Program>(GetWindow()->GetSurface().get(), sizeof(vertices), m_pVertexBuffer.get());
+	m_pProgram = CreateScope<Program>(
+		GetWindow()->GetSurface().get(), sizeof(vertices), m_pVertexBuffer.get(), m_pUniformBuffer.get());
 #elif NTT_USE_GRAPHICS_VULKAN
 	m_pProgram = CreateScope<Program>(Renderer::GetDevice().get(),
 									  GetWindow()->GetSurface().get(),
@@ -115,7 +119,11 @@ void RuntimeApplication::updateBeginImpl(f32 deltaTime)
 	if (Input::IsKeyPressed(KEY_CODE_3))
 	{
 		color = {0.3f, 0.0f, 0.3f, 1.0f};
+#if NTT_USE_GRAPHICS_VULKAN
 		m_pUniformBuffer->GetBuffer()->Write(&color, sizeof(color));
+#elif NTT_USE_GRAPHICS_OPENGL
+		m_pUniformBuffer->Write(&color, sizeof(color));
+#endif // NTT_USE_GRAPHICS_VULKAN
 	}
 }
 

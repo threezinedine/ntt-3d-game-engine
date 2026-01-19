@@ -7,11 +7,12 @@ namespace ntt {
 class Surface;
 class Shader;
 class VertexBuffer;
+class UniformBuffer;
 
 class Program
 {
 public:
-	Program(Surface* pSurface, u32 size, VertexBuffer* pBuffer);
+	Program(Surface* pSurface, u32 size, VertexBuffer* pBuffer, UniformBuffer* pUniformBuffer);
 	NTT_DELETE_COPY(Program);
 	Program(Program&& other) noexcept;
 	~Program();
@@ -27,6 +28,7 @@ private:
 	GLuint		  m_glProgramID;
 	Array<Shader> m_shaders;
 	u32			  m_bufferId;
+	u32			  m_uniformBufferId;
 };
 
 } // namespace ntt

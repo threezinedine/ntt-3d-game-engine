@@ -3,14 +3,16 @@
 #include "graphics/opengl/program_opengl.h"
 #include "graphics/shader.h"
 #include "graphics/surface.h"
+#include "graphics/uniform_buffer.h"
 #include "graphics/vertex_buffer.h"
 
 namespace ntt {
 
-Program::Program(Surface* pSurface, u32 size, VertexBuffer* pBuffer)
+Program::Program(Surface* pSurface, u32 size, VertexBuffer* pBuffer, UniformBuffer* pUniformBuffer)
 	: m_pSurface(pSurface)
 	, m_glProgramID(0)
 	, m_bufferId(pBuffer->GetBufferId())
+	, m_uniformBufferId(pUniformBuffer->GetGLBuffer())
 {
 }
 
@@ -19,10 +21,12 @@ Program::Program(Program&& other) noexcept
 	, m_glProgramID(other.m_glProgramID)
 	, m_shaders(std::move(other.m_shaders))
 	, m_bufferId(other.m_bufferId)
+	, m_uniformBufferId(other.m_uniformBufferId)
 {
-	other.m_pSurface	= nullptr;
-	other.m_glProgramID = 0;
-	other.m_bufferId	= 0;
+	other.m_pSurface		= nullptr;
+	other.m_glProgramID		= 0;
+	other.m_bufferId		= 0;
+	other.m_uniformBufferId = 0;
 }
 
 Program::~Program()
@@ -75,6 +79,7 @@ void Program::Bind()
 {
 	GL_ASSERT(glUseProgram(m_glProgramID));
 	GL_ASSERT(glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_bufferId));
+	GL_ASSERT(glBindBufferBase(GL_UNIFORM_BUFFER, 1, m_uniformBufferId));
 }
 
 } // namespace ntt
