@@ -15,6 +15,15 @@ int main()
 
 		String helloStr("Hello, NTT String!");
 
+		Path testPath("/tmp/test.txt");
+		print(testPath.isExisted() ? "File exists" : "File does not exist");
+
+		Path testDir("/tmp");
+		print(testDir.isDirectory() ? "It's a directory" : "It's not a directory");
+
+		Path testExitingFile("/etc/passwd");
+		print(testExitingFile.isFile() ? "It's a file" : "It's not a file");
+
 		print(helloStr.c_str(), CONSOLE_COLOR_CYAN);
 
 		int* testInt = (int*)MemorySystem::getDefaultAllocator()->allocate(sizeof(int), alignof(int));
