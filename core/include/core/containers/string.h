@@ -31,6 +31,18 @@ public:
 	~String();
 
 public:
+	u32 length() const;
+
+	/**
+	 * Modify the current string with some replacements.
+	 *
+	 * @param search The substring to search for.
+	 * @param replace The substring to replace with.
+	 * @param all If true, replace all occurrences; if false, replace only the first occurrence.
+	 */
+	void replace(const String& search, const String& replace, b8 all = false);
+
+public:
 	const char* c_str() const
 	{
 		return m_pData;
@@ -41,9 +53,20 @@ private:
 	Char*	   m_pData;		 /// Pointer to the character data, always has the null-terminator
 };
 
+/**
+ * Overloaded print function to print a String object to the console.
+ */
 void print(const String& str,
 		   ConsoleColor	 color			 = CONSOLE_COLOR_DEFAULT,
 		   ConsoleColor	 backgroundColor = CONSOLE_COLOR_DEFAULT,
 		   bool			 bold			 = false);
+
+#if 0
+template <typename T, typename... Args>
+String format(const T& first, const Args&... args)
+{
+	return String(); // Placeholder implementation
+}
+#endif
 
 } // namespace ntt

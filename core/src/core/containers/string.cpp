@@ -4,6 +4,8 @@
 #include "core/memory/memory_utils.h"
 #include <cstring>
 
+#define NTT_MAX_TEMP_BUFFER_SIZE 2048
+
 namespace ntt {
 
 String::String(Allocator* pStringAllocator)
@@ -58,6 +60,82 @@ String::~String()
 		pAllocator->deallocate(m_pData, (strlen(m_pData) + 1) * sizeof(Char));
 		m_pData = nullptr;
 	}
+}
+
+u32 String::length() const
+{
+	return static_cast<u32>(strlen(m_pData));
+}
+
+static b8 isSubstringAt(const Char* str, const Char* substr, Size pos);
+
+void String::replace(const String& search, const String& replace, b8 all)
+{
+	NTT_USE_ALLOCATOR(pAllocator, m_pAllocator);
+
+	Char newBuffer[NTT_MAX_TEMP_BUFFER_SIZE];
+
+	u32 currentLength = length();
+	u32 searchLength  = search.length();
+	u32 replaceLength = replace.length();
+
+	u32 newBufferIndex = 0;
+	u32 currentIndex   = 0; // Index for the original string
+
+	while (currentIndex < currentLength - searchLength)
+	{
+		if (isSubstringAt(m_pData, search.m_pData, currentIndex))
+		{
+			// Copy the replacement string into the new buffer
+			MemoryCopy(&newBuffer[newBufferIndex], replace.m_pData, replaceLength * sizeof(Char));
+
+			newBufferIndex += replaceLength;
+			currentIndex += searchLength;
+
+			if (!all)
+			{
+				break;
+			}
+		}
+		else
+		{
+			newBuffer[newBufferIndex++] = m_pData[currentIndex++];
+		}
+	}
+
+	MemoryCopy(&newBuffer[newBufferIndex], &m_pData[currentIndex], (currentLength - currentIndex) * sizeof(Char));
+	newBufferIndex += (currentLength - currentIndex);
+
+	newBuffer[newBufferIndex] = NTT_TERMINTED_CHAR;
+
+	pAllocator->deallocate(m_pData, (currentLength + 1) * sizeof(Char));
+
+	m_pData = (Char*)pAllocator->allocate((newBufferIndex + 1) * sizeof(Char));
+	MemoryCopy(m_pData, newBuffer, (newBufferIndex + 1) * sizeof(Char));
+}
+
+static b8 isSubstringAt(const Char* str, const Char* substr, Size pos)
+{
+	if (str == nullptr || substr == nullptr)
+	{
+		return false;
+	}
+
+	if (pos + strlen(substr) > strlen(str))
+	{
+		return false;
+	}
+
+	Size substrLength = static_cast<Size>(strlen(substr));
+	for (Size i = 0; i < substrLength; ++i)
+	{
+		if (str[pos + i] != substr[i])
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 void print(const String& str, ConsoleColor color, ConsoleColor backgroundColor, bool bold)

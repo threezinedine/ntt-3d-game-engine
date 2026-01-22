@@ -24,6 +24,13 @@ int main()
 		Path testExitingFile("/etc/passwd");
 		print(testExitingFile.isFile() ? "It's a file" : "It's not a file");
 
+		String testStr("The quick brown fox jumps over the lazy dog. The fox is quick.");
+		testStr.replace("fox", "cat", true);
+		print(testStr);
+
+		testStr.replace("cat", "tiger", false);
+		print(testStr);
+
 		print(helloStr.c_str(), CONSOLE_COLOR_CYAN);
 
 		int* testInt = (int*)MemorySystem::getDefaultAllocator()->allocate(sizeof(int), alignof(int));
