@@ -11,6 +11,7 @@ namespace ntt {
 enum AllocatorType : u8
 {
 	ALLOCATOR_TYPE_MALLOC, ///< Allocator using standard malloc and free
+	ALLOCATOR_TYPE_STACK,  ///< Stack allocator with checkpoint support
 	ALLOCATOR_TYPE_COUNT,
 };
 

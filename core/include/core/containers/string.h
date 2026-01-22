@@ -31,6 +31,11 @@ public:
 	~String();
 
 public:
+	/**
+	 * Get the length of the string (number of characters, excluding null-terminator)
+	 *
+	 * @return The length of the string, not containing the null-terminator
+	 */
 	u32 length() const;
 
 	/**

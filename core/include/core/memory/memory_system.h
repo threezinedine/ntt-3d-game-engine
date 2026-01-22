@@ -5,6 +5,8 @@
 namespace ntt {
 
 class Allocator;
+class StackAllocator;
+class MallocAllocator;
 
 /**
  * Only be used when memory leak tracking is enabled.
@@ -43,8 +45,25 @@ public:
 		return pDefaultAllocator;
 	}
 
+	static inline StackAllocator* getStackAllocator()
+	{
+		return pStackAllocator;
+	}
+
+	static inline MallocAllocator* getMallocAllocator()
+	{
+		return pMallocAllocator;
+	}
+
+	static inline void setDefaultAllocator(Allocator* pAllocator)
+	{
+		pDefaultAllocator = pAllocator;
+	}
+
 private:
-	static Allocator* pDefaultAllocator; ///< The allocate algorithm which is mostly used throughout the engine
+	static Allocator*		pDefaultAllocator; ///< The allocate algorithm which is mostly used throughout the engine
+	static StackAllocator*	pStackAllocator;   ///< The global stack allocator for temporary allocations
+	static MallocAllocator* pMallocAllocator;  ///< The global malloc allocator
 };
 
 #define NTT_USE_ALLOCATOR(dest, ptr)                                                                                   \
