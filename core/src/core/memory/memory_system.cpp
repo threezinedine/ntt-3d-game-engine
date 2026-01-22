@@ -46,7 +46,7 @@ void MemorySystem::Shutdown()
 
 		print("Memory Leak Report:", CONSOLE_COLOR_RED, CONSOLE_COLOR_DEFAULT, true);
 
-		PrintBacktrace(pMemoryBlockListHead->info.pBacktraceInfo);
+		printBacktrace(pMemoryBlockListHead->info.pBacktraceInfo);
 	}
 
 #else  // NTT_MEMORY_LEAK_DEBUG

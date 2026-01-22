@@ -58,7 +58,7 @@ struct BacktraceInfo
 
 #endif // NTT_DEBUG
 
-BacktraceInfo* GetBacktrace()
+BacktraceInfo* getBacktrace()
 {
 #if NTT_DEBUG
 
@@ -73,9 +73,9 @@ BacktraceInfo* GetBacktrace()
 	return pOutBacktraceInfo;
 
 #elif NTT_PLATFORM_WINDOWS
-#error "GetBacktrace is not implemented for Windows yet."
+#error "getBacktrace is not implemented for Windows yet."
 #else // NTT_PLATFORM_LINUX
-#error "GetBacktrace is not implemented for this platform yet."
+#error "getBacktrace is not implemented for this platform yet."
 #endif // NTT_PLATFORM_LINUX
 
 #else  // NTT_DEBUG
@@ -89,7 +89,7 @@ BacktraceInfo* GetBacktrace()
 static u32 extractAddress(char* pOutBuffer, const char* line);
 #endif // NTT_DEBUG
 
-void PrintBacktrace(BacktraceInfo* pBacktraceInfo)
+void printBacktrace(BacktraceInfo* pBacktraceInfo)
 {
 #if NTT_DEBUG
 	char	exePath[NTT_BACKTRACE_BUFFER_SIZE / 2] = {0};
@@ -126,6 +126,15 @@ void PrintBacktrace(BacktraceInfo* pBacktraceInfo)
 	UNUSED(pBacktraceInfo);
 #endif // NTT_DEBUG
 	}
+}
+
+void deleteBacktrace(BacktraceInfo* pBacktraceInfo)
+{
+#if NTT_DEBUG
+	delete pBacktraceInfo;
+#else  // NTT_DEBUG
+	UNUSED(pBacktraceInfo);
+#endif // NTT_DEBUG
 }
 
 #if NTT_DEBUG

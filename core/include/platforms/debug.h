@@ -22,13 +22,20 @@ struct BacktraceInfo; ///< Forward for declaring the backtrace information of al
  *
  * @note In release builds, this function may not have any effect and return nullptr.
  */
-BacktraceInfo* GetBacktrace();
+BacktraceInfo* getBacktrace();
 
 /**
  * Print the backtrace information to the console for debugging purposes.
  *
  * @param pBacktraceInfo The backtrace information to print.
  */
-void PrintBacktrace(BacktraceInfo* pBacktraceInfo);
+void printBacktrace(BacktraceInfo* pBacktraceInfo);
+
+/**
+ * Delete the backtrace information and free associated resources.
+ *
+ * @param pBacktraceInfo The backtrace information to delete.
+ */
+void deleteBacktrace(BacktraceInfo* pBacktraceInfo);
 
 } // namespace ntt

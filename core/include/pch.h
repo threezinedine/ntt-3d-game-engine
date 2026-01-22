@@ -97,6 +97,7 @@ private:                                                                        
 		if (!(condition))                                                                                              \
 		{                                                                                                              \
 			print("Assertion failed: " #condition, CONSOLE_COLOR_RED, CONSOLE_COLOR_DEFAULT, true);                    \
+			ntt::printBacktrace(getBacktrace());                                                                       \
 			ntt::debugBreak();                                                                                         \
 		}                                                                                                              \
 	} while (0)
@@ -110,6 +111,7 @@ private:                                                                        
 				  CONSOLE_COLOR_RED,                                                                                   \
 				  CONSOLE_COLOR_DEFAULT,                                                                               \
 				  true);                                                                                               \
+			ntt::printBacktrace(getBacktrace());                                                                       \
 			ntt::debugBreak();                                                                                         \
 		}                                                                                                              \
 	} while (0)

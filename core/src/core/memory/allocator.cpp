@@ -20,7 +20,7 @@ void* Allocator::allocate(Size size, Size alignment)
 	blockInfo.pAddress		   = ptr;
 	blockInfo.size			   = size;
 	blockInfo.allocatorType	   = getAllocatorType();
-	blockInfo.pBacktraceInfo   = GetBacktrace();
+	blockInfo.pBacktraceInfo   = getBacktrace();
 
 	// Insert the new node at the head of the memory block list
 	newNode->pNext		 = pMemoryBlockListHead;
@@ -66,6 +66,7 @@ void Allocator::deallocate(void* ptr, Size size)
 				pMemoryBlockListHead = currentNode->pNext;
 			}
 
+			deleteBacktrace(currentNode->info.pBacktraceInfo);
 			delete currentNode;
 
 			break;
