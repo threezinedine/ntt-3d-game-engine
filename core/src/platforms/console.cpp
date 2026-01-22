@@ -1,71 +1,79 @@
 #include "platforms/console.h"
-#include <cstdarg>
 #include <cstdio>
+#include <cstring>
 
-namespace ntt {
-ConsoleColor Console::s_currentColor = CONSOLE_COLOR_DEFAULT;
+namespace ntt::console {
 
-void Console::setColor(ConsoleColor color)
+static void getAnsiColorCode(ConsoleColor color, bool isBackground, char* outCode, size_t outCodeSize);
+
+void print(const char* message, ConsoleColor textColor, ConsoleColor backgroundColor, b8 isBold)
 {
-	s_currentColor = color;
-	switch (s_currentColor)
+	char textCode[3];
+	char backgroundCode[3];
+
+	getAnsiColorCode(textColor, false, textCode, sizeof(textCode));
+	getAnsiColorCode(backgroundColor, true, backgroundCode, sizeof(backgroundCode));
+
+	char boldCode[3];
+	memset(boldCode, 0, sizeof(boldCode));
+	if (isBold)
 	{
+		snprintf(boldCode, sizeof(boldCode), "1;");
+	}
+
+	char textColorCode[6];
+	memset(textColorCode, 0, sizeof(textColorCode));
+	snprintf(textColorCode, sizeof(textColorCode), "%s", textCode);
+
+	char backgroundColorCode[6];
+	memset(backgroundColorCode, 0, sizeof(backgroundColorCode));
+	if (backgroundColor != CONSOLE_COLOR_DEFAULT)
+	{
+		snprintf(backgroundColorCode, sizeof(backgroundColorCode), ";%s", backgroundCode);
+	}
+
+	printf("\033[%s%s%sm", boldCode, textColorCode, backgroundColorCode);
+
+	printf("%s\n", message);
+
+	printf("\033[0m"); // Reset to default colors
+}
+
+static void getAnsiColorCode(ConsoleColor color, bool isBackground, char* outCode, size_t outCodeSize)
+{
+	memset(outCode, 0, outCodeSize);
+
+	switch (color)
+	{
+	case CONSOLE_COLOR_DEFAULT:
+		break;
 	case CONSOLE_COLOR_BLACK:
-		std::printf("\033[30m");
+		snprintf(outCode, outCodeSize, isBackground ? "40" : "30");
 		break;
 	case CONSOLE_COLOR_RED:
-		std::printf("\033[31m");
+		snprintf(outCode, outCodeSize, isBackground ? "41" : "31");
 		break;
 	case CONSOLE_COLOR_GREEN:
-		std::printf("\033[32m");
+		snprintf(outCode, outCodeSize, isBackground ? "42" : "32");
 		break;
 	case CONSOLE_COLOR_YELLOW:
-		std::printf("\033[33m");
+		snprintf(outCode, outCodeSize, isBackground ? "43" : "33");
 		break;
 	case CONSOLE_COLOR_BLUE:
-		std::printf("\033[34m");
+		snprintf(outCode, outCodeSize, isBackground ? "44" : "34");
 		break;
 	case CONSOLE_COLOR_MAGENTA:
-		std::printf("\033[35m");
+		snprintf(outCode, outCodeSize, isBackground ? "45" : "35");
 		break;
 	case CONSOLE_COLOR_CYAN:
-		std::printf("\033[36m");
+		snprintf(outCode, outCodeSize, isBackground ? "46" : "36");
 		break;
 	case CONSOLE_COLOR_WHITE:
-		std::printf("\033[37m");
+		snprintf(outCode, outCodeSize, isBackground ? "47" : "37");
 		break;
-	case CONSOLE_COLOR_DEFAULT:
-		std::printf("\033[39m");
-		break;
-
 	case CONSOLE_COLOR_COUNT:
-		NTT_UNREACHABLE();
 		break;
 	}
 }
 
-void Console::resetColor()
-{
-	s_currentColor = CONSOLE_COLOR_WHITE;
-	std::printf("\033[37m");
-}
-
-void Console::print(const char* message)
-{
-	// Note: Actual color changing code would go here, platform-specific.
-	// For simplicity, we just print the message.
-	std::printf("%s\n", message);
-}
-
-void Console::printf(const char* format, ...)
-{
-	// Note: Actual color changing code would go here, platform-specific.
-	// For simplicity, we just print the formatted message.
-	va_list args;
-	va_start(args, format);
-	std::vprintf(format, args);
-	std::printf("\n");
-	va_end(args);
-}
-
-} // namespace ntt
+} // namespace ntt::console

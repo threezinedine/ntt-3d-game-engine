@@ -50,9 +50,10 @@ macro(ntt_configure)
 
     ntt_detect_graphics_api()
 
+
     if (MSVC)
     else()
-        add_compile_options(-Wall -Werror -Wswitch)
+        list(APPEND TARGET_COMPILE_OPTIONS -Wall -Werror -Wswitch -Wunused-variable -Wextra -Wpedantic)
     endif()
 
     ntt_remove_duplicates()

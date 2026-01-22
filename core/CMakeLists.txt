@@ -40,7 +40,7 @@ set(TARGET_INCLUDE_DIRS
 )
 
 set(TARGET_PRECOMPILED_HEADER
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/platforms/common.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/pch.h"
 )
 
 ntt_find_package(ntt-glm "Dependencies")

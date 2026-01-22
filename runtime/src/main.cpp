@@ -1,25 +1,13 @@
-#include "runtime_application.h"
 #include <engine/engine.h>
 
 using namespace ntt;
 
 int main()
 {
-	Logger::GetInstance()->Setup(
-		LOG_LEVEL_DEBUG, "[@5:name] - [@7:level] - @:message", LOG_HANDLER_TYPE_CONSOLE, LOG_TAG_MASK_ALL);
-
-	Scope<Application> app = CreateScope<RuntimeApplication>();
-
-	app->Start();
-
-	app->LoadProject("./appdata/project.json");
-
-	while (app->IsOpen())
-	{
-		app->Update(0.016f); // Assuming a fixed delta time for simplicity
-	}
-
-	app->Shutdown();
-
+	console::print("Hello, NTT 3D Game Engine!");
+	console::print("Hello, NTT 3D Game Engine!", console::CONSOLE_COLOR_DEFAULT, console::CONSOLE_COLOR_BLUE);
+	console::print("Hello, NTT 3D Game Engine!", console::CONSOLE_COLOR_GREEN);
+	console::print("Hello, NTT 3D Game Engine!", console::CONSOLE_COLOR_RED, console::CONSOLE_COLOR_WHITE);
+	console::print("Hello, NTT 3D Game Engine!", console::CONSOLE_COLOR_YELLOW, console::CONSOLE_COLOR_DEFAULT, true);
 	return 0;
 }
