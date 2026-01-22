@@ -115,3 +115,11 @@ private:                                                                        
 			ntt::debugBreak();                                                                                         \
 		}                                                                                                              \
 	} while (0)
+
+#define NTT_UNREACHABLE()                                                                                              \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		print("Reached unreachable code!", CONSOLE_COLOR_RED, CONSOLE_COLOR_DEFAULT, true);                            \
+		ntt::printBacktrace(getBacktrace());                                                                           \
+		ntt::debugBreak();                                                                                             \
+	} while (0)

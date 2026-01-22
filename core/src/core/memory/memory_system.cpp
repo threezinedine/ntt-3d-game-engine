@@ -1,4 +1,5 @@
 #include "core/memory/memory_system.h"
+#include "core/memory/linear_allocator.h"
 #include "core/memory/malloc_allocator.h"
 #include "core/memory/stack_allocator.h"
 #include "memory_system_internal.h"
@@ -9,6 +10,7 @@ namespace ntt {
 Allocator*		 MemorySystem::pDefaultAllocator = nullptr;
 StackAllocator*	 MemorySystem::pStackAllocator	 = nullptr;
 MallocAllocator* MemorySystem::pMallocAllocator	 = nullptr;
+LinearAllocator* MemorySystem::pLinearAllocator	 = nullptr;
 
 #if NTT_MEMORY_LEAK_TRACKING
 #if NTT_MEMORY_LEAK_DEBUG
@@ -30,8 +32,10 @@ void MemorySystem::Initialize()
 	totalAllocatedMemory = 0;
 #endif // NTT_MEMORY_LEAK_TRACKING
 
-	pStackAllocator	  = new StackAllocator(100 * NTT_MB); // 100 MB stack allocator
-	pMallocAllocator  = new MallocAllocator();
+	pMallocAllocator = new MallocAllocator();
+	pStackAllocator	 = new StackAllocator(100 * NTT_MB);  // 100 MB stack allocator
+	pLinearAllocator = new LinearAllocator(100 * NTT_MB); // 100 MB linear allocator
+
 	pDefaultAllocator = pMallocAllocator;
 }
 
@@ -66,6 +70,9 @@ void MemorySystem::Shutdown()
 
 	delete pMallocAllocator;
 	pMallocAllocator = nullptr;
+
+	delete pLinearAllocator;
+	pLinearAllocator = nullptr;
 
 	pDefaultAllocator = nullptr;
 }
