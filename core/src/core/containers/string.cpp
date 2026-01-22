@@ -45,7 +45,7 @@ String::String(String&& other) noexcept
 
 	m_pData = (Char*)pAllocator->allocate((strlen(other.m_pData) + 1) * sizeof(Char));
 	MemoryCopy(m_pData, other.m_pData, (strlen(other.m_pData) + 1) * sizeof(Char));
-	pAllocator->deallocate(other.m_pData);
+	pAllocator->deallocate(other.m_pData, (strlen(other.m_pData) + 1) * sizeof(Char));
 	other.m_pData = nullptr;
 }
 
@@ -55,7 +55,7 @@ String::~String()
 
 	if (m_pData != nullptr)
 	{
-		pAllocator->deallocate(m_pData);
+		pAllocator->deallocate(m_pData, (strlen(m_pData) + 1) * sizeof(Char));
 		m_pData = nullptr;
 	}
 }

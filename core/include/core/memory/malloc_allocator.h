@@ -15,8 +15,20 @@ public:
 	~MallocAllocator() override = default;
 
 public:
-	virtual void* allocate(Size size, Size alignment = 0) override;
-	virtual void  deallocate(void* ptr) override;
+	MallocAllocator(const MallocAllocator&)			   = delete;
+	MallocAllocator& operator=(const MallocAllocator&) = delete;
+	MallocAllocator(MallocAllocator&&)				   = delete;
+	MallocAllocator& operator=(MallocAllocator&&)	   = delete;
+
+protected:
+	virtual void* allocateImpl(Size size, Size alignment = 0) override;
+	virtual void  deallocateImpl(void* ptr) override;
+
+public:
+	inline virtual AllocatorType getAllocatorType() const override
+	{
+		return ALLOCATOR_TYPE_MALLOC;
+	}
 };
 
 } // namespace ntt

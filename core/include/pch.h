@@ -96,7 +96,20 @@ private:                                                                        
 	{                                                                                                                  \
 		if (!(condition))                                                                                              \
 		{                                                                                                              \
-			Console::print("Assertion failed: " #condition, CONSOLE_COLOR_RED, CONSOLE_COLOR_DEFAULT, true);           \
+			print("Assertion failed: " #condition, CONSOLE_COLOR_RED, CONSOLE_COLOR_DEFAULT, true);                    \
+			ntt::debugBreak();                                                                                         \
+		}                                                                                                              \
+	} while (0)
+
+#define NTT_ASSERT_MSG(condition, message)                                                                             \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		if (!(condition))                                                                                              \
+		{                                                                                                              \
+			print("Assertion failed: " #condition "\nMessage: " message,                                               \
+				  CONSOLE_COLOR_RED,                                                                                   \
+				  CONSOLE_COLOR_DEFAULT,                                                                               \
+				  true);                                                                                               \
 			ntt::debugBreak();                                                                                         \
 		}                                                                                                              \
 	} while (0)

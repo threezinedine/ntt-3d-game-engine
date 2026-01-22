@@ -1,9 +1,21 @@
 #pragma once
+#include "allocator_types.h"
 #include "pch.h"
 
 namespace ntt {
 
 class Allocator;
+
+/**
+ * Only be used when memory leak tracking is enabled.
+ * Retrieve the current call stack up to the specified maximum depth.
+ * In release builds, this function does nothing.
+ *
+ * @param outCallStack An array to store the call stack addresses.
+ * @param outCallStackCount The number of frames retrieved in the call stack.
+ * @param maxDepth The maximum depth of the call stack to retrieve.
+ */
+void GetCallStack(void** outCallStack, u32& outCallStackCount, u32 maxDepth);
 
 /**
  * Stored the needed information about the memory usages, the global allocators, etc.

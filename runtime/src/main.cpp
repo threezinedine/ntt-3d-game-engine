@@ -16,6 +16,10 @@ int main()
 		String helloStr("Hello, NTT String!");
 
 		print(helloStr.c_str(), CONSOLE_COLOR_CYAN);
+
+		int* testInt = (int*)MemorySystem::getDefaultAllocator()->allocate(sizeof(int), alignof(int));
+		*testInt	 = 42;
+		MemorySystem::getDefaultAllocator()->deallocate(testInt, sizeof(int));
 	}
 
 	MemorySystem::Shutdown();

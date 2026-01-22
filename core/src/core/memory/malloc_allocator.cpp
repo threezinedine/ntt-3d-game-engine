@@ -3,14 +3,14 @@
 
 namespace ntt {
 
-void* MallocAllocator::allocate(Size size, Size alignment)
+void* MallocAllocator::allocateImpl(Size size, Size alignment)
 {
 	NTT_UNUSED(alignment);
 
 	return malloc(size);
 }
 
-void MallocAllocator::deallocate(void* ptr)
+void MallocAllocator::deallocateImpl(void* ptr)
 {
 	free(ptr);
 }

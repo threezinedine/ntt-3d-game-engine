@@ -47,6 +47,8 @@ macro(ntt_configure)
     ntt_option("NTT_BOOTAPP_COPY" "ON")
     ntt_option("NTT_IDE_APPLICATION" "OFF")
     ntt_option("NTT_USE_IMGUI" "OFF")
+    ntt_option("NTT_MEMORY_LEAK_DEBUG" "OFF")
+    ntt_option("NTT_MEMORY_LEAK_TRACKING" "OFF")
 
     ntt_detect_graphics_api()
 
@@ -54,6 +56,20 @@ macro(ntt_configure)
     if (MSVC)
     else()
         list(APPEND TARGET_COMPILE_OPTIONS -Wall -Werror -Wswitch -Wunused-variable -Wextra -Wpedantic)
+    endif()
+
+    if (NTT_DEBUG)
+        list(APPEND TARGET_COMPILE_OPTIONS "-g -O0")
+    endif()
+
+    if (NTT_MEMORY_LEAK_DEBUG AND NTT_MEMORY_LEAK_TRACKING)
+        list(APPEND TARGET_COMPILE_OPTIONS "-fno-omit-frame-pointer")
+
+        if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+            list(APPEND TARGET_COMPILE_OPTIONS "-export-dynamic")
+        else()
+            list(APPEND TARGET_COMPILE_OPTIONS "-rdynamic")
+        endif()
     endif()
 
     ntt_remove_duplicates()
