@@ -1,4 +1,5 @@
 #include "core/memory/memory.h"
+#include "core/memory/memory_utils.h"
 #include "memory_system_internal.h"
 
 namespace ntt {
@@ -9,8 +10,8 @@ Allocator::~Allocator()
 
 void* Allocator::allocate(Size size, Size alignment)
 {
-#if NTT_MEMORY_LEAK_TRACKING
 	void* ptr = allocateImpl(size, alignment);
+#if NTT_MEMORY_LEAK_TRACKING
 
 #if NTT_MEMORY_LEAK_DEBUG
 	// Create a new memory block info
@@ -29,10 +30,10 @@ void* Allocator::allocate(Size size, Size alignment)
 
 	totalAllocatedMemory += size;
 
-	return ptr;
-#else  // NTT_MEMORY_LEAK_TRACKING
-	return allocateImpl(size, alignment);
 #endif // NTT_MEMORY_LEAK_TRACKING
+	MemorySet(ptr, 0, size);
+
+	return ptr;
 }
 
 void Allocator::deallocate(void* ptr, Size size)
