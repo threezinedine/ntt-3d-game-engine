@@ -25,6 +25,20 @@ public:
 	StackAllocator& operator=(StackAllocator&&)		 = delete;
 
 public:
+	/**
+	 * Be used for active obtaining the current checkpoint of the stack allocator.
+	 */
+	inline void* getCurrentCheckpoint() const
+	{
+		return m_pCurrentAddress;
+	}
+
+	/**
+	 * The main interface of the stack allocator, which will roll back to the certain
+	 * 		address for renewing the stack.
+	 *
+	 * @param pCheckpoint The checkpoint address to roll back to.
+	 */
 	void resetToCheckpoint(void* pCheckpoint);
 
 protected:

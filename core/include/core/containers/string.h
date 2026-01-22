@@ -1,4 +1,6 @@
 #pragma once
+#include "core/memory/memory_system.h"
+#include "core/memory/stack_allocator.h"
 #include "pch.h"
 
 namespace ntt {
@@ -66,12 +68,54 @@ void print(const String& str,
 		   ConsoleColor	 backgroundColor = CONSOLE_COLOR_DEFAULT,
 		   bool			 bold			 = false);
 
-#if 0
-template <typename T, typename... Args>
-String format(const T& first, const Args&... args)
+/**
+ * All types should be convertible to string via this function.
+ *
+ * @param value The value to convert to string.
+ * @return The string representation of the value.
+ *
+ * @note The returned string can use the stack allocator for temporary storage.
+ */
+String toString(const String& value);
+
+/**
+ * The public format function to format a string with given arguments.
+ */
+template <typename... Args>
+String format(const String& format, const Args&... args)
 {
-	return String(); // Placeholder implementation
+	StackAllocator* pStackAllocator	   = MemorySystem::getStackAllocator();
+	void*			pCurrentCheckpoint = pStackAllocator->getCurrentCheckpoint();
+
+	String result = _format(format, args...);
+	String finalResult(result.c_str()); // Copy to a new string with default allocator
+
+	pStackAllocator->resetToCheckpoint(pCurrentCheckpoint);
+
+	return finalResult;
 }
-#endif
+
+/**
+ * The internal format method used by the public format function.
+ *
+ * @return The formatted string with temporary storage in the stack allocator.
+ *
+ * @note This function uses the stack allocator for temporary storage.
+ */
+template <typename T, typename... Args>
+String _format(const String& format, const T& first, const Args&... args)
+{
+	String result(format.c_str(), MemorySystem::getStackAllocator());
+	result.replace("{}", toString(first), false);
+	return _format(result, args...);
+}
+
+template <typename T>
+String _format(const String& format, const T& last)
+{
+	String result(format.c_str(), MemorySystem::getStackAllocator());
+	result.replace("{}", toString(last), false);
+	return result;
+}
 
 } // namespace ntt

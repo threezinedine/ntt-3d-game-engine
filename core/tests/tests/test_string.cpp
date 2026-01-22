@@ -27,6 +27,22 @@ TEST_F(StringTest, ReplaceFunctionality)
 	EXPECT_STREQ(testStr.c_str(), "The quick brown tiger jumps over the lazy dog. The cat is quick.");
 }
 
+TEST_F(StringTest, ReplaceNoOccurrences)
+{
+	String testStr("Hello, World!");
+
+	// Try to replace a substring that doesn't exist
+	testStr.replace("foo", "bar", true);
+	EXPECT_STREQ(testStr.c_str(), "Hello, World!");
+}
+
+TEST_F(StringTest, FormatReplace)
+{
+	String testStr("Value: {}");
+	testStr.replace("{}", "42", false);
+	EXPECT_STREQ(testStr.c_str(), "Value: 42");
+}
+
 TEST_F(StringTest, TestLength)
 {
 	String testStr("Hello, World!");

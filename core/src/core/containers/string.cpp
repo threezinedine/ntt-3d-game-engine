@@ -82,7 +82,7 @@ void String::replace(const String& search, const String& replace, b8 all)
 	u32 newBufferIndex = 0;
 	u32 currentIndex   = 0; // Index for the original string
 
-	while (currentIndex < currentLength - searchLength)
+	while (currentIndex <= currentLength - searchLength)
 	{
 		if (isSubstringAt(m_pData, search.m_pData, currentIndex))
 		{
@@ -141,6 +141,11 @@ static b8 isSubstringAt(const Char* str, const Char* substr, Size pos)
 void print(const String& str, ConsoleColor color, ConsoleColor backgroundColor, bool bold)
 {
 	print(str.c_str(), color, backgroundColor, bold);
+}
+
+String toString(const String& value)
+{
+	return value;
 }
 
 } // namespace ntt

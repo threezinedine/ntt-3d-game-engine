@@ -100,4 +100,7 @@ const char* AllocatorTypeToString(AllocatorType type)
 		return "Unknown Allocator Type";
 	}
 
+	return "Unknown Allocator Type";
+}
+
 } // namespace ntt

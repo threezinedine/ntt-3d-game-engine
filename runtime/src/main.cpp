@@ -31,6 +31,8 @@ int main()
 		testStr.replace("cat", "tiger", false);
 		print(testStr);
 
+		print(format("Formatted string: {}", "hello"));
+
 		print(helloStr.c_str(), CONSOLE_COLOR_CYAN);
 
 		int* testInt = (int*)MemorySystem::getDefaultAllocator()->allocate(sizeof(int), alignof(int));
