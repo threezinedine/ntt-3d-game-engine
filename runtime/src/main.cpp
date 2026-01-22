@@ -4,10 +4,20 @@ using namespace ntt;
 
 int main()
 {
-	console::print("Hello, NTT 3D Game Engine!");
-	console::print("Hello, NTT 3D Game Engine!", console::CONSOLE_COLOR_DEFAULT, console::CONSOLE_COLOR_BLUE);
-	console::print("Hello, NTT 3D Game Engine!", console::CONSOLE_COLOR_GREEN);
-	console::print("Hello, NTT 3D Game Engine!", console::CONSOLE_COLOR_RED, console::CONSOLE_COLOR_WHITE);
-	console::print("Hello, NTT 3D Game Engine!", console::CONSOLE_COLOR_YELLOW, console::CONSOLE_COLOR_DEFAULT, true);
+	MemorySystem::Initialize();
+
+	{
+		print("Hello, NTT 3D Game Engine!");
+		print("Hello, NTT 3D Game Engine!", CONSOLE_COLOR_DEFAULT, CONSOLE_COLOR_BLUE);
+		print("Hello, NTT 3D Game Engine!", CONSOLE_COLOR_GREEN);
+		print("Hello, NTT 3D Game Engine!", CONSOLE_COLOR_RED, CONSOLE_COLOR_WHITE);
+		print("Hello, NTT 3D Game Engine!", CONSOLE_COLOR_YELLOW, CONSOLE_COLOR_DEFAULT, true);
+
+		String helloStr("Hello, NTT String!");
+
+		print(helloStr.c_str(), CONSOLE_COLOR_CYAN);
+	}
+
+	MemorySystem::Shutdown();
 	return 0;
 }

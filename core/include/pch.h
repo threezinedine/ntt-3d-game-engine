@@ -16,6 +16,10 @@ typedef double f64;
 typedef bool b8;
 typedef u32	 b32;
 
+typedef unsigned long Size;
+
+typedef char Char;
+
 #define NTT_KB 1024ULL
 #define NTT_MB 1024ULL * NTT_KB
 #define NTT_GB 1024ULL * NTT_MB
@@ -24,6 +28,8 @@ typedef u32	 b32;
 
 #define NTT_PI	3.14159265358979323846f
 #define NTT_ESP 1e-5f
+
+#define NTT_TERMINTED_CHAR '\0' /// The null-terminator character for strings
 
 #define NTT_ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0])) /// Get the number of elements in a static array
 #define NTT_UNUSED(x)		(void)(x)						 /// To suppress unused variable warnings
@@ -81,3 +87,16 @@ private:                                                                        
 	structName structName##FromJson(const Json& json);                                                                 \
 	Json	   structName##ToJson(const structName& obj);                                                              \
 	String	   structName##ToJsonString(const structName& obj) NTT_BINDING;
+
+#include "platforms/break.h"
+#include "platforms/console.h"
+
+#define NTT_ASSERT(condition)                                                                                          \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		if (!(condition))                                                                                              \
+		{                                                                                                              \
+			Console::print("Assertion failed: " #condition, CONSOLE_COLOR_RED, CONSOLE_COLOR_DEFAULT, true);           \
+			ntt::debugBreak();                                                                                         \
+		}                                                                                                              \
+	} while (0)

@@ -2,7 +2,7 @@
 #include <cstdio>
 #include <cstring>
 
-namespace ntt::console {
+namespace ntt {
 
 static void getAnsiColorCode(ConsoleColor color, bool isBackground, char* outCode, size_t outCodeSize);
 
@@ -76,4 +76,4 @@ static void getAnsiColorCode(ConsoleColor color, bool isBackground, char* outCod
 	}
 }
 
-} // namespace ntt::console
+} // namespace ntt
