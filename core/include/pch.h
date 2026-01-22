@@ -90,6 +90,7 @@ private:                                                                        
 
 #include "platforms/console.h"
 #include "platforms/debug.h"
+#include "platforms/exception.h"
 
 #define NTT_ASSERT(condition)                                                                                          \
 	do                                                                                                                 \
@@ -122,4 +123,13 @@ private:                                                                        
 		print("Reached unreachable code!", CONSOLE_COLOR_RED, CONSOLE_COLOR_DEFAULT, true);                            \
 		ntt::printBacktrace(getBacktrace());                                                                           \
 		ntt::debugBreak();                                                                                             \
+	} while (0)
+
+#define NTT_RAISE_ERROR(type, message)                                                                                 \
+	do                                                                                                                 \
+	{                                                                                                                  \
+		print("Error raised ", CONSOLE_COLOR_RED, CONSOLE_COLOR_DEFAULT, true);                                        \
+		print(exceptionTypeToString(type), CONSOLE_COLOR_RED, CONSOLE_COLOR_DEFAULT, true);                            \
+		print(": " message, CONSOLE_COLOR_RED, CONSOLE_COLOR_DEFAULT, true);                                           \
+		raiseException(type, message);                                                                                 \
 	} while (0)
