@@ -63,6 +63,7 @@ public:
 	{
 		if (m_pData != nullptr)
 		{
+			clear();
 			NTT_USE_ALLOCATOR(pAllocator, m_pAllocator);
 			pAllocator->deallocate(m_pData, m_capacity * sizeof(T));
 			m_pData = nullptr;

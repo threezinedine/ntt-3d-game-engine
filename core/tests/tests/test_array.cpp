@@ -162,3 +162,35 @@ TEST_F(ArrayTest, ClearFunctionality)
 	EXPECT_EQ(testObjs.count(), 0u);
 	EXPECT_EQ(TestObject::destructorCount, 6u); // All objects destroyed
 }
+
+TEST_F(ArrayTest, Destructor)
+{
+	{
+		Array<TestObject> testObjs;
+
+		// Append elements
+		testObjs.append(TestObject());
+		testObjs.append(TestObject());
+		testObjs.append(TestObject());
+
+		EXPECT_EQ(testObjs.count(), 3u);
+		EXPECT_EQ(TestObject::constructorCount, 3u);
+		EXPECT_EQ(TestObject::destructorCount, 3u);
+	}
+
+	// After going out of scope, all objects should be destroyed
+	EXPECT_EQ(TestObject::destructorCount, 6u);
+}
+
+TEST_F(ArrayTest, Pointer)
+{
+	Array<TestObject*> ptrArray;
+	TestObject		   obj1;
+
+	ptrArray.append(&obj1);
+	EXPECT_EQ(ptrArray.count(), 1u);
+
+	EXPECT_NO_THROW(ptrArray.clear());
+
+	EXPECT_EQ(TestObject::destructorCount, 0u); // Pointers are cleared, not the objects they point to
+}
