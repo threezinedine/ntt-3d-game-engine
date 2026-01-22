@@ -1,6 +1,7 @@
 #pragma once
 #include "core/memory/allocator_types.h"
 #include "pch.h"
+#include "platforms/debug.h"
 
 namespace ntt {
 
@@ -22,15 +23,8 @@ struct MemoryBlockInfo
 	AllocatorType allocatorType; ///< The type of allocator used for this allocation
 
 #if NTT_MEMORY_LEAK_DEBUG
-#if NTT_PLATFORM_LINUX
-	void* callStack[NTT_MEMORY_LEAK_STACK_DEPTH]; ///< The call stack at the time of allocation
-	u32	  callStackCount;						  ///< The number of frames in the call stack
+	BacktraceInfo* pBacktraceInfo; ///< The call stack at the time of allocation
 
-#elif NTT_PLATFORM_WINDOWS
-#error "Memory leak tracking is not implemented for Windows yet."
-#else // NTT_PLATFORM_LINUX
-#error "Memory leak tracking is not implemented for this platform yet."
-#endif // NTT_PLATFORM_LINUX
 #endif // NTT_MEMORY_LEAK_DEBUG
 };
 

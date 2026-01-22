@@ -88,8 +88,8 @@ private:                                                                        
 	Json	   structName##ToJson(const structName& obj);                                                              \
 	String	   structName##ToJsonString(const structName& obj) NTT_BINDING;
 
-#include "platforms/break.h"
 #include "platforms/console.h"
+#include "platforms/debug.h"
 
 #define NTT_ASSERT(condition)                                                                                          \
 	do                                                                                                                 \

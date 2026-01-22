@@ -20,9 +20,7 @@ void* Allocator::allocate(Size size, Size alignment)
 	blockInfo.pAddress		   = ptr;
 	blockInfo.size			   = size;
 	blockInfo.allocatorType	   = getAllocatorType();
-
-	// Capture the call stack at the time of allocation
-	GetCallStack(blockInfo.callStack, blockInfo.callStackCount, NTT_MEMORY_LEAK_STACK_DEPTH);
+	blockInfo.pBacktraceInfo   = GetBacktrace();
 
 	// Insert the new node at the head of the memory block list
 	newNode->pNext		 = pMemoryBlockListHead;
