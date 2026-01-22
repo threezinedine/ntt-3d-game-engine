@@ -51,3 +51,9 @@ TEST_F(StringTest, TestLength)
 	String emptyStr;
 	EXPECT_EQ(emptyStr.length(), 0u);
 }
+
+TEST_F(StringTest, Format)
+{
+	String formattedStr = format("Hello, {}, you have {} new messages.", "Alice", 5);
+	EXPECT_STREQ(formattedStr.c_str(), "Hello, Alice, you have 5 new messages.");
+}

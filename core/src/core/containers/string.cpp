@@ -2,6 +2,7 @@
 #include "core/memory/allocator.h"
 #include "core/memory/memory_system.h"
 #include "core/memory/memory_utils.h"
+#include <cstdio>
 #include <cstring>
 
 #define NTT_MAX_TEMP_BUFFER_SIZE 2048
@@ -146,6 +147,30 @@ void print(const String& str, ConsoleColor color, ConsoleColor backgroundColor, 
 String toString(const String& value)
 {
 	return value;
+}
+
+String toString(const char* value)
+{
+	return String(value);
+}
+
+String toString(const u32& value)
+{
+	char buffer[16];
+	snprintf(buffer, sizeof(buffer), "%u", value);
+	return String(buffer);
+}
+
+String toString(const s32& value)
+{
+	char buffer[16];
+	snprintf(buffer, sizeof(buffer), "%d", value);
+	return String(buffer);
+}
+
+String toString(const b8& value)
+{
+	return String(value ? "true" : "false");
 }
 
 } // namespace ntt

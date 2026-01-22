@@ -79,6 +79,15 @@ void print(const String& str,
 String toString(const String& value);
 
 /**
+ * Convert a C-style string to a String object.
+ */
+String toString(const char* value);
+
+String toString(const u32& value);
+String toString(const s32& value);
+String toString(const b8& value);
+
+/**
  * The public format function to format a string with given arguments.
  */
 template <typename... Args>
@@ -110,11 +119,25 @@ String _format(const String& format, const T& first, const Args&... args)
 	return _format(result, args...);
 }
 
+template <typename T, typename... Args>
+String _format(const String& format, const T* first, const Args&... args)
+{
+	String result(format.c_str(), MemorySystem::getStackAllocator());
+	result.replace("{}", String(first), false);
+	return _format(result, args...);
+}
+
 template <typename T>
 String _format(const String& format, const T& last)
 {
 	String result(format.c_str(), MemorySystem::getStackAllocator());
 	result.replace("{}", toString(last), false);
+	return result;
+}
+
+inline String _format(const String& format)
+{
+	String result(format.c_str(), MemorySystem::getStackAllocator());
 	return result;
 }
 
