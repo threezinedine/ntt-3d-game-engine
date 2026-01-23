@@ -144,16 +144,19 @@ void print(const String& str, ConsoleColor color, ConsoleColor backgroundColor, 
 	print(str.c_str(), color, backgroundColor, bold);
 }
 
+template <>
 String toString(const String& value)
 {
 	return value;
 }
 
+template <>
 String toString(const char* value)
 {
 	return String(value);
 }
 
+template <>
 String toString(const u32& value)
 {
 	char buffer[16];
@@ -161,6 +164,7 @@ String toString(const u32& value)
 	return String(buffer);
 }
 
+template <>
 String toString(const s32& value)
 {
 	char buffer[16];
@@ -168,6 +172,7 @@ String toString(const s32& value)
 	return String(buffer);
 }
 
+template <>
 String toString(const b8& value)
 {
 	return String(value ? "true" : "false");

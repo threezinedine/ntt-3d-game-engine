@@ -33,6 +33,8 @@ int main()
 
 		print(format("Formatted string: {}", "hello"));
 
+		print(format("Print with color: {}", CONSOLE_COLOR_MAGENTA), CONSOLE_COLOR_MAGENTA);
+
 		print(helloStr.c_str(), CONSOLE_COLOR_CYAN);
 
 		int* testInt = (int*)MemorySystem::getDefaultAllocator()->allocate(sizeof(int), alignof(int));

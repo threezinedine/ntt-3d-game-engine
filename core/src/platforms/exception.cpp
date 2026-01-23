@@ -11,33 +11,6 @@
 
 namespace ntt {
 
-const char* exceptionTypeToString(ExceptionType type)
-{
-	switch (type)
-	{
-	case EXCEPTION_TYPE_UNKNOWN:
-		return "Unknown Exception";
-	case EXCEPTION_TYPE_RUNTIME:
-		return "Runtime Exception";
-	case EXCEPTION_TYPE_LOGIC:
-		return "Logic Exception";
-	case EXCEPTION_TYPE_OUT_OF_MEMORY:
-		return "Out of Memory Exception";
-	case EXCEPTION_TYPE_INVALID_ARGUMENT:
-		return "Invalid Argument Exception";
-	case EXCEPTION_TYPE_INDEX_OUT_OF_BOUNDS:
-		return "Index Out of Bounds Exception";
-	case EXCEPTION_TYPE_FILE_NOT_FOUND:
-		return "File Not Found Exception";
-	case EXCEPTION_TYPE_IO_ERROR:
-		return "IO Error Exception";
-	case EXCEPTION_TYPE_COUNT:
-		break;
-	}
-
-	return "Unrecognized Exception Type";
-}
-
 void raiseException(ExceptionType type, const char* message)
 {
 #if NTT_PLATFORM_WINDOWS

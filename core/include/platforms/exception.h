@@ -20,13 +20,7 @@ enum ExceptionType
 	EXCEPTION_TYPE_COUNT,
 };
 
-/**
- * Convert the exception type enum to a human-readable string.
- *
- * @param type The exception type to convert.
- * @return The string representation of the exception type.
- */
-const char* exceptionTypeToString(ExceptionType type);
+NTT_ENUM_UTILS_DECLARE(ExceptionType);
 
 /**
  * Main interface for triggering exceptions in the engine.

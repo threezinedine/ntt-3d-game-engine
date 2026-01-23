@@ -1,0 +1,32 @@
+#include <engine/engine.h>
+
+// clang-format off
+namespace ntt 
+{
+
+{% for enum in parser.Enums -%}
+{% if enum.namespace == "ntt"-%}
+const char* convert{{ enum.name }}ToString({{ enum.name }} value)
+{
+    switch(value)
+    {
+    {% for constant in enum.constants -%}
+    case {{ enum.name }}::{{ constant.name }}:
+        return "{{ constant.name }}";
+    {% endfor -%}
+    }
+
+    NTT_UNREACHABLE();
+    return "Unknown {{ enum.name }}";
+}
+
+template <>
+String toString(const {{ enum.name }}& value)
+{
+    return String(convert{{ enum.name }}ToString(value));
+}
+{% endif -%}
+{% endfor -%}
+
+} // namespace ntt
+// clang-format on

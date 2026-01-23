@@ -16,12 +16,6 @@ enum AllocatorType : u8
 	ALLOCATOR_TYPE_COUNT,
 };
 
-/**
- * Convert AllocatorType enum to string representation.
- *
- * @param type The AllocatorType enum value.
- * @return The string representation of the AllocatorType.
- */
-const char* AllocatorTypeToString(AllocatorType type);
+NTT_ENUM_UTILS_DECLARE(AllocatorType)
 
 } // namespace ntt

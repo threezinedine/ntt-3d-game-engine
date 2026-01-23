@@ -76,16 +76,14 @@ void print(const String& str,
  *
  * @note The returned string can use the stack allocator for temporary storage.
  */
-String toString(const String& value);
+template <typename T>
+String toString(const T& value);
 
 /**
  * Convert a C-style string to a String object.
  */
-String toString(const char* value);
-
-String toString(const u32& value);
-String toString(const s32& value);
-String toString(const b8& value);
+template <typename T>
+String toString(const T* value);
 
 /**
  * The public format function to format a string with given arguments.

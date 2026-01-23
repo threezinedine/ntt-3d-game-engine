@@ -20,6 +20,7 @@ file(
 set(
     GENERATED_SOURCE_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/temp/generated_json_writer.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/temp/generated_enum_utils.cpp"
 )
 
 
@@ -55,7 +56,6 @@ if (NTT_USE_IMGUI)
 ntt_configure_imgui()
 list(APPEND TARGET_LINK_LIBRARIES ntt-imgui)
 endif()
-
 
 if (NTT_USE_GLFW)
     ntt_find_package(ntt-glfw "Dependencies")

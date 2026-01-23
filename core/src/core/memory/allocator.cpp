@@ -86,22 +86,4 @@ void Allocator::deallocate(void* ptr, Size size)
 	deallocateImpl(ptr);
 }
 
-const char* AllocatorTypeToString(AllocatorType type)
-{
-	switch (type)
-	{
-	case ALLOCATOR_TYPE_MALLOC:
-		return "Malloc Allocator";
-	case ALLOCATOR_TYPE_LINEAR:
-		return "Linear Allocator";
-	case ALLOCATOR_TYPE_STACK:
-		return "Stack Allocator";
-	case ALLOCATOR_TYPE_COUNT:
-		NTT_UNREACHABLE();
-		return "Unknown Allocator Type";
-	}
-
-	return "Unknown Allocator Type";
-}
-
 } // namespace ntt

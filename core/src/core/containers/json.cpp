@@ -24,6 +24,7 @@ Json::~Json()
 
 String Json::toString(u32 indentLevel) const
 {
+	NTT_UNUSED(indentLevel);
 	return String();
 }
 

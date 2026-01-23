@@ -88,9 +88,10 @@ private:                                                                        
 	Json	   structName##ToJson(const structName& obj);                                                              \
 	String	   structName##ToJsonString(const structName& obj) NTT_BINDING;
 
+#define NTT_ENUM_UTILS_DECLARE(enumType) const char* convert##enumType##ToString(enumType value);
+
 #include "platforms/console.h"
 #include "platforms/debug.h"
-#include "platforms/exception.h"
 
 #define NTT_ASSERT(condition)                                                                                          \
 	do                                                                                                                 \
@@ -125,11 +126,13 @@ private:                                                                        
 		ntt::debugBreak();                                                                                             \
 	} while (0)
 
+#include "platforms/exception.h"
+
 #define NTT_RAISE_ERROR(type, message)                                                                                 \
 	do                                                                                                                 \
 	{                                                                                                                  \
 		print("Error raised ", CONSOLE_COLOR_RED, CONSOLE_COLOR_DEFAULT, true);                                        \
-		print(exceptionTypeToString(type), CONSOLE_COLOR_RED, CONSOLE_COLOR_DEFAULT, true);                            \
+		print(convertExceptionTypeToString(type), CONSOLE_COLOR_RED, CONSOLE_COLOR_DEFAULT, true);                     \
 		print(": " message, CONSOLE_COLOR_RED, CONSOLE_COLOR_DEFAULT, true);                                           \
 		raiseException(type, message);                                                                                 \
 	} while (0)

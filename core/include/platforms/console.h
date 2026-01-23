@@ -21,6 +21,8 @@ enum ConsoleColor : u8
 	CONSOLE_COLOR_COUNT,
 };
 
+NTT_ENUM_UTILS_DECLARE(ConsoleColor)
+
 /**
  * Print a message to the console with optional text and background colors, and bold formatting.
  *

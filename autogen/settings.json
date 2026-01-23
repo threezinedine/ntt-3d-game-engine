@@ -55,6 +55,20 @@
 			],
 			"includes": ["{{ BASE_DIR }}/core/include"],
 			"template": "binding.j2"
+		},
+		{
+			"output": "core/temp/generated_enum_utils.cpp",
+			"input": "core/include/engine/engine.h",
+			"dependencies": [
+				"core/include/**/*.h",
+				"core/include/**/**/*.h",
+				"autogen/parser/*.py",
+				"autogen/templates/*.j2",
+				"autogen/templates/**/*.j2",
+				"autogen/templates/**/**/*.j2"
+			],
+			"includes": ["{{ BASE_DIR }}/core/include"],
+			"template": "enum_utils.j2"
 		}
 	]
 }
