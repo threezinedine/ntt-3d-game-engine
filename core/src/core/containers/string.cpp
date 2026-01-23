@@ -156,21 +156,27 @@ String toString(const char* value)
 	return String(value);
 }
 
-template <>
-String toString(const u32& value)
-{
-	char buffer[16];
-	snprintf(buffer, sizeof(buffer), "%u", value);
-	return String(buffer);
-}
+#define NTT_TO_STRING_SPECIALIZATION(type, formatSpecifier)                                                            \
+	template <>                                                                                                        \
+	String toString(const type& value)                                                                                 \
+	{                                                                                                                  \
+		char buffer[16];                                                                                               \
+		snprintf(buffer, sizeof(buffer), formatSpecifier, value);                                                      \
+		return String(buffer);                                                                                         \
+	}
 
-template <>
-String toString(const s32& value)
-{
-	char buffer[16];
-	snprintf(buffer, sizeof(buffer), "%d", value);
-	return String(buffer);
-}
+NTT_TO_STRING_SPECIALIZATION(u64, "%llu")
+NTT_TO_STRING_SPECIALIZATION(u32, "%u")
+NTT_TO_STRING_SPECIALIZATION(u16, "%hu")
+NTT_TO_STRING_SPECIALIZATION(u8, "%hhu")
+
+NTT_TO_STRING_SPECIALIZATION(s64, "%lld")
+NTT_TO_STRING_SPECIALIZATION(s32, "%d")
+NTT_TO_STRING_SPECIALIZATION(s16, "%hd")
+NTT_TO_STRING_SPECIALIZATION(s8, "%hhd")
+
+NTT_TO_STRING_SPECIALIZATION(f32, "%f")
+NTT_TO_STRING_SPECIALIZATION(f64, "%lf")
 
 template <>
 String toString(const b8& value)

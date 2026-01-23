@@ -34,6 +34,7 @@ int main()
 		print(format("Formatted string: {}", "hello"));
 
 		print(format("Print with color: {}", CONSOLE_COLOR_MAGENTA), CONSOLE_COLOR_MAGENTA);
+		print(format("Number: {}, Boolean: {}, Float: {}", 12345u, true, 3.14159f), CONSOLE_COLOR_YELLOW);
 
 		print(helloStr.c_str(), CONSOLE_COLOR_CYAN);
 
