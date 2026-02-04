@@ -5,12 +5,12 @@ class StringTest : public ::testing::Test
 protected:
 	void SetUp() override
 	{
-		MemorySystem::Initialize();
+		SetupTesting();
 	}
 
 	void TearDown() override
 	{
-		MemorySystem::Shutdown();
+		TeardownTesting();
 	}
 };
 
