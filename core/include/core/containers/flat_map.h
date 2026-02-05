@@ -66,6 +66,17 @@ public:
 	 */
 	typedef HashType (*CustomHashFunction)(const K& key);
 
+private:
+	/**
+	 * Be retrieved by the internal methods which store information about each entry (key, value, control byte).
+	 */
+	struct EntryInfo
+	{
+		HashEntry*	 pEntry;
+		ControlWord* pControlWord;
+		u32			 slotIndex;
+	};
+
 public:
 	FlatMap(Allocator* pMapAllocator = nullptr, CustomHashFunction callback = nullptr)
 		: FlatMap(NTT_DEFAULT_FLAT_GROUPS, pMapAllocator, callback)
@@ -110,14 +121,14 @@ public:
 	 */
 	bool contains(const K& key) const
 	{
-		HashEntry* pEntry = getEntryByKey(key);
+		HashEntry* pEntry = getEntryByKey(key).pEntry;
 
 		return pEntry != nullptr;
 	}
 
 	V& get(const K& key) const
 	{
-		HashEntry* pEntry = getEntryByKey(key);
+		HashEntry* pEntry = getEntryByKey(key).pEntry;
 
 		if (pEntry == nullptr)
 		{
@@ -135,7 +146,7 @@ public:
 
 		u32 currentGroupIndex = static_cast<u32>(groupIndex);
 
-		HashEntry* pExistingEntry = getEntryByKey(key);
+		HashEntry* pExistingEntry = getEntryByKey(key).pEntry;
 		if (pExistingEntry != nullptr)
 		{
 			pExistingEntry->value = value;
@@ -147,15 +158,23 @@ public:
 			ControlWord* pControlWord = getControlWordPtr(currentGroupIndex);
 			__m128i		 control	  = _mm_loadu_si128(reinterpret_cast<const __m128i*>(pControlWord));
 
-			__m128i emptyPattern = _mm_set1_epi8(static_cast<char>(NTT_HASH_CONTROL_EMPTY));
-			__m128i cmpResult	 = _mm_cmpeq_epi8(control, emptyPattern);
-			s32		emptyMask	 = _mm_movemask_epi8(cmpResult);
+			__m128i emptyPattern   = _mm_set1_epi8(static_cast<char>(NTT_HASH_CONTROL_EMPTY));
+			__m128i deletedPattern = _mm_set1_epi8(static_cast<char>(NTT_HASH_CONTROL_DELETED));
+			__m128i cmpResult	   = _mm_cmpeq_epi8(control, emptyPattern);
+			__m128i cmpDeleted	   = _mm_cmpeq_epi8(control, deletedPattern);
+			s32		emptyMask	   = _mm_movemask_epi8(cmpResult);
+			s32		deletedMask	   = _mm_movemask_epi8(cmpDeleted);
 
-			if (emptyMask == 0)
+			if (emptyMask == 0 && deletedMask == 0)
 			{
 				// no empty slot in this group, try the next group
 				currentGroupIndex = (currentGroupIndex + 1) % m_groupCount;
 				continue;
+			}
+
+			if (deletedMask != 0)
+			{
+				emptyMask = deletedMask;
 			}
 
 			s32 slotIndex = __builtin_ctz(emptyMask);
@@ -172,6 +191,18 @@ public:
 			pControlWord->slots[slotIndex] = static_cast<HashControlType>(controlByte);
 			break;
 		}
+	}
+
+	void remove(const K& key)
+	{
+		EntryInfo entryInfo = getEntryByKey(key);
+
+		if (entryInfo.pEntry == nullptr)
+		{
+			NTT_RAISE_ERROR(EXCEPTION_TYPE_KEY_NOT_FOUND, "Key is not found in the map");
+		}
+
+		entryInfo.pControlWord->slots[entryInfo.slotIndex] = NTT_HASH_CONTROL_DELETED;
 	}
 
 private:
@@ -211,7 +242,7 @@ private:
 	/**
 	 * @note return nullptr of non existed.
 	 */
-	HashEntry* getEntryByKey(const K& key) const
+	EntryInfo getEntryByKey(const K& key) const
 	{
 		HashType		hashValue	= internalHash(key);
 		HashType		groupIndex	= computIndex(hashValue);
@@ -233,7 +264,7 @@ private:
 			if (matchedMask == 0 && emptyMask != 0)
 			{
 				// no matching slot in this group, and there is empty slot, so the key does not exist
-				return nullptr;
+				return {nullptr, nullptr, 0};
 			}
 
 			if (matchedMask == 0 && emptyMask == 0)
@@ -250,16 +281,16 @@ private:
 
 				if (pEntry->key == key)
 				{
-					return pEntry;
+					return {pEntry, pControlWord, static_cast<u32>(slotIndex)};
 				}
 
 				matchedMask &= ~(1 << slotIndex);
 			}
 
-			return nullptr;
+			return {nullptr, nullptr, 0};
 		}
 
-		return nullptr;
+		return {nullptr, nullptr, 0};
 	}
 
 	/**
@@ -300,7 +331,8 @@ private:
 	void*	   m_entries;	 // Where the data are stored
 	u32		   m_groupCount; // Number of groups
 
-	CustomHashFunction m_customHashCallback;
+	CustomHashFunction
+		m_customHashCallback; // The custom hash function provided by user, can be nullptr and use default
 };
 
 } // namespace ntt

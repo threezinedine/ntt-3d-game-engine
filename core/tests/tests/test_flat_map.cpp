@@ -88,6 +88,19 @@ TEST_F(FlatMapTest, InsertMultipleKeysWith1GroupAndExceedSlotsCount)
 	EXPECT_EQ(map.get(NTT_SLOT_PER_GROUP), NTT_SLOT_PER_GROUP + 100);
 }
 
+TEST_F(FlatMapTest, DeleteKeyAndStillNoError)
+{
+	FlatMap<int, int> map;
+
+	map.insert(50, 200);
+
+	EXPECT_TRUE(map.contains(50));
+	EXPECT_EQ(map.get(50), 200);
+
+	map.remove(50);
+	EXPECT_FALSE(map.contains(50));
+}
+
 TEST_F(FlatMapTest, InsertMultipleKeysWithCollision)
 {
 	FlatMap<s32, s32> map(nullptr, autoGroup1Hash);
