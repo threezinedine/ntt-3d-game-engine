@@ -29,6 +29,9 @@ void raiseException(ExceptionType type, const char* message)
 	case EXCEPTION_TYPE_INDEX_OUT_OF_BOUNDS:
 		throw std::out_of_range(message);
 		break;
+	case EXCEPTION_TYPE_KEY_NOT_FOUND:
+		throw std::out_of_range(std::string("Key Not Found: ") + message);
+		break;
 	case EXCEPTION_TYPE_FILE_NOT_FOUND:
 		throw std::runtime_error(std::string("File Not Found: ") + message);
 		break;

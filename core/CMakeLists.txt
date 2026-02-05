@@ -194,6 +194,7 @@ if (NTT_ENGINE_CORE_TESTS_ENABLE AND NOT NTT_ENGINE_EDITOR_BINDING)
         ${TEST_PROJECT_NAME}
         PRIVATE 
         ${TARGET_DEFINITIONS}
+        NTT_TEST
     )
 
     target_compile_options(

@@ -20,7 +20,7 @@ namespace ntt {
 #define NTT_MAX_LOAD_FACTOR		0.75f
 
 #define NTT_FLAT_MAP_MASK						  0x7F // Only choose the key from 0 - 127
-#define NTT_FLAT_MAP_GET_GROUP_VALUE(hashValue)	  ((hashValue) >> 3)
+#define NTT_FLAT_MAP_GET_GROUP_VALUE(hashValue)	  ((hashValue) >> 7)
 #define NTT_FLAT_MAP_GET_CONTROL_VALUE(hashValue) ((hashValue) & NTT_FLAT_MAP_MASK)
 
 typedef u64 HashType;
@@ -61,16 +61,22 @@ public:
 		HashControlType slots[NTT_SLOT_PER_GROUP];
 	};
 
+	/**
+	 * The way to override the default hash method
+	 */
+	typedef HashType (*CustomHashFunction)(const K& key);
+
 public:
-	FlatMap(Allocator* pMapAllocator = nullptr)
-		: FlatMap(NTT_DEFAULT_FLAT_GROUPS, pMapAllocator)
+	FlatMap(Allocator* pMapAllocator = nullptr, CustomHashFunction callback = nullptr)
+		: FlatMap(NTT_DEFAULT_FLAT_GROUPS, pMapAllocator, callback)
 	{
 	}
 
-	FlatMap(u32 groupsCount, Allocator* pMapAllocator = nullptr)
+	FlatMap(u32 groupsCount, Allocator* pMapAllocator = nullptr, CustomHashFunction callback = nullptr)
 		: m_pAllocator(pMapAllocator)
 		, m_entries(nullptr)
 		, m_groupCount(0)
+		, m_customHashCallback(callback)
 	{
 		rehash(groupsCount);
 	}
@@ -109,13 +115,32 @@ public:
 		return pEntry != nullptr;
 	}
 
+	V& get(const K& key) const
+	{
+		HashEntry* pEntry = getEntryByKey(key);
+
+		if (pEntry == nullptr)
+		{
+			NTT_RAISE_ERROR(EXCEPTION_TYPE_KEY_NOT_FOUND, "Key is not found in the map");
+		}
+
+		return pEntry->value;
+	}
+
 	void insert(const K& key, const V& value)
 	{
-		HashType		hashValue	= hash(key);
+		HashType		hashValue	= internalHash(key);
 		HashType		groupIndex	= computIndex(hashValue);
 		HashControlType controlByte = NTT_FLAT_MAP_GET_CONTROL_VALUE(hashValue);
 
 		u32 currentGroupIndex = static_cast<u32>(groupIndex);
+
+		HashEntry* pExistingEntry = getEntryByKey(key);
+		if (pExistingEntry != nullptr)
+		{
+			pExistingEntry->value = value;
+			return;
+		}
 
 		while (true)
 		{
@@ -124,9 +149,16 @@ public:
 
 			__m128i emptyPattern = _mm_set1_epi8(static_cast<char>(NTT_HASH_CONTROL_EMPTY));
 			__m128i cmpResult	 = _mm_cmpeq_epi8(control, emptyPattern);
-			s32		mask		 = _mm_movemask_epi8(cmpResult);
+			s32		emptyMask	 = _mm_movemask_epi8(cmpResult);
 
-			s32 slotIndex = __builtin_ctz(mask);
+			if (emptyMask == 0)
+			{
+				// no empty slot in this group, try the next group
+				currentGroupIndex = (currentGroupIndex + 1) % m_groupCount;
+				continue;
+			}
+
+			s32 slotIndex = __builtin_ctz(emptyMask);
 
 			if (slotIndex < 0 || slotIndex >= NTT_SLOT_PER_GROUP)
 			{
@@ -143,6 +175,18 @@ public:
 	}
 
 private:
+	s32 internalHash(const K& key) const
+	{
+		if (m_customHashCallback)
+		{
+			return m_customHashCallback(key);
+		}
+		else
+		{
+			return hash(key);
+		}
+	}
+
 	HashType computIndex(HashType hashValue) const
 	{
 		return NTT_FLAT_MAP_GET_GROUP_VALUE(hashValue) % m_groupCount;
@@ -169,7 +213,7 @@ private:
 	 */
 	HashEntry* getEntryByKey(const K& key) const
 	{
-		HashType		hashValue	= hash(key);
+		HashType		hashValue	= internalHash(key);
 		HashType		groupIndex	= computIndex(hashValue);
 		HashControlType controlByte = NTT_FLAT_MAP_GET_CONTROL_VALUE(hashValue);
 
@@ -181,12 +225,27 @@ private:
 			__m128i		 control	  = _mm_loadu_si128(reinterpret_cast<const __m128i*>(pControlWord));
 
 			__m128i matchPattern = _mm_set1_epi8(static_cast<char>(controlByte));
+			__m128i emptyPattern = _mm_set1_epi8(static_cast<char>(NTT_HASH_CONTROL_EMPTY));
 			__m128i cmpResult	 = _mm_cmpeq_epi8(control, matchPattern);
-			s32		mask		 = _mm_movemask_epi8(cmpResult);
+			s32		matchedMask	 = _mm_movemask_epi8(cmpResult);
+			s32		emptyMask	 = _mm_movemask_epi8(_mm_cmpeq_epi8(control, emptyPattern));
 
-			while (mask != 0)
+			if (matchedMask == 0 && emptyMask != 0)
 			{
-				s32		   slotIndex = __builtin_ctz(mask);
+				// no matching slot in this group, and there is empty slot, so the key does not exist
+				return nullptr;
+			}
+
+			if (matchedMask == 0 && emptyMask == 0)
+			{
+				// no empty slot in this group, try the next group
+				currentGroupIndex = (currentGroupIndex + 1) % m_groupCount;
+				continue;
+			}
+
+			while (matchedMask != 0)
+			{
+				s32		   slotIndex = __builtin_ctz(matchedMask);
 				HashEntry* pEntry	 = getEntry(currentGroupIndex, static_cast<u32>(slotIndex));
 
 				if (pEntry->key == key)
@@ -194,7 +253,7 @@ private:
 					return pEntry;
 				}
 
-				mask &= ~(1 << slotIndex);
+				matchedMask &= ~(1 << slotIndex);
 			}
 
 			return nullptr;
@@ -240,6 +299,8 @@ private:
 	Allocator* m_pAllocator; // The allocator used for memory management, can be nullptr, then use default allocator
 	void*	   m_entries;	 // Where the data are stored
 	u32		   m_groupCount; // Number of groups
+
+	CustomHashFunction m_customHashCallback;
 };
 
 } // namespace ntt
