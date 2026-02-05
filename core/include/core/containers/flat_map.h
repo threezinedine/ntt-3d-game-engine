@@ -138,6 +138,18 @@ public:
 		return pEntry->value;
 	}
 
+	void clear()
+	{
+		if (m_entries)
+		{
+			for (u32 groupIndex = 0; groupIndex < m_groupCount; ++groupIndex)
+			{
+				ControlWord* pControlWord = getControlWordPtr(groupIndex);
+				MemorySet(pControlWord, NTT_HASH_CONTROL_EMPTY, sizeof(ControlWord));
+			}
+		}
+	}
+
 	void insert(const K& key, const V& value)
 	{
 		HashType		hashValue	= internalHash(key);

@@ -122,3 +122,38 @@ TEST_F(FlatMapTest, InsertDuplicateKey)
 	EXPECT_TRUE(map.contains(50));
 	EXPECT_EQ(map.get(50), 300); // Value should be updated to the latest
 }
+
+TEST_F(FlatMapTest, ReInsertSameDeletedKey)
+{
+	FlatMap<int, int> map;
+
+	map.insert(75, 150);
+	EXPECT_TRUE(map.contains(75));
+	EXPECT_EQ(map.get(75), 150);
+
+	map.remove(75);
+	EXPECT_FALSE(map.contains(75));
+
+	map.insert(75, 250); // Re-insert the same key
+	EXPECT_TRUE(map.contains(75));
+	EXPECT_EQ(map.get(75), 250);
+}
+
+TEST_F(FlatMapTest, Clear)
+{
+	FlatMap<int, int> map;
+
+	map.insert(10, 100);
+	map.insert(20, 200);
+	map.insert(30, 300);
+
+	EXPECT_TRUE(map.contains(10));
+	EXPECT_TRUE(map.contains(20));
+	EXPECT_TRUE(map.contains(30));
+
+	map.clear();
+
+	EXPECT_FALSE(map.contains(10));
+	EXPECT_FALSE(map.contains(20));
+	EXPECT_FALSE(map.contains(30));
+}
